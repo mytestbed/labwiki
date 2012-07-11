@@ -8,7 +8,7 @@ module LabWiki
   # Responsible for the content to be shown in a particular column 
   class ColumnWidget < OMF::Common::LObject
     
-    attr_reader :embedded_widget, :name
+    attr_reader :embedded_widget, :name, :content_descriptor
 
     def initialize(name)
       @name = name
@@ -18,13 +18,14 @@ module LabWiki
       @embedded_widget.nil?
     end
     
-    def on_get(req)
-      margin = { :left => 0, :top => 0, :right => 0, :bottom => 0 }
-      t = {:type => :text, :content => {:url => 'sample2.md'}, :margin => margin}      
-      @embedded_widget = OMF::Web::Widget.create_widget(t)
-      r = OMF::Web::Theme::ColumnContentRenderer.new(self, @name)
-      [r.to_html, "text/html"]
+    def mime_type
+      @embedded_widget ? @embedded_widget.mime_type : ''
     end
+    
+    def on_get(opts, req)
+      @content_descriptor = opts[:content_descriptor]
+    end
+    
     
     def collect_data_sources(ds_set)
       if @embedded_widget

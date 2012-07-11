@@ -15,14 +15,32 @@ module LabWiki
         unless main_w = LabWiki::LWWidget[req]
           raise MissingArgumentException.new "Can't find session widget"
         end
+
+        opts = {}
+        if content_encoded = req.params['content']
+          mime_type, path = Base64.decode64(content_encoded).split('::')
+          unless mime_type && path
+            raise OMF::Web::Rack::MissingArgumentException.new "Can't decode 'content' parameter (#{content_encoded})"
+          end
+          opts[:content_descriptor] = content_encoded
+          opts[:mime_type] = mime_type
+          opts[:path] = path
+        elsif mime_type = req.params['create']
+          opts[:mime_type] = mime_type
+          opts[:create] = true
+        else
+          raise OMF::Web::Rack::MissingArgumentException.new "Missing parameter 'content' or 'create'"
+        end
+        
         unless col = req.params['col']
           raise OMF::Web::Rack::MissingArgumentException.new "Missing parameter 'col'"
         end
         unless col_w = main_w.get_column_widget(col)
           raise OMF::Web::Rack::MissingArgumentException.new "Can't find column widget for '#{col}"
         end
+        
         method = "on_#{req.request_method().downcase}"
-        body, headers = col_w.send(method.to_sym, req)
+        body, headers = col_w.send(method.to_sym, opts, req)
       rescue OMF::Web::Rack::MissingArgumentException => mex
         debug mex
         return [412, {"Content-Type" => 'text'}, [mex.to_s]]

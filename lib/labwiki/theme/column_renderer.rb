@@ -11,7 +11,7 @@ module OMF::Web::Theme
       @widget = widget
       @col_name = col_name
       @position = position
-      @content_renderer = ColumnContentRenderer.new(widget, col_name)
+      @content_renderer = ColumnContentRenderer.new(widget, widget.embedded_widget, col_name)
     end
         
     def content
@@ -33,14 +33,25 @@ module OMF::Web::Theme
           div :class => "loader"
         end
       end
+      opts = {:sid => Thread.current["sessionID"], :col => @col_name}
+      if cd = @widget.content_descriptor
+        opts[:content] = cd
+      end
+      javascript %{
+        //LW.#{@col_name}_controller.init_content_search('lw#{object_id}', #{opts.to_json});
+        LW.#{@col_name}_controller.init('lw#{object_id}', #{opts.to_json});
+      }
+      
     end
     
     def render_panel_titlebar(title)
+      prefix = "kp#{@position}_"
       div :class => "titlebar" do
         table do
           tbody do
             tr do
               td :class => "left" do
+                button :id => prefix + 'maximize_left_buttom', :class => "tool maximize", :title => "Resize", :style => "display:none"                
                 #button :class => "tool reload", :title => "Reload"
               end
               td :class => "center" do
@@ -49,7 +60,7 @@ module OMF::Web::Theme
                 end
               end
               td :class => "right" do
-                button :class => "tool maximize", :title => "Resize", :style => ""
+                button :id => prefix + 'maximize_right_buttom', :class => "tool maximize", :title => "Resize", :style => "display:none"
                 #button :class => "tool newtab", :title => "Open this panel in a new tab" 
               end
             end
@@ -72,7 +83,7 @@ module OMF::Web::Theme
             td do
               form :class => "quicksearch k-active", :onsubmit => "return false;" do
                 div :class => "container rounded-corners" do
-                  button :class => "head_add" "FOO" # "add_content"
+                  #button :class => "head_add" # "add_content"
                   button :class => "head search"
                   input :id => "lw#{object_id}_si", :class => "input", :type => "text", :value => "" do
                     button :class => "tail reset", :onclick => "$(this).prev('input:text').val('');return false;"
@@ -97,10 +108,6 @@ module OMF::Web::Theme
           end
         end
       end 
-      opts = {:sid => Thread.current["sessionID"], :col => @col_name}
-      javascript %{
-        LW.register_content_search('lw#{object_id}', #{opts.to_json});
-      }
                  
     end
     

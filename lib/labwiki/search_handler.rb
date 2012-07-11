@@ -33,7 +33,7 @@ module LabWiki
       end
       res = fs[0, 10].collect do |f|
         path = f.delete(:path)
-        f[:content] = :id => Base64.encode64(long_name).gsub("\n", ''), 
+        f[:content] = Base64.encode64("#{f[:mime_type]}::#{path}").gsub("\n", '')
         {:label => path, :value => f}
       end
       [res.to_json, 'application/json']

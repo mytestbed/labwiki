@@ -14,6 +14,9 @@ module OMF::Web::Theme
     depends_on :js, "/resource/vendor/jquery-ui/js/jquery-ui.min.js"
     depends_on :js, "/resource/vendor/jquery-ui/js/jquery.ui.autocomplete.js"        
 
+    
+    depends_on :js, "/resource/theme/labwiki/js/column_controller.js"        
+    depends_on :js, "/resource/theme/labwiki/js/execute_col_controller.js"            
     depends_on :js, "/resource/theme/labwiki/js/labwiki.js"        
    
 
@@ -34,6 +37,10 @@ module OMF::Web::Theme
       # #<link rel="icon" type="image/png" href="file://localhost/Users/max/Downloads/v1.2.2%202/images/kaiten-boxed-favicon.png" sizes="16x16">
       # <link rel="stylesheet" type="text/css" href="./dom_files/kaiten.min.css">
     
+      javascript %{
+        if (typeof(LW) == "undefined") LW = {};
+        LW.session_id = '#{Thread.current["sessionID"]}';
+      }    
       div :id => "container", :style => "position: relative; height: 100%;" do
         div :id => "k-window" do
           div :id => "k-topbar" do
