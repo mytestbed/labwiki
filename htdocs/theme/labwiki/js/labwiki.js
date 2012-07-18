@@ -24,6 +24,7 @@ LW.layout = function(window) {
       controller.resize(left, w);
       return left + w;
     }, 0);
+    OHUB.trigger('layout.resize', {});
   }
   return layout;
 }($(window));
@@ -50,6 +51,8 @@ $(function() {
   LW.resize();
   
   console.log('hi');
+  
+  
   
   
   // /* Support dragging of column title icons onto other column header */

@@ -35,7 +35,7 @@ module OMF::Web::Theme
       div :class => "block block-nav widget-title-block" do
         div :class => "drop-target" do
           div :class => "summary" do
-            mime_type = @widget.mime_type
+            mime_type = @embedded_widget.mime_type
             unless img_src = MIMETYPE2ICON[mime_type]
               # try default
               mime_type = mime_type.split('/')[0]

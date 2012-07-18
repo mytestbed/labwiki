@@ -142,3 +142,87 @@ ol.codemirror_toolbar li a {
 .codemirror_edit {
   overflow:hidden;
 }
+
+/*** EXPERIMENT FORMS ***/
+
+div.experiment-description {
+  border-bottom: 1px solid #CCC;
+}
+
+.experiment-description .start-form {
+  padding: 20px;
+  background-color: #FFF7C0;
+}
+
+.experiment-description div.experiment-status {
+  padding: 20px;
+}
+
+.experiment-description tr td {
+  padding: 5px;
+}
+
+.experiment-description tr.prop0 td {
+  padding-top: 20px;
+}
+
+
+
+/*.experiment-description label.desc, */
+.experiment-description td.desc
+{
+  font-size: 95%;
+  font-family: inherit;
+  font-style: normal;
+  font-weight: bold;
+  color: #444;
+}
+
+.experiment-description input.text {
+  font-style: normal;
+  font-weight: normal;
+  color: #333;
+  font-size: 100%;
+  border-top: 1px solid #7C7C7C;
+  border-left: 1px solid #C3C3C3;
+  border-right: 1px solid #C3C3C3;
+  border-bottom: 1px solid #DDD;
+  background: white url(/resource/theme/labwiki/images/fieldbg.gif)  repeat-x top;
+  margin: 0;
+  padding: 2px 0 2px 5px;
+}
+
+.experiment-description td.input {
+  width: 60%;  
+  font-family: inherit;
+  font-style: normal;
+  font-weight: bold;
+} 
+ 
+.experiment-description td.comment {
+/*
+ *   width: 100%;
+ */
+  font-size: 85%;
+  color: #444;
+}
+
+.experiment-description input.button-text {
+  padding: 0px 7px;
+  width: auto;
+  overflow: visible;  
+  font-size: 120%;
+}
+
+.experiment-description tr.buttons td {
+  padding-top: 10px;
+}
+
+
+/*.experiment-description form li.buttons input {
+  font-size: 100%;
+  margin-right: 5px;
+}*/
+
+
+

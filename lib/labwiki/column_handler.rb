@@ -16,22 +16,6 @@ module LabWiki
           raise MissingArgumentException.new "Can't find session widget"
         end
 
-        opts = {}
-        if content_encoded = req.params['content']
-          mime_type, path = Base64.decode64(content_encoded).split('::')
-          unless mime_type && path
-            raise OMF::Web::Rack::MissingArgumentException.new "Can't decode 'content' parameter (#{content_encoded})"
-          end
-          opts[:content_descriptor] = content_encoded
-          opts[:mime_type] = mime_type
-          opts[:path] = path
-        elsif mime_type = req.params['create']
-          opts[:mime_type] = mime_type
-          opts[:create] = true
-        else
-          raise OMF::Web::Rack::MissingArgumentException.new "Missing parameter 'content' or 'create'"
-        end
-        
         unless col = req.params['col']
           raise OMF::Web::Rack::MissingArgumentException.new "Missing parameter 'col'"
         end
@@ -39,10 +23,41 @@ module LabWiki
           raise OMF::Web::Rack::MissingArgumentException.new "Can't find column widget for '#{col}"
         end
         
-        method = "on_#{req.request_method().downcase}"
-        body, headers = col_w.send(method.to_sym, opts, req)
+        unless action = req.params['action']
+          raise OMF::Web::Rack::MissingArgumentException.new "Missing parameter 'action'"
+        end
+        
+        action = "on_#{action}".to_sym
+        unless col_w.respond_to? action
+          raise OMF::Web::Rack::MissingArgumentException.new "Unknown action '#{action}' for column '#{col}'"
+        end
+        
+        debug "Calling '#{action} on '#{col_w.class}' widget"
+        body, headers = col_w.send(action, OMF::Web.deep_symbolize_keys(req.params), req)
+        #method = "on_#{req.request_method().downcase}"
+        #body, headers = col_w.send(method.to_sym, opts, req)
+
+        # opts = {}
+        # if content_encoded = req.params['content']
+          # mime_type, path = Base64.decode64(content_encoded).split('::')
+          # unless mime_type && path
+            # raise OMF::Web::Rack::MissingArgumentException.new "Can't decode 'content' parameter (#{content_encoded})"
+          # end
+          # opts[:content_descriptor] = content_encoded
+          # opts[:mime_type] = mime_type
+          # opts[:path] = path
+        # elsif mime_type = req.params['create']
+          # opts[:mime_type] = mime_type
+          # opts[:create] = true
+        # else
+          # raise OMF::Web::Rack::MissingArgumentException.new "Missing parameter 'content' or 'create' (#{req.params.inspect})"
+        # end
+#         
+#         
+        # method = "on_#{req.request_method().downcase}"
+        # body, headers = col_w.send(method.to_sym, opts, req)
       rescue OMF::Web::Rack::MissingArgumentException => mex
-        debug mex
+        warn mex
         return [412, {"Content-Type" => 'text'}, [mex.to_s]]
       rescue Exception => ex
         error ex
