@@ -7,8 +7,8 @@ use ::Rack::Lint
 options = OMF::Web::Runner.instance.options
 
 map "/labwiki" do
-  require 'labwiki/labwiki_rack'
-  run LabWiki::LWRack.new(options)
+  require 'labwiki/rack/top_handler'
+  run LabWiki::TopHandler.new(options)
 end
 
 map "/resource" do
@@ -38,12 +38,12 @@ map '/_content' do
 end
 
 map '/_search' do
-  require 'labwiki/search_handler'
+  require 'labwiki/rack/search_handler'
   run LabWiki::SearchHandler.new
 end
 
 map '/_column' do
-  require 'labwiki/column_handler'
+  require 'labwiki/rack/column_handler'
   run LabWiki::ColumnHandler.new
 end
 

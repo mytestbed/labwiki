@@ -29,8 +29,8 @@ module LabWiki
     def parse_req_params(params, req)
       h = {}
       if cd = h[:content_descriptor] = params[:content]
-        h[:mime_type], h[:path] = Base64.decode64(cd).split('::')
-        unless h[:mime_type] && h[:path]
+        h[:mime_type], h[:url] = Base64.decode64(cd).split('::')
+        unless h[:mime_type] && h[:url]
           raise OMF::Web::Rack::MissingArgumentException.new "Can't decode 'content' parameter (#{cd})"
         end
       end

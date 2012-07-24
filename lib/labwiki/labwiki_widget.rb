@@ -8,11 +8,11 @@ require 'labwiki/execute_widget'
 
 module LabWiki     
   class LWWidget < OMF::Common::LObject
-    @@instance = nil
-    
-    def self.[](opts)
-      @@instance ||= self.new
-    end
+    # @@instance = nil
+#     
+    # def self.[](opts)
+      # @@instance ||= self.new
+    # end
     
     attr_reader :plan_widget, :prepare_widget, :execute_widget
     

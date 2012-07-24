@@ -23,7 +23,7 @@ module OMF::Web::Theme
       properties = @wopts[:properties]
       form :id => fid, :class => 'start-form' do
         if properties
-          table do
+          table :style => 'width: auto' do
             render_field -1, :name => 'Name', :size => 24, :default => @wopts[:name]
             render_field_static :name => 'Script', :value => @wopts[:script]
             properties.each_with_index do |prop, i|
@@ -93,10 +93,11 @@ module OMF::Web::Theme
       #puts ">>>> #{properties}"
       div :class => 'experiment-status' do
         if properties
-          table :class => 'experiment-status' do
+          table :class => 'experiment-status', :style => 'width: auto'  do
             render_field_static :name => 'Name', :value => @wopts[:name]
             render_field_static :name => 'Script', :value => @wopts[:script]
             properties.each_with_index do |prop, i|
+              prop[:index] = i
               render_field_static(prop)
             end
           end

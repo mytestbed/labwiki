@@ -15,7 +15,8 @@ module LabWiki
     
     def on_get_content(params, req)
       p = parse_req_params(params, req)
-      content_proxy = OMF::Web::ContentRepository.create_content_proxy_for(:path => p[:path])
+      debug "on_get_content: #{p.inspect}"
+      content_proxy = OMF::Web::ContentRepository.create_content_proxy_for(:url => p[:url])
       #puts "CONTENT>>>> #{content_proxy.content}"
       if @embedded_widget
         @embedded_widget.content_proxy = content_proxy

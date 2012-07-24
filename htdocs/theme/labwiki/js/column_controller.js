@@ -42,6 +42,7 @@ LW.column_controller = Backbone.Model.extend({
   refresh_content: function(opts, type) {
     //opts['id'] = selected.id;
     var self = this;
+    opts.sid = LW.session_id;
     $.ajax({
       url: '_column',
       data: opts,

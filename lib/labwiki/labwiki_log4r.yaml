@@ -1,0 +1,35 @@
+log4r:
+  # define all loggers ...
+  loggers:
+    - name      : production
+      level     : INFO # WARN
+      trace     : 'false'
+      outputters :
+        - datefile
+    - name      : development
+      level     : DEBUG
+      trace     : 'true'
+      outputters :
+        - datefile
+        - console
+        
+
+  # define all outputters (incl. formatters)
+  outputters:
+    - type: DateFileOutputter
+      name: datefile
+      dirname: "/tmp"
+      filename: "labwiki.log" 
+      date_pattern: '%Y-%m-%d'  # timestamp to add to log file, also rolls over on
+      formatter:
+        date_pattern: '%Y-%m-%d %H:%M:%S'
+        pattern     : '%d %l %p %C: %m '
+        type        : PatternFormatter
+        
+    - type: StdoutOutputter
+      name: console
+      formatter:
+        #pattern     : '%l %h %C: %m'
+        pattern     : '%l %C: %m'
+        type        : PatternFormatter
+ 
