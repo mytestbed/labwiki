@@ -16,6 +16,7 @@ module OMF::Web::Theme
 
     
     depends_on :js, "/resource/theme/labwiki/js/column_controller.js"        
+    depends_on :js, "/resource/theme/labwiki/js/content_selector_widget.js"            
     depends_on :js, "/resource/theme/labwiki/js/execute_col_controller.js"            
     depends_on :js, "/resource/theme/labwiki/js/labwiki.js"        
    

@@ -14,11 +14,14 @@ module LabWiki
       if (req.params['col'] == 'plan') 
         opts[:mime_type] = 'text/markup'
       end
-      fs = OMF::Web::ContentRepository.find_files(req.params['term'], opts)
+      unless (pat = req.params['pat'])
+        raise OMF::Web::Rack::MissingArgumentException.new "Missing parameter 'pat'"
+      end
+      fs = OMF::Web::ContentRepository.find_files(pat, opts)
       res = fs.collect do |f|
-        path = f.delete(:path)
+        f[:label] = path = f.delete(:path)
         f[:content] = Base64.encode64("#{f[:mime_type]}::#{path}").gsub("\n", '')
-        {:label => path, :value => f}
+        f
       end
       [res.to_json, 'application/json']
     end

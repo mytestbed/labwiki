@@ -71,7 +71,7 @@ module OMF::Web::Theme
     end
     
     def render_panel_search
-      div :class => "block-nav content-selection" do
+      div :id => "lw#{object_id}_search", :class => "block-nav content-selection" do
         table do
           tr do
             unless @col_name == :plan
@@ -81,31 +81,21 @@ module OMF::Web::Theme
               end
             end
             td do
-              form :class => "quicksearch k-active", :onsubmit => "return false;" do
+              form :id => "lw#{object_id}_csf", :class => "quicksearch k-active", :onsubmit => "return false;" do
                 div :class => "container rounded-corners" do
                   #button :class => "head_add" # "add_content"
                   button :class => "head search"
                   input :id => "lw#{object_id}_si", :class => "input", :type => "text", :value => "" do
-                    button :class => "tail reset", :onclick => "$(this).prev('input:text').val('');return false;"
+                    button :class => "tail reset" #, :onclick => "$(this).prev('input:text').val('');return false;"
                   end
-                  button :class => "tail reset", :onclick => "$(this).prev('input:text').val('');return false;"
+                  button :class => "tail reset" #, :onclick => "$(this).prev('input:text').val('');return false;"
                 end
               end
             end
           end
         end        
-        div :id => "lw#{object_id}_sl", :class => "content-list" do
-        end
-        div :id => "lw#{object_id}_hi", :class => "content-list" do
-          ul :class => 'content-list-history ui-menu', :style => 'display: none;' do
-            ['ONE', 'TWO'].each do |item|
-              li :class => 'ui-menu-item' do
-                a :class => 'ui-corner-index', 'lw:url' => "http://foo/#{item}" do
-                  text item
-                end
-              end
-            end
-          end
+        div :class => "suggestion-list", :style => 'display: none;' do
+          ul :class => 'suggestion-list ui-menu'
         end
       end 
                  

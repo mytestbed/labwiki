@@ -11,9 +11,15 @@ LW.column_controller = Backbone.Model.extend({
   initialize: function(opts) {
     this._opts = opts;
     var name = this._name = opts.name;
-    this._content_history = []; 
+    this._content_selector = new LW.content_selector_widget(this, {});
+    //this._content_history = []; 
     
     this.col_span = 1;
+    
+    var self = this;
+    OHUB.bind('layout.resize', function(e) {
+      self.init_content_panel();
+    });  
   },
   
   resize: function(left, width) {
@@ -49,6 +55,15 @@ LW.column_controller = Backbone.Model.extend({
       type: type
     }).done(function(data) { 
       $('#col_content_' + opts.col).replaceWith(data);
+      var col = $('#col_content_' + opts.col);
+      var panel = col.find('.panel-body');
+      var toolbar = panel.find('.widget-toolbar').detach();
+      var c = col.find('.widget-title-toolbar-container');
+      c.empty(); // remove potential previous toolbar
+      if (toolbar.length > 0) {
+        toolbar.appendTo(c);
+      }
+      
       self.init_content_panel();
       self.init_drag_n_drop();
     });
@@ -102,7 +117,7 @@ LW.column_controller = Backbone.Model.extend({
    */
   init: function(el_prefix, opts) {
     this.init_titlebar();
-    this.init_content_search(el_prefix, opts);
+    this._content_selector.init(el_prefix, opts);
     this.init_drag_n_drop();
     this.init_content_panel();
     
@@ -148,66 +163,6 @@ LW.column_controller = Backbone.Model.extend({
     });
   },
    
-  /*
-   * Each column has a search box at the top to allow the selection of the content 
-   * to be displayed. This method attaches all kind of functionality to the various
-   * form elements making up the search box. All these elements have an id starting
-   * with 'el_prefix'.
-   */
-  init_content_search: function(el_prefix, opts) {
-    var self = this;
-    var si = $('#' + el_prefix + '_si');
-    var panel = $('#col_content_' + self._name + ' .panel-body');
-    
-    $('#' + el_prefix + '_hi a').hover(
-      function() {$(this).addClass('ui-state-hover');},
-      function() {$(this).removeClass('ui-state-hover');}       
-    );
-    $('#' + el_prefix + '_hi a').click(function() {
-      si.autocomplete("close");
-      $('#' + el_prefix + '_hi ul').hide();
-      var content = $(this).attr('lw:content');
-      self.load_content({content: content});
-      return false;
-    }),
-  
-    si.autocomplete({
-      source: '_search?sid=' + opts.sid + '&col=' + opts.col,
-      appendTo: $('#' + el_prefix + '_sl'),
-      //autoFocus: true,
-      minLength: 0,
-      open: function() {
-        console.log('OPEN');
-        var w = si.autocomplete("widget");
-        w.css('left', '0px');
-        w.css('top', '0px');
-        var i = 0;
-      },
-      close: function() {
-        //$('this').element.val(''); // clear search box
-        // TODO: This is a bit of a hack and leads to the menu blinking
-        // as the search box is getting back focus when the menu is clicked on.
-        //si.autocomplete("close").blur();               
-        $('#' + el_prefix + '_hi ul').hide();
-        panel.focus();
-        console.log('CLOSE');        
-      },
-      select: function(event, ui) {
-        //$('#' + el_prefix + '_si').autocomplete("close");
-        //$('.summary').focus();
-        //si.autocomplete("close");
-        self.load_content(ui.item.value, {});
-        return false;
-      }
-    });
-
-    $('#' + el_prefix + '_si').focus(function () {
-      //console.log('FOCUS');
-      $('#' + el_prefix + '_hi ul').show();
-      $('#' + el_prefix + '_si').autocomplete("search");
-      //return true;
-    });
-  },
 
   init_drag_n_drop: function() {
     var self = this;
@@ -235,11 +190,15 @@ LW.column_controller = Backbone.Model.extend({
   },
   
   init_content_panel: function() {
-    var panel = $('#col_content_' + this._opts.name + ' .panel-body');
-    var position = panel.position();
+    var opts = this._opts;
+//    $('#col_content_' + opts.col)
+    var col = $('#col_content_' + opts.name);
+    var panel = col.find('.panel-body');
+    var position = panel.offset();
     if (position) {
       var win_height = $(window).height();
-      panel.height(win_height - position.top);
+      var panel_height = win_height - position.top;
+      panel.height(panel_height);
     } 
   },
 

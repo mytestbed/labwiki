@@ -54,6 +54,7 @@ module OMF::Web::Theme
             div :class => "info" do
             end
           end
+          div :class => 'widget-title-toolbar-container'
         end
       end
     end

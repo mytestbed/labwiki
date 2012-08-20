@@ -72,6 +72,7 @@
   line-height:1.5;
   zoom:1;
 }
+.ui-menu .ui-menu-item-selected a,
 .ui-menu .ui-menu-item a.ui-state-hover,
 .ui-menu .ui-menu-item a.ui-state-active {
   font-weight: normal;
@@ -83,6 +84,12 @@
   color: #eb8f00; 
   outline: none;  
   background: #fdf5ce
+}
+
+.ui-menu .ui-menu-item-first-hist {
+  margin-top: 5px;
+  padding-top: 5px;  
+  border-top: 1px solid #BBB;
 }
 
 /*
@@ -222,10 +229,17 @@ div.experiment-description {
 }
 
 
+
 /*.experiment-description form li.buttons input {
   font-size: 100%;
   margin-right: 5px;
 }*/
+
+/**** TOOLBAR *****/
+.codemirror_toolbar_container {
+  border-bottom: 1px solid silver;
+  text-align: left;
+}
 
 
 
