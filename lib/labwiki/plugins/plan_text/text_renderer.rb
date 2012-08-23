@@ -3,6 +3,7 @@ require 'omf-web/theme/bright/widget_chrome'
 
 module OMF::Web::Theme
   
+  # Override some of the functionality of the text renderer defined in OMF::Web
   class TextRenderer < Erector::Widget
     
     def initialize(text_widget, content, opts)
@@ -17,7 +18,6 @@ module OMF::Web::Theme
         rawtext @content.to_html
         render_content_observer(wid)
       end
-      
     end
     
     def render_content_observer(div_id)

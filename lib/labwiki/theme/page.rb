@@ -24,9 +24,15 @@ module OMF::Web::Theme
        
     def initialize(widget, opts)
       super
-      @plan_renderer = ColumnRenderer.new('Plan', @widget.plan_widget, :plan, 0)
-      @prepare_renderer = ColumnRenderer.new('Prepare', @widget.prepare_widget, :prepare, 1)
-      @execute_renderer = ColumnRenderer.new('Execute', @widget.execute_widget, :execute, 2)
+      @title = "LabWiki"
+      index = -1
+      @col_renderers = [:plan, :prepare, :execute].map do |name|
+        index += 1
+        ColumnRenderer.new(name.to_s.capitalize, @widget.column_widget(name), name, index)
+      end
+      # @plan_renderer = ColumnRenderer.new('Plan', @widget.column_widget(:plan), :plan, 0)
+      # @prepare_renderer = ColumnRenderer.new('Prepare', @widget.column_widget(:prepare), :prepare, 1)
+      # @execute_renderer = ColumnRenderer.new('Execute', @widget.column_widget(:execute)t, :execute, 2)
 
     end
  
@@ -47,9 +53,12 @@ module OMF::Web::Theme
           div :id => "k-topbar" do
           end
           div :id => "k-slider", :style => "height: 500px;" do
-            rawtext @plan_renderer.to_html
-            rawtext @prepare_renderer.to_html
-            rawtext @execute_renderer.to_html
+            @col_renderers.each do |renderer|
+              rawtext renderer.to_html
+            end
+            # rawtext @plan_renderer.to_html
+            # rawtext @prepare_renderer.to_html
+            # rawtext @execute_renderer.to_html
           end
         end
       end

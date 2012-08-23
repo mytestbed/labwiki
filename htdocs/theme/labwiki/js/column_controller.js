@@ -17,10 +17,14 @@ LW.column_controller = Backbone.Model.extend({
     this.col_span = 1;
     
     var self = this;
-    OHUB.bind('layout.resize', function(e) {
-      self.init_content_panel();
-    });  
-  },
+    // OHUB.bind('layout.resize', function(e) {
+      // self.init_content_panel();
+    // });
+    OHUB.bind('page.loaded', function(e) {
+      self.fix_toolbar();
+    });
+    
+  },  
   
   resize: function(left, width) {
     var cd = $("#kp" + this._opts.col_index);
@@ -55,15 +59,7 @@ LW.column_controller = Backbone.Model.extend({
       type: type
     }).done(function(data) { 
       $('#col_content_' + opts.col).replaceWith(data);
-      var col = $('#col_content_' + opts.col);
-      var panel = col.find('.panel-body');
-      var toolbar = panel.find('.widget-toolbar').detach();
-      var c = col.find('.widget-title-toolbar-container');
-      c.empty(); // remove potential previous toolbar
-      if (toolbar.length > 0) {
-        toolbar.appendTo(c);
-      }
-      
+      self.fix_toolbar();
       self.init_content_panel();
       self.init_drag_n_drop();
     });
@@ -200,6 +196,20 @@ LW.column_controller = Backbone.Model.extend({
       var panel_height = win_height - position.top;
       panel.height(panel_height);
     } 
+  },
+  
+  // Check if the content panel includes a 'toolbar'. If yes, move it to
+  // the widget widget title so it remains visible when scrolling the content
+  //
+  fix_toolbar: function() {
+    var col = $('#col_content_' + this._opts.name);
+    var panel = col.find('.panel-body');
+    var toolbar = panel.find('.widget-toolbar').detach();
+    var c = col.find('.widget-title-toolbar-container');
+    c.empty(); // remove potential previous toolbar
+    if (toolbar.length > 0) {
+      toolbar.appendTo(c);
+    }
   },
 
   content_history_for_pos: function(pos) {

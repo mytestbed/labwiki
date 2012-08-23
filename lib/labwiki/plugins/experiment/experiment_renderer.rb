@@ -25,7 +25,7 @@ module OMF::Web::Theme
         if properties
           table :style => 'width: auto' do
             render_field -1, :name => 'Name', :size => 24, :default => @wopts[:name]
-            render_field_static :name => 'Script', :value => @wopts[:script]
+            render_field_static :name => 'Script', :value => @wopts[:url]
             properties.each_with_index do |prop, i|
               render_field(i, prop)
             end
@@ -95,7 +95,7 @@ module OMF::Web::Theme
         if properties
           table :class => 'experiment-status', :style => 'width: auto'  do
             render_field_static :name => 'Name', :value => @wopts[:name]
-            render_field_static :name => 'Script', :value => @wopts[:script]
+            render_field_static :name => 'Script', :value => @wopts[:url]
             properties.each_with_index do |prop, i|
               prop[:index] = i
               render_field_static(prop)

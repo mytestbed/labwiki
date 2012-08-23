@@ -32,11 +32,15 @@ LW.layout = function(window) {
 
 LW.resize = function(window) {
   var last_width = -1;
+  var last_height = -1;
+  
   
   function resize() {
     var width = window.width();
-    if (last_width == width) return;
+    var height = window.height();    
+    if (last_width == width && last_height == height) return;
     last_width = width;
+    last_height = height;    
     LW.layout();
   }
   return resize;
@@ -47,6 +51,9 @@ OHUB.bind('window.resize', LW.resize);
 
 
 $(function() {
+  // Init controller now that everything is loaded
+  OHUB.trigger('page.loaded', {});
+  
   // Fix layout
   LW.resize();
   

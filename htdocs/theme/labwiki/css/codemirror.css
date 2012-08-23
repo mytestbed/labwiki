@@ -1,0 +1,98 @@
+.CodeMirror {
+  border: 1px solid silver;
+  border-top: 0px;
+  
+  font-size: 1.077em;
+  line-height: 18px;
+  color: #333;
+}
+
+/*.CodeMirror-scroll {
+  /* height: auto; *  
+  overflow: auto; 
+}*/
+.CodeMirror-scroll {
+  height: auto;
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+
+
+.CodeMirror .activeline {
+  background: #e8f2ff !important;
+}
+
+.codemirror-lines {
+  /* a bit more space between line no and text */
+  padding-left: .8em;
+}
+
+/** TOOL BAR **/
+
+.codemirror_widget .codemirror_toolbar_container {
+  border: 1px solid silver;
+  width: 100%;
+  padding: 2px;
+}
+
+ol.codemirror_toolbar {
+  display: block;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+ol.codemirror_toolbar li {
+  display: inline-block;
+  list-style: none;
+}
+
+ol.codemirror_toolbar a {
+  text-decoration: none;
+}
+
+/*ol.codemirror_toolbar .widget_tools_menu {
+  text-decoration: none;
+  display: block;
+}*/
+
+
+
+ol.codemirror_toolbar a {
+  display: inline-block;
+  padding: 22px 0 0 0;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  height: 0px !important;
+  height /**/:22px;
+      
+  width: 22px;
+  border: 1px solid transparent;  /* make room for the 'selected' border */
+  background-color: silver   
+}
+
+ol.codemirror_toolbar a:hover {
+  border: 1px solid silver;  
+  background-color: silver; 
+}
+
+ol.codemirror_toolbar li a {
+  margin: 4px;
+  background-size: 16px 16px;
+}
+
+ol.codemirror_toolbar li.cmd_save a {
+  background: url(/resource/image/graph/info.png) 3px 3px no-repeat;
+  background: url(/resource/vendor/must_have_icon_set/Save/Save_16x16.png) 2px 2px no-repeat;
+  background-size: 16px 16px;
+}
+
+ol.codemirror_toolbar li.cmd_undo a {
+  background: url(/resource/vendor/must_have_icon_set/Undo/Undo_16x16.png) 2px 2px no-repeat;
+}
+
+ol.codemirror_toolbar li.cmd_redo a {
+  background: url(/resource/vendor/must_have_icon_set/Redo/Redo_16x16.png) 2px 2px no-repeat;
+}
+
+

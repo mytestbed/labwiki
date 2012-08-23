@@ -14,15 +14,14 @@ module OMF::Web::Theme
       'experiment' => "/resource/vendor/mono_icons/experiment32.png"
     }
     
-    def initialize(widget, embedded_widget, col_name)
+    def initialize(widget, col_name)
       @widget = widget
-      @embedded_widget = embedded_widget
       @col_name = col_name
     end
         
     def content
       div :id => "col_content_#{@col_name}" do 
-        if @embedded_widget
+        if @widget
           render_title
           render_body
         else
@@ -35,7 +34,7 @@ module OMF::Web::Theme
       div :class => "block block-nav widget-title-block" do
         div :class => "drop-target" do
           div :class => "summary" do
-            mime_type = @embedded_widget.mime_type
+            mime_type = @widget.mime_type
             unless img_src = MIMETYPE2ICON[mime_type]
               # try default
               mime_type = mime_type.split('/')[0]
@@ -46,10 +45,10 @@ module OMF::Web::Theme
                 img :src => img_src 
               end
             else
-              debug "Couldn't find icon for mime-type '#{@widget.mime_type}'"
+              debug "Couldn't find icon for mime-type '#{mime_type}'"
             end
             div :class => "label" do
-              text  @embedded_widget.title
+              text  @widget.title
             end
             div :class => "info" do
             end
@@ -62,9 +61,9 @@ module OMF::Web::Theme
     def render_body
       div :class => "panel-body", :style => "height: 200px; " do
         div :class => "block block-content widget_container" do
-          if widget = @embedded_widget
+          if widget = @widget
             div :class => "widget_body widget_body_#{widget.widget_type}" do
-              rawtext widget.content().to_html 
+              rawtext widget.content_renderer().to_html 
             end
           end 
         end

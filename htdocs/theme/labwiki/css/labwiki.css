@@ -203,7 +203,7 @@ div.experiment-description {
 }
 
 .experiment-description td.input {
-  width: 60%;  
+  /* width: 60%; */  
   font-family: inherit;
   font-style: normal;
   font-weight: bold;

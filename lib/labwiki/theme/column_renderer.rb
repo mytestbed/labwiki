@@ -11,7 +11,7 @@ module OMF::Web::Theme
       @widget = widget
       @col_name = col_name
       @position = position
-      @content_renderer = ColumnContentRenderer.new(widget, widget.embedded_widget, col_name)
+      @content_renderer = ColumnContentRenderer.new(widget, col_name)
     end
         
     def content
@@ -28,17 +28,17 @@ module OMF::Web::Theme
         # end
         render_panel_search
         rawtext @content_renderer.to_html()
-        #render_widget(widget)
         div :class => "mask", :style => "display: none; " do
           div :class => "loader"
         end
       end
       opts = {:sid => Thread.current["sessionID"], :col => @col_name}
-      if cd = @widget.content_descriptor
-        opts[:content] = cd
+      if @widget
+        if cd = @widget.content_url
+          opts[:content] = cd
+        end
       end
       javascript %{
-        //LW.#{@col_name}_controller.init_content_search('lw#{object_id}', #{opts.to_json});
         LW.#{@col_name}_controller.init('lw#{object_id}', #{opts.to_json});
       }
       

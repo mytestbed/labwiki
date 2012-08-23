@@ -8,42 +8,30 @@ module LabWiki
   # Responsible for the content to be shown in a particular column 
   class ColumnWidget < OMF::Common::LObject
     
-    attr_reader :embedded_widget, :name, :content_descriptor
-
-    def initialize(name)
-      @name = name
+    def initialize(col, opts)
+      @column = col
+      @opts = opts
     end
     
-    # def empty?
-      # @embedded_widget.nil?
-    # end
-#     
-    # def mime_type
-      # @embedded_widget ? @embedded_widget.mime_type : 'unknown'
-    # end
-    
-    # def on_get(opts, req)
-      # @content_descriptor = opts[:content_descriptor]
-    # end
-    
-    def parse_req_params(params, req)
-      h = {}
-      if cd = h[:content_descriptor] = params[:content]
-        h[:mime_type], h[:url] = Base64.decode64(cd).split('::')
-        unless h[:mime_type] && h[:url]
-          raise OMF::Web::Rack::MissingArgumentException.new "Can't decode 'content' parameter (#{cd})"
-        end
-      end
-      h
+    def widget_type
+      @opts[:type] || :unknown
     end
     
+    def title
+      @title || content_url
+    end
     
+    def content_url
+      @content_url || @opts[:url] || :unknown
+    end
+    
+    def mime_type
+      @mime_type || 'unknown'
+    end
     
     def collect_data_sources(ds_set)
-      if @embedded_widget
-        @embedded_widget.collect_data_sources(ds_set)
-      end
       ds_set
     end
+    
   end
 end
