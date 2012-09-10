@@ -1,8 +1,10 @@
 require 'omf_common/lobject'
 
 
-module LabWiki     
-  class Plugin < OMF::Common::LObject
+module LabWiki 
+  module Plugin; end # Put all plugins under this module
+      
+  class PluginManager < OMF::Common::LObject
     @@plugins = {}
 
     def self.init
@@ -55,6 +57,10 @@ module LabWiki
       debug "Creating widget for '#{column}' from '#{widget_class}'"      
       widget = widget_class.new(column, params)
       widget
+    end
+    
+    def self.resource_directory_for(plugin_name)
+      @@plugins[plugin_name.to_sym][:resources]
     end
     
     

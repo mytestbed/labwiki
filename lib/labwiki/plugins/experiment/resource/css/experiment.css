@@ -1,0 +1,103 @@
+/*** EXPERIMENT FORMS ***/
+
+div.experiment-description {
+  border-bottom: 1px solid #CCC;
+}
+
+.experiment-description .start-form {
+  padding: 20px;
+  background-color: #FFF7C0;
+  background: #eaf1fb;
+}
+
+div.experiment-status,
+div.experiment-log {
+  padding: 10px 10px 10px 10px;
+}
+
+.experiment-setup tr td {
+  padding: 5px;
+}
+
+.experiment-setup tr.prop0 td {
+  padding-top: 20px;
+}
+
+div.experiment-graph-caption {
+  margin-bottom: 20px
+}
+
+.experiment-graph-caption img {
+  display: inline-block;
+  margin-left: 20px
+}
+
+.experiment-graph-caption img:hover {
+  background: #FFF7C0
+}
+
+
+.experiment-graph-caption-figure {
+  margin-left: 5px;
+  margin-right: 0.2em;  
+  font-weight: bold;
+}
+
+
+
+
+/*.experiment-description label.desc, */
+.experiment-setup td.desc
+{
+  font-size: 95%;
+  font-family: inherit;
+  font-style: normal;
+  font-weight: bold;
+  color: #444;
+  max-width: 100px;
+}
+
+.experiment-setup input.text {
+  font-style: normal;
+  font-weight: normal;
+  color: #333;
+  font-size: 100%;
+  border-top: 1px solid #7C7C7C;
+  border-left: 1px solid #C3C3C3;
+  border-right: 1px solid #C3C3C3;
+  border-bottom: 1px solid #DDD;
+  background: white url(/resource/theme/labwiki/images/fieldbg.gif)  repeat-x top;
+  margin: 0;
+  padding: 2px 0 2px 5px;
+  width: auto;  /* overriding bootstrap */
+}
+
+.experiment-setup td.input {
+  /* width: 60%; */  
+  font-family: inherit;
+  font-style: normal;
+  font-weight: bold;
+} 
+ 
+.experiment-setup td.comment {
+/*
+ *   width: 100%;
+ */
+  font-size: 85%;
+  color: #444;
+}
+
+.experiment-setup input.button-text {
+  padding: 0px 7px;
+  width: auto;
+  overflow: visible;  
+  font-size: 120%;
+}
+
+.experiment-setup tr.buttons td {
+  padding-top: 10px;
+}
+
+
+
+

@@ -19,6 +19,12 @@ map "/resource" do
   run OMF::Web::Rack::MultiFile.new(dirs)
 end
 
+map "/plugin" do
+  require 'labwiki/rack/plugin_resource_handler'
+  run LabWiki::PluginResourceHandler.new()
+end
+
+
 map '/_ws' do
   begin
     require 'omf-web/rack/websocket_handler'

@@ -1,7 +1,7 @@
 require 'labwiki/column_widget'
 require 'omf-web/content/repository'
 
-module LabWiki     
+module LabWiki::Plugin::SourceEdit  
       
   # Maintains the context for a particular editing session on a file.
   #

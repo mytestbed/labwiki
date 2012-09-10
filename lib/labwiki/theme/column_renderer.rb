@@ -39,7 +39,9 @@ module OMF::Web::Theme
         end
       end
       javascript %{
-        LW.#{@col_name}_controller.init('lw#{object_id}', #{opts.to_json});
+        L.require('#LW.init', function() {
+          LW.#{@col_name}_controller.init('lw#{object_id}', #{opts.to_json});
+        });
       }
       
     end

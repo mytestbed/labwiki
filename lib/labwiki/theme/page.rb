@@ -6,18 +6,19 @@ require 'labwiki/theme/column_renderer'
 module OMF::Web::Theme
   class Page < OMF::Web::Theme::AbstractPage
     
+    depends_on :css, "/resource/vendor/bootstrap/css/bootstrap.css"    
     depends_on :css, '/resource/theme/bright/css/reset-fonts-grids.css'
     depends_on :css, "/resource/theme/bright/css/bright.css"
     depends_on :css, "/resource/theme/labwiki/css/kaiten.css"
     depends_on :css, "/resource/theme/labwiki/css/labwiki.css"    
     
-    depends_on :js, "/resource/vendor/jquery-ui/js/jquery-ui.min.js"
-    depends_on :js, "/resource/vendor/jquery-ui/js/jquery.ui.autocomplete.js"        
+    # depends_on :js, '/resource/vendor/jquery/jquery.periodicalupdater.js'
+    # depends_on :js, "/resource/vendor/jquery-ui/js/jquery-ui.min.js"
+    #depends_on :js, "/resource/vendor/jquery-ui/js/jquery.ui.autocomplete.js"        
 
-    
     depends_on :js, "/resource/theme/labwiki/js/column_controller.js"        
     depends_on :js, "/resource/theme/labwiki/js/content_selector_widget.js"            
-    depends_on :js, "/resource/theme/labwiki/js/execute_col_controller.js"            
+    #depends_on :js, "/resource/theme/labwiki/js/execute_col_controller.js"            
     depends_on :js, "/resource/theme/labwiki/js/labwiki.js"        
    
 
@@ -46,7 +47,17 @@ module OMF::Web::Theme
     
       javascript %{
         if (typeof(LW) == "undefined") LW = {};
-        LW.session_id = '#{Thread.current["sessionID"]}';
+        LW.session_id = OML.session_id = '#{Thread.current["sessionID"]}';
+        
+        L.provide('jquery', ['/resource/vendor/jquery/jquery.js']);
+        L.provide('jquery.periodicalupdater', ['/resource/vendor/jquery/jquery.periodicalupdater.js']);   
+        L.provide('jquery.ui', ['/resource/vendor/jquery-ui/js/jquery-ui.min.js']);
+        X = null;
+        /*
+        $(document).ready(function() {
+          X = $;
+        });
+        */
       }    
       div :id => "container", :style => "position: relative; height: 100%;" do
         div :id => "k-window" do

@@ -1,7 +1,7 @@
 require 'labwiki/column_widget'
 require 'omf-web/content/repository'
 
-module LabWiki     
+module LabWiki::Plugin::PlanText    
       
   # Maintains the context for a MarkDown formatted text column.
   #

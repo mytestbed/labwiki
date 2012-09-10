@@ -2,25 +2,14 @@
 require 'omf_common/lobject'
 require 'omf-web/widget'
 require 'labwiki/column_widget'
-# require 'labwiki/plan_widget'
-# require 'labwiki/prepare_widget'
-# require 'labwiki/execute_widget'
 
 module LabWiki     
   class LWWidget < OMF::Common::LObject
-    # @@instance = nil
-#     
-    # def self.[](opts)
-      # @@instance ||= self.new
-    # end
     
     attr_reader :plan_widget, :prepare_widget, :execute_widget
     
     def initialize()
       @widgets = {}
-      # @plan_widget = @widgets[:plan] = PlanWidget.new(:plan)
-      # @prepare_widget = @widgets[:prepare] = PrepareWidget.new(:prepare)
-      # @execute_widget = @widgets[:execute] = ExecuteWidget.new(:execute)
     end
     
     def column_widget(pos)
@@ -56,7 +45,7 @@ module LabWiki
     
     def create_column_widget(col, params)
       debug "Creating widget for '#{col}' from '#{params.inspect}'"
-      @widgets[col] = Plugin.create_widget(col, params)
+      @widgets[col] = PluginManager.create_widget(col, params)
     end
     
     def expand_req_params(params, req)
@@ -75,9 +64,6 @@ module LabWiki
       @widgets.each_value do |w|
         w.collect_data_sources(ds_set)
       end
-      # @plan_widget.collect_data_sources(ds_set)
-      # @prepare_widget.collect_data_sources(ds_set)
-      # @execute_widget.collect_data_sources(ds_set)
       ds_set
     end
   end

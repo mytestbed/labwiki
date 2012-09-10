@@ -7,8 +7,7 @@ module OmfLabWiki; end
 require 'omf-web/content/git_repository'
 OMF::Web::GitContentRepository.register_git_repo(:foo, '/tmp/foo', true)
 
-require 'labwiki/plugin'
-#LabWiki::Plugin.init
+require 'labwiki/plugin_manager'
 
 # Configure the web server
 #
@@ -27,7 +26,7 @@ opts = {
   :handlers => {
     # Should be done in a better way
     :pre_rackup => lambda { 
-      LabWiki::Plugin.init 
+      LabWiki::PluginManager.init 
     },
   }
 }

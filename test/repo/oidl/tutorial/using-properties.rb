@@ -1,24 +1,6 @@
 #
 # Copyright (c) 2006-2010 National ICT Australia (NICTA), Australia
 #
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-#
 # Tutorial experiment
 #
 defProperty('res1', 'omf.nicta.node1', "ID of sender node")
@@ -29,7 +11,6 @@ defProperty('runtime', 40, "Time in second for the experiment is to run")
 defProperty('wifiType', "g", "The type of WIFI to use in this experiment")
 defProperty('channel', '6', "The WIFI channel to use in this experiment")
 defProperty('netid', "example2", "The ESSID to use in this experiment")
-defProperty('graph', false, "Display graph or not")
 
 defGroup('Sender',property.res1) do |node|
   node.addApplication("test:app:otg2") do |app|
@@ -77,17 +58,27 @@ onEvent(:ALL_UP_AND_INSTALLED) do |event|
   Experiment.done
 end
 
-if property.graph.value
-  addTab(:defaults)
-  addTab(:graph2) do |tab|
-    opts = { :postfix => %{This graph shows the Packet Size of the incoming UDP traffic (byte).}, :updateEvery => 1 }
-    tab.addGraph("Incoming UDP Packet Size", opts) do |g|
-      dataIn = Array.new
-      mpIn = ms('udp_in')
-      mpIn.project(:oml_ts_server, :pkt_length).each do |sample|
-        dataIn << sample.tuple
-      end
-      g.addLine(dataIn, :label => "Incoming UDP (byte)")
-    end
-  end
+defGraph 'Throughput' do |g|
+  g.ms('udp_in').select {[ oml_ts_client.as(:ts), pkt_length.as(:size) ]}
+  g.postfix %{This graph shows the Packet Size of the incoming UDP traffic (byte).}
+  g.type 'line_chart3'
+  g.mapping :x_axis => :ts, :y_axis => :size 
+  g.xaxis :legend => 'time [s]'
+  g.yaxis :legend => 'size [B]'
+  
+  # g.ms('udp_in').select do
+    # [
+     # min(:oml_ts_client).as(:ts), 
+     # sum(:pkt_length).as(:size)
+    # ]
+  # end.group do
+    # round(:oml_ts_client + 0.5)
+  # end.order do
+    # min(:oml_ts_client)
+  # end
+  
 end
+
+# OMF::EC::OML::MStream.each do |k, v|
+#   puts "#{k}: #{v.tableName}"
+# end

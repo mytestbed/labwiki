@@ -1,0 +1,28 @@
+<log4r_config>
+  <pre_config>
+    <global level="DEBUG"/>
+    <parameter name="serverlog" value="/tmp/omf-expctl-5.4.log"/>
+    <parameter name="logDir" value="/tmp"/>
+  </pre_config>
+  <!-- outputters -->
+  <outputter type="FileOutputter" name="log" level="DEBUG">
+    <filename>#{logDir}/#{appInstance}.log</filename>
+    <trunc>false</trunc>
+    <formatter type="PatternFormatter" pattern="%d %l %C: %m" />
+  </outputter>
+  <outputter type="StdoutOutputter" name="console" level="INFO"/>
+  <outputter type="OMF::EC::OML::OMLOutputter" name="oml" level="DEBUG"/>
+  
+
+  <!-- loggers -->
+  <logger name="nodeHandler" outputters="log, console, oml" level="DEBUG" trace="true"/>
+  <!-- To streamline log file... -->
+  <!-- 1) Only log ERROR-level messages from the Communication stack -->
+  <logger name="nodeHandler::OmfXMPPServices" outputters="log, console, oml" level="ERROR"/>
+  <logger name="nodeHandler::OMFPubSubTransport" outputters="log, console, oml" level="ERROR"/>
+  <logger name="nodeHandler::ECCommunicator" outputters="log, console, oml" level="ERROR"/>
+  <!-- 2) Only log ERROR-level messages from the ALLGROUP NodeSet and the Every-block loop -->
+  <logger name="nodeHandler::set::_ALLGROUPS_" outputters="log, console, oml" level="ERROR"/>
+  <logger name="nodeHandler::every" outputters="log, console, oml" level="ERROR"/>
+  
+</log4r_config>

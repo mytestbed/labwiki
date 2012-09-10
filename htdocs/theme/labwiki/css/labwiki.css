@@ -1,4 +1,7 @@
 
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
 
 /* content blocks */
 .k-panel .block-content
@@ -115,6 +118,19 @@
 .k-panel .summary .label {
     margin: 0px;
     text-align: left;
+    
+/* 
+    line-height: 1;
+    font-size: 30px;
+    line-height: 36px;
+    font-size: 24px;
+    line-height: 30px;
+*/
+    font-family: inherit;
+    font-weight: bold;
+    color: inherit;
+    text-rendering: optimizelegibility;   
+    background-color: white; 
 }
 
 .k-panel .summary img {
@@ -151,81 +167,37 @@ ol.codemirror_toolbar li a {
   overflow:hidden;
 }
 
-/*** EXPERIMENT FORMS ***/
+/***** H3 - collapse ****/
 
-div.experiment-description {
-  border-bottom: 1px solid #CCC;
-}
-
-.experiment-description .start-form {
-  padding: 20px;
-  background-color: #FFF7C0;
-}
-
-.experiment-description div.experiment-status {
-  padding: 10px 10px 10px 20px;
-  background: #eaf1fb;
-}
-
-.experiment-description tr td {
-  padding: 5px;
-}
-
-.experiment-description tr.prop0 td {
-  padding-top: 20px;
-}
-
-
-
-/*.experiment-description label.desc, */
-.experiment-description td.desc
-{
-  font-size: 95%;
-  font-family: inherit;
-  font-style: normal;
-  font-weight: bold;
-  color: #444;
-  max-width: 100px;
-}
-
-.experiment-description input.text {
-  font-style: normal;
-  font-weight: normal;
-  color: #333;
-  font-size: 100%;
-  border-top: 1px solid #7C7C7C;
-  border-left: 1px solid #C3C3C3;
-  border-right: 1px solid #C3C3C3;
-  border-bottom: 1px solid #DDD;
-  background: white url(/resource/theme/labwiki/images/fieldbg.gif)  repeat-x top;
+.widget_body h3 {
+  border-top: 1px solid #E5E5E5;
+  color: #777;
+  font-size: 16px;
+  line-height: 27px;
   margin: 0;
-  padding: 2px 0 2px 5px;
-}
-
-.experiment-description td.input {
-  /* width: 60%; */  
+  padding-left: 10px;
   font-family: inherit;
-  font-style: normal;
   font-weight: bold;
-} 
- 
-.experiment-description td.comment {
-/*
- *   width: 100%;
- */
-  font-size: 85%;
-  color: #444;
+  text-rendering: optimizelegibility;
 }
 
-.experiment-description input.button-text {
-  padding: 0px 7px;
-  width: auto;
-  overflow: visible;  
-  font-size: 120%;
+.widget_body h3 a {
+  display: inline-block;
+  padding: 16px 0 0 0;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  height: 0px !important;
+  height /**/:16px;
+  width: 16px;
+  background: url(/plugin/experiment/img/toggle.png) 0px -16px no-repeat;
+}
+  
+.widget_body h3 a.toggle-closed {   
+  background: url(/plugin/experiment/img/toggle.png) 0px 3px no-repeat;
 }
 
-.experiment-description tr.buttons td {
-  padding-top: 10px;
+.widget_body h3 a.toggle:hover {
+  background-color: white;
 }
 
 

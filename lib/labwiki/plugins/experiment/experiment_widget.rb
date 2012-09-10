@@ -1,35 +1,20 @@
 require 'time'
 require 'ruby_parser'
 require 'labwiki/column_widget'
+require 'omf_web'
 require 'omf-web/content/repository'
+require 'omf-oml/table'
+require 'labwiki/plugins/experiment/run_exp_controller'
+require 'labwiki/plugins/experiment/graph_description'
+require 'labwiki/plugins/experiment/oml_connector'
 
-module LabWiki     
-      
+module LabWiki::Plugin::Experiment
+        
   # Maintains the context for a particular experiment in this user context.
   #
   class ExperimentWidget < LabWiki::ColumnWidget
-    # def self.create_for(opts)
-      # unless url = opts[:url]
-        # raise "Expected 'url' for experiment script in '#{opts.inspect}'"
-      # end
-      # self.new(
-        # :script => url
-      # )
-    # end
-# 
-    # def self.create(opts)
-      # #opts[:is_new] = true
-      # self.new(opts)
-    # end
-#     
-    # def self.find(opts)
-      # unless url = opts[:url]
-        # raise "Expected 'url' for experiment script in '#{opts.inspect}'"
-      # end
-      # raise "Can't handle showing exisiting experiments '#{opts}'"
-    # end
-    
-    #attr_reader :exp_properties, :script_path
+
+    attr_reader :name
     
     def initialize(column, unused)
       unless column == :execute
@@ -37,6 +22,10 @@ module LabWiki
       end
       super column, :type => :experiment
       @state = :new
+      ts = Time.now.iso8601.split('+')[0].gsub(':', '-')
+      @opts[:name] = @name = "exp-" + ts
+      @content_url = "exp:#{@name}"
+      @graph_descriptions = []
     end
     
     def on_get_content(params, req)      
@@ -48,20 +37,79 @@ module LabWiki
           @opts[:properties] = parse_oidl_script(description)
         end
       end
-      @opts[:name] = "slice-" + Time.now.iso8601
       @title = "NEW"  
     end
     
     def on_start_experiment(params, req)
-      @state = :prepare_to_run
-      if name = params[:name]
-        @title = @opts[:name] = name
+      unless @state == :new
+        warn "Attempt to start an already running or finished experiment"
+        return
       end
+      
+      @title = @name
       # Set all unassigned properties to their default value
       @opts[:properties].each do |prop|
         prop[:value] ||= prop[:default]
       end
+
+      @log_ds_name = "log_#{@name}"
+      @log_table = OMF::OML::OmlTable.new @log_ds_name, [[:time, :int], :severity, :path, :message]
+      OMF::Web::DataSourceProxy.register_datasource @log_table
+      
+      @graph_ds_name = "graph_#{@name}"
+      @graph_table = OMF::OML::OmlTable.new @graph_ds_name, [:id, :description]
+      OMF::Web::DataSourceProxy.register_datasource @graph_table
+      @oml_connector = OmlConnector.new(@name, @graph_table)
+      
+      debug "on_start: opts: #{@opts.inspect}"
+      script = '~/src/omf_labwiki/test/repo/oidl/tutorial/using-properties.rb'
+      props = {'experiment-id' => @name}
+      @opts[:properties].each { |p| props[p[:name]] = p[:value] }
+      @state = :running
+      @start_time = Time.now
+      @ec = LabWiki::Plugin::Experiment::RunExpController.new(@name, script, props) do |etype, msg|
+        handle_exp_output @ec, etype, msg
+      end
     end
+    
+    def handle_exp_output(ec, etype, msg)
+      begin
+        debug "output:#{etype}: #{msg.inspect}"
+        
+        if etype == 'STDOUT'
+          if m = msg.match(/^\s*([A-Z]+)\s*([^:]*):\s*(.*)/)
+            # ' INFO NodeHandler: OMF Experiment..' => ['...'. 'INFO', 'NodeHandler', 'OMF ...']
+            severity = m[1].to_sym
+            path = m[2]
+            message = m[3]
+            return if message.start_with? '------'
+                        
+            if path == 'GraphDescription' && (m = message.match(/^\s*REPORT:([A-Za-z:]*)\s*(.*)/))
+              if m[1] == 'START:'
+                @gd = LabWiki::Plugin::Experiment::GraphDescription.new
+              end
+              @gd.parse(m[1], m[2])
+              if m[1] == 'STOP'
+                @oml_connector.add_graph(@gd)
+                # @graph_descriptions << @gd
+                # @graph_table.add_row [@gd.object_id, @gd.render_description().to_json]
+                @gd = nil
+              end
+              return
+            end
+
+            @log_table.add_row [Time.now - @start_time, severity, path, message]
+          end
+        end
+      rescue Exception => ex
+        warn "EXCEPTION: #{ex}"
+      end
+      
+      if etype == 'DONE.OK'
+        @state = :finished
+      end
+    end
+
     
     # def start(opts)
       # configure(opts)
@@ -73,9 +121,24 @@ module LabWiki
     end
     
     def content_renderer()
-      OMF::Web::Theme.require 'experiment_renderer'
       debug "content_renderer: #{@opts.inspect}"
-      OMF::Web::Theme::ExperimentRenderer.new(self, @opts)
+      if @state == :new
+        OMF::Web::Theme.require 'experiment_setup_renderer'
+        ExperimentSetupRenderer.new(self, @opts)
+      else
+        OMF::Web::Theme.require 'experiment_running_renderer'
+        ExperimentRunningRenderer.new(self, @opts)
+      end
+        
+    end
+    
+    # As widget are dynamically added, we need register datasources from within the 
+    # widget renderer.
+    #
+    def datasource_renderer
+      lp = @log_proxy ||= OMF::Web::DataSourceProxy.for_source(:name => @log_ds_name)[0]      
+      gp = @graph_proxy ||= OMF::Web::DataSourceProxy.for_source(:name => @graph_ds_name)[0]
+      gp.to_javascript(1) + lp.to_javascript(1)
     end
     
     def mime_type
