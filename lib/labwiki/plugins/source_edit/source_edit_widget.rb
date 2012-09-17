@@ -18,7 +18,7 @@ module LabWiki::Plugin::SourceEdit
     def on_get_content(params, req)
       debug "on_get_content: '#{params.inspect}'"
       
-      @mime_type = (params[:mime_type] || 'text').gsub('text', 'code')
+      @mime_type = (params[:mime_type] || 'text')#.gsub('text', 'code')
       @content_url = params[:url]
       content_proxy = OMF::Web::ContentRepository.create_content_proxy_for(@content_url, params)
       if @code_widget

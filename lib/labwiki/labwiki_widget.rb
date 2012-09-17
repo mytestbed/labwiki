@@ -36,11 +36,16 @@ module LabWiki
       end
 
       debug "Calling '#{action} on '#{col_widget.class}' widget"
-      col_widget.send(action, params, req)
+      col_widget.send(action, params, req) || {}
+      # res = col_widget.send(action, params, req) || {}
+      # unless res.is_a? Hash
+        # raise "Action '#{action}' for '#{col_widget}' is expected to return a hash, but returned type '#{res.class}'"
+      # end
       
+      res = col_widget.content_descriptor.dup
       r = OMF::Web::Theme::ColumnContentRenderer.new(col_widget, col)
-      [r.to_html, "text/html"]
-      
+      res[:html] = r.to_html
+      [res.to_json, "application/json"]
     end
     
     def create_column_widget(col, params)

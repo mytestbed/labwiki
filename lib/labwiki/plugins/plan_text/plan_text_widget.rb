@@ -11,7 +11,7 @@ module LabWiki::Plugin::PlanText
       unless column == :plan
         raise "Should only be used in ':plan' column"
       end
-      super column, :type => :experiment
+      super column, :type => :plan
     end
     
 

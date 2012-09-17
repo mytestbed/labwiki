@@ -10,6 +10,10 @@ div.experiment-description {
   background: #eaf1fb;
 }
 
+.experiment-description h3 {
+  padding-left: 10px;
+}
+
 div.experiment-status,
 div.experiment-log {
   padding: 10px 10px 10px 10px;
@@ -22,6 +26,23 @@ div.experiment-log {
 .experiment-setup tr.prop0 td {
   padding-top: 20px;
 }
+
+/** Experiment Running Toolbar ***/
+  
+.btn-stop-experiment {
+  margin: 7px;
+  float: left;
+}
+  
+/*** Log messages ***/
+table.experiment-log td,
+table.experiment-log tr {
+  padding: 3px;
+  padding-left: 5px;  
+  padding-right: 5px;  
+}
+
+/*** GRAPHS ***/
 
 div.experiment-graph-caption {
   margin-bottom: 20px

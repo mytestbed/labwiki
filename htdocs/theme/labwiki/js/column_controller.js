@@ -15,6 +15,10 @@ L.provide('LW.column_controller', ['#LW.content_selector_widget', '#jquery.ui'],
       var name = this._name = opts.name;
       this._content_selector = new LW.content_selector_widget(this, {});
       //this._content_history = []; 
+      this.content_descriptor = {};
+      // allow content specific monitors to take a first stab at handling dropped content
+      this.on_drop_handler = null;
+      
       
       this.col_span = 1;
       
@@ -40,14 +44,17 @@ L.provide('LW.column_controller', ['#LW.content_selector_widget', '#jquery.ui'],
     
     load_content: function(selected) {
       console.log(selected);
-      this.displayed_content = selected;
+      //this.displayed_content = selected;
       var self = this;
       var opts = {
         action: 'get_content',
-        content: selected.content,
         //blob: selected.blob,  // use this one if we care about a specific version
         col: this._name
       };
+      if (selected.content) opts.content = selected.content;
+      if (selected.url) opts.url = selected.url;
+      if (selected.mime_type) opts.mime_type = selected.mime_type;
+
       this.refresh_content(opts, 'GET');
     },
     
@@ -60,7 +67,17 @@ L.provide('LW.column_controller', ['#LW.content_selector_widget', '#jquery.ui'],
         data: opts,
         type: type
       }).done(function(data) { 
-        $('#col_content_' + opts.col).replaceWith(data);
+        self.on_drop_handler = null; // remove drop handler as it may be related to old content
+        try {
+          $('#col_content_' + opts.col).replaceWith(data.html);
+        } catch(err) {
+          // TODO: Find a better way of conveying problem
+          var s = printStackTrace({e: err});
+          console.log(s);            
+        }
+        delete data['html'];
+        self.content_descriptor = data;
+        OHUB.trigger('column.content.showing', {column: self._name, content: data});         
         self.fix_toolbar();
         self.init_content_panel();
         self.init_drag_n_drop();
@@ -68,16 +85,16 @@ L.provide('LW.column_controller', ['#LW.content_selector_widget', '#jquery.ui'],
       
     },
     
-    on_drop: function(ui) {
-      var e = ui.draggable;
-      var controller = e.data('controller');
-      if (controller) {
-        var content = controller.displayed_content;
-        if (content) {
-          this.load_content(content);
+    on_drop: function(e, target) {
+      var content_descriptor = e.data('content');
+      var delegate = target.attr('delegate');
+      if (content_descriptor.url) {
+        var o = {
+          url: content_descriptor.url,
+          mime_type: content_descriptor.mime_type
         }
+        this.load_content(o);
       }
-      var i = 0;
     },
     
     /* 
@@ -119,12 +136,10 @@ L.provide('LW.column_controller', ['#LW.content_selector_widget', '#jquery.ui'],
       this.init_drag_n_drop();
       this.init_content_panel();
       
-      var o = this._opts;
-      if (opts.content) {
-        o.content = opts.content;
-        this.displayed_content = {content: o.content};
-      }
-      o.sid = opts.sid;
+      var o = opts;
+      if (o.mime_type) this.content_descriptor.mime_type = o.mime_type;
+      if (o.url) this.content_descriptor.url = o.url;
+      this._opts.sid = o.sid;
     },
     
     init_titlebar: function() {
@@ -166,7 +181,7 @@ L.provide('LW.column_controller', ['#LW.content_selector_widget', '#jquery.ui'],
       var self = this;
       var prefix = '#kp' + this._opts.col_index;
       var del = $(prefix + ' .widget-title-icon');
-      del.data('controller', this);
+      del.data('content', this.content_descriptor);
       del.draggable({
         appendTo: "body",
         helper: "clone",
@@ -178,7 +193,14 @@ L.provide('LW.column_controller', ['#LW.content_selector_widget', '#jquery.ui'],
         activeClass: "ui-state-default",
         hoverClass: "ui-state-hover ui-drop-hover",
         drop: function(event, ui) {
-          self.on_drop(ui);
+          var propagate = true;
+          var e = ui.draggable;
+          if (self.on_drop_handler) {
+            propagate = self.on_drop_handler(e, $(this), self);
+          } 
+          if (propagate) {
+            self.on_drop(e, $(this));
+          }
         },
         accept: function(candidate) {
           console.log("drop accept? : " + candidate);

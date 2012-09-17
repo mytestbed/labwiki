@@ -43,14 +43,25 @@ module LabWiki::Plugin::Experiment
     def on_start_experiment(params, req)
       unless @state == :new
         warn "Attempt to start an already running or finished experiment"
-        return
+        return # TODO: Raise appropriate exception
       end
       
       @title = @name
+      debug "on_start: opts: #{@opts.inspect}"
+      url = @opts[:url]
+      unless script = OMF::Web::ContentRepository.absolute_path_for(url)
+        warn "Can't find script '#{url}'"
+        return # TODO: Raise appropriate exception
+      end
+
       # Set all unassigned properties to their default value
       @opts[:properties].each do |prop|
         prop[:value] ||= prop[:default]
       end
+
+      @status_ds_name = "status_#{@name}"
+      @status_table = OMF::OML::OmlTable.new @status_ds_name, [[:time, :int], :phase, [:completion, :float], :message]
+      OMF::Web::DataSourceProxy.register_datasource @status_table
 
       @log_ds_name = "log_#{@name}"
       @log_table = OMF::OML::OmlTable.new @log_ds_name, [[:time, :int], :severity, :path, :message]
@@ -61,8 +72,6 @@ module LabWiki::Plugin::Experiment
       OMF::Web::DataSourceProxy.register_datasource @graph_table
       @oml_connector = OmlConnector.new(@name, @graph_table)
       
-      debug "on_start: opts: #{@opts.inspect}"
-      script = '~/src/omf_labwiki/test/repo/oidl/tutorial/using-properties.rb'
       props = {'experiment-id' => @name}
       @opts[:properties].each { |p| props[p[:name]] = p[:value] }
       @state = :running

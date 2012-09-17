@@ -34,9 +34,10 @@ module OMF::Web::Theme
       end
       opts = {:sid => Thread.current["sessionID"], :col => @col_name}
       if @widget
-        if cd = @widget.content_url
-          opts[:content] = cd
-        end
+        opts.merge!(@widget.content_descriptor)
+        # if cd = @widget.content_url
+          # opts[:content] = cd
+        # end
       end
       javascript %{
         L.require('#LW.init', function() {

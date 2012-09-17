@@ -209,8 +209,8 @@ module LabWiki::Plugin::Experiment
           end
           Fiber.yield
           begin
-            a = @connection.query("#{sql} LIMIT #{limit} OFFSET #{offset}")
             offset += a.rows.length
+            a = @connection.query("#{sql} LIMIT #{limit} OFFSET #{offset}")
           rescue Exception => ex
             warn "Exception while running query '#{sql}' - #{ex}"
             a = nil

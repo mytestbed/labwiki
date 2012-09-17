@@ -10,32 +10,22 @@ module OMF::Web::Theme
       super opts
       @widget = text_widget
       @content = content
+      @content_descriptor = opts[:content].content_descriptor
     end
     
     def content
+      link :href => '/plugin/plan_text/css/plan_text.css', :rel => "stylesheet", :type => "text/css"
       wid = "w#{@widget.object_id}"
       div :class => "text", :id => wid do
         rawtext @content.to_html
-        render_content_observer(wid)
       end
+      javascript %{
+        L.require('#LW.plugin.plan_text.plan_text_monitor', '/plugin/plan_text/js/plan_text_monitor.js', function() {
+          var r_#{object_id} = LW.plugin.plan_text.plan_text_monitor(#{@content_descriptor.to_json});
+        })
+      }
     end
-    
-    def render_content_observer(div_id)
-      javascript(%{
-        OHUB.bind("content.changed.#{@widget.content_id}", function(evt) {
-          // Need a way to find the associated column controller
-          // Maybe walking up the DOM tree to look for some element whose
-          // id contains the column name - convoluted, but passing the col name
-          // through to the rendere is most likely even harder.
-          var p = $('\##{div_id}').parents();
-          $.each(p, function(index, value) { 
-            console.log(index + ': ' + value); 
-          });
-        });
-      })
-    end
-
-      
+          
   end 
 
 end # OMF::Web::Theme

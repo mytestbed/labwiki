@@ -21,6 +21,8 @@ module LabWiki::Plugin::Experiment
         @opts[:type] = descr
       when 'POSTFIX'
         @opts[:postfix] = descr
+      when 'CAPTION'
+        @opts[:caption] = descr
       when 'MS'
         @mstreams[type[1]] = descr
       when 'MAPPING'

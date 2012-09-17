@@ -18,6 +18,7 @@ LabWiki::PluginManager.register :plan_text, {
   ],
   :renderers => {
     :text_renderer => OMF::Web::Theme::TextRenderer
-  }
+  },
+  :resources => File.dirname(__FILE__) + '/resource' # should find a more portable solution
 } 
 

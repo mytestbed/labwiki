@@ -29,6 +29,10 @@ module LabWiki
       @mime_type || 'unknown'
     end
     
+    def content_descriptor
+      {:mime_type => mime_type, :url => content_url}
+    end
+    
     def collect_data_sources(ds_set)
       ds_set
     end

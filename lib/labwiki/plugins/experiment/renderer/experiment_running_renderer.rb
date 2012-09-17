@@ -6,6 +6,7 @@ module LabWiki::Plugin::Experiment
   class ExperimentRunningRenderer < ExperimentCommonRenderer
     
     def render_content
+      render_toolbar
       render_properties
       render_logging
       render_graphs
@@ -19,6 +20,11 @@ module LabWiki::Plugin::Experiment
       
     end
     
+    def render_toolbar
+      div :class => 'widget-toolbar' do
+        button "Stop Experiment", :class => 'btn-stop-experiment btn-mini btn-danger'
+      end
+    end
     
     def render_properties
       properties = @wopts[:properties]
