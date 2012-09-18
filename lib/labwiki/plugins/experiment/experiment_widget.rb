@@ -57,7 +57,7 @@ module LabWiki::Plugin::Experiment
     end
 
     def title
-      @experiment ? @experiment.title : 'No Experiment'
+      @experiment ? (@experiment.name || 'NEW') : 'No Experiment'
     end        
     
   end # class

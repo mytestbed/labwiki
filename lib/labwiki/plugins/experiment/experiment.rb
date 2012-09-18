@@ -18,9 +18,6 @@ module LabWiki::Plugin::Experiment
     def initialize(description_url = nil)
       unless description_url
         @state = :new
-        ts = Time.now.iso8601.split('+')[0].gsub(':', '-')
-        @name = "exp-" + ts
-        @content_url = "exp:#{@name}"
         @graph_descriptions = []
       end
     end
@@ -38,8 +35,9 @@ module LabWiki::Plugin::Experiment
         return # TODO: Raise appropriate exception
       end
       
-      @title = @name
-      debug "on_start: opts: #{@opts.inspect}"
+      ts = Time.now.iso8601.split('+')[0].gsub(':', '-')
+      @name = "exp-" + ts
+      @content_url = "exp:#{@name}"
       url = @url
       unless script = OMF::Web::ContentRepository.absolute_path_for(url)
         warn "Can't find script '#{url}'"
