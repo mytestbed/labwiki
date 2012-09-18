@@ -11,12 +11,12 @@ module LabWiki::Plugin::Experiment
     
     def render_start_form
       fid = "f#{self.object_id}"
-      properties = @wopts[:properties]
+      properties = @experiment.properties
       form :id => fid, :class => 'start-form' do
         if properties
           table :class => 'experiment-setup', :style => 'width: auto' do
-            render_field -1, :name => 'Name', :size => 24, :default => @wopts[:name]
-            render_field_static :name => 'Script', :value => @wopts[:url]
+            render_field -1, :name => 'Name', :size => 24, :default => @experiment.name
+            render_field_static :name => 'Script', :value => @experiment.url
             properties.each_with_index do |prop, i|
               render_field(i, prop)
             end
@@ -32,12 +32,17 @@ module LabWiki::Plugin::Experiment
           end
         end
       end
+      
+      opts = {
+        :properties => @experiment.properties,
+        :url => @experiment.url
+      }
       javascript %{
         $("\##{fid}").submit(function(event) {
           event.preventDefault();
-          //LW.execute_controller.start_experiment($(this), #{@wopts.to_json});
+          //LW.execute_controller.start_experiment($(this), #{opts.to_json});
           var form_el = $(this);
-          var fopts = #{@wopts.to_json};
+          var fopts = #{opts.to_json};
     
           function get_value(name, def_value) {
             var e = form_el.find('td.' + name).children();
@@ -69,13 +74,13 @@ module LabWiki::Plugin::Experiment
     
     
     def render_properties
-      properties = @wopts[:properties]
+      properties = @experiment.properties
       #puts ">>>> #{properties}"
       div :class => 'experiment-status' do
         if properties
           table :class => 'experiment-status', :style => 'width: auto'  do
-            render_field_static :name => 'Name', :value => @wopts[:name]
-            render_field_static :name => 'Script', :value => @wopts[:url]
+            render_field_static :name => 'Name', :value => @experiment.name
+            render_field_static :name => 'Script', :value => @experiment.url
             properties.each_with_index do |prop, i|
               prop[:index] = i
               render_field_static(prop)

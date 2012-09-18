@@ -6,9 +6,10 @@ module LabWiki::Plugin::Experiment
     include OMF::Common::Loggable
     extend OMF::Common::Loggable    
          
-    def initialize(widget, wopts)
+    def initialize(widget, experiment)
       @widget = widget
-      @wopts = wopts
+      @experiment = experiment
+      #@wopts = wopts
       @tab_index = 30
     end
         

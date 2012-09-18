@@ -13,8 +13,8 @@ module LabWiki::Plugin::Experiment
       
       javascript %{
         L.require('#LW.plugin.experiment.experiment_monitor', '/plugin/experiment/js/experiment_monitor.js', function() {
-          #{@widget.datasource_renderer};
-          var r_#{object_id} = LW.plugin.experiment.experiment_monitor('#{@widget.name}');
+          #{@experiment.datasource_renderer};
+          var r_#{object_id} = LW.plugin.experiment.experiment_monitor('#{@experiment.name}');
         })
       }
       
@@ -27,14 +27,14 @@ module LabWiki::Plugin::Experiment
     end
     
     def render_properties
-      properties = @wopts[:properties]
+      properties = @experiment.properties
       #puts ">>>> #{properties}"
       render_header "Experiment Properties"
       div :class => 'experiment-status' do
         if properties
           table :class => 'experiment-status table table-bordered', :style => 'width: auto'  do
-            render_field_static :name => 'Name', :value => @wopts[:name]
-            render_field_static :name => 'Script', :value => @wopts[:url]
+            render_field_static :name => 'Name', :value => @experiment.name
+            render_field_static :name => 'Script', :value => @experiment.url
             properties.each_with_index do |prop, i|
               prop[:index] = i
               render_field_static(prop, false)
