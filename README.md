@@ -2,7 +2,7 @@
 
 ## Overview
 
-Visit (http://labwiki.mytestbed.net) for more information on this project.
+Visit http://labwiki.mytestbed.net for more information on this project.
 
 ## Installation
 
@@ -35,12 +35,12 @@ Finally start LabWiki.
     cd $LABWIKI_TOP
     ruby1.9 -I lib -I $OMF_WEB_TOP/lib -rubygems lib/labwiki.rb start
     
-This will start a web server at port 3000. Point your browser there and you should see somthing like:
+This will start a web server at port 4000. Point your browser there and you should see somthing like:
 
 ![Screenshot of starting page](https://raw.github.com/mytestbed/labwiki/master/doc/screenshot.png "Screenshot")
 
 For additional options start the server with -h.
 
-The introductory video at  (http://labwiki.mytestbed.net) should provide you with some hints on how to proceed. Obviously, 
+The introductory video at http://labwiki.mytestbed.net should provide you with some hints on how to proceed. Obviously, 
 more (any) documentation would be even better.
 
