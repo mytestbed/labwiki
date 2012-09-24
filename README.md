@@ -44,3 +44,5 @@ For additional options start the server with -h.
 The introductory video at http://labwiki.mytestbed.net should provide you with some hints on how to proceed. Obviously, 
 more (any) documentation would be even better.
 
+__Please Note:__ There are still quite a few hard coded dependencies to the Norbit Testbed in the current code. I hope to
+add a config file option soon which would allow to better customize an install.
