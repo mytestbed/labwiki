@@ -59,26 +59,10 @@ onEvent(:ALL_UP_AND_INSTALLED) do |event|
 end
 
 defGraph 'Throughput' do |g|
-  g.ms('udp_in').select {[ oml_ts_client.as(:ts), pkt_length.as(:size) ]}
-  g.postfix %{This graph shows the Packet Size of the incoming UDP traffic (byte).}
+  g.ms('udp_in').select {[ oml_ts_client.as(:ts), pkt_length_sum.as(:rate) ]}
+  g.caption "Incoming traffic on receiver."
   g.type 'line_chart3'
-  g.mapping :x_axis => :ts, :y_axis => :size 
+  g.mapping :x_axis => :ts, :y_axis => :rate
   g.xaxis :legend => 'time [s]'
-  g.yaxis :legend => 'size [B]'
-  
-  # g.ms('udp_in').select do
-    # [
-     # min(:oml_ts_client).as(:ts), 
-     # sum(:pkt_length).as(:size)
-    # ]
-  # end.group do
-    # round(:oml_ts_client + 0.5)
-  # end.order do
-    # min(:oml_ts_client)
-  # end
-  
+  g.yaxis :legend => 'size [B]', :ticks => {:format => 's'}
 end
-
-# OMF::EC::OML::MStream.each do |k, v|
-#   puts "#{k}: #{v.tableName}"
-# end

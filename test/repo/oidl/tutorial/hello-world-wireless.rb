@@ -24,7 +24,7 @@
 defProperty('res1', 'omf.nicta.node1', "ID of sender node")
 defProperty('res2', 'omf.nicta.node2', "ID of receiver node")
 defProperty('duration', 60, "Duration of the experiment")
-defProperty('graph', false, "Display graph or not")
+defProperty('channel', '6', "The WIFI channel to use in this experiment")
 
 defGroup('Sender', property.res1) do |node|
   node.addApplication("test:app:otg2") do |app|
@@ -35,7 +35,7 @@ defGroup('Sender', property.res1) do |node|
   end
   node.net.w0.mode = "adhoc"
   node.net.w0.type = 'g'
-  node.net.w0.channel = "6"
+  node.net.w0.channel = property.channel
   node.net.w0.essid = "helloworld"
   node.net.w0.ip = "192.168.0.2"
 end
@@ -48,7 +48,7 @@ defGroup('Receiver', property.res2) do |node|
   end
   node.net.w0.mode = "adhoc"
   node.net.w0.type = 'g'
-  node.net.w0.channel = "6"
+  node.net.w0.channel = property.channel
   node.net.w0.essid = "helloworld"
   node.net.w0.ip = "192.168.0.3"
 end
@@ -64,24 +64,12 @@ onEvent(:ALL_UP_AND_INSTALLED) do |event|
   Experiment.done
 end
 
-if property.graph.value 
-  addTab(:defaults)
-  addTab(:graph2) do |tab|
-    opts = { :postfix => %{This graph shows the Sequence Number from the UDP traffic.}, :updateEvery => 1 }
-    tab.addGraph("Sequence_Number", opts) do |g|
-      dataOut = Array.new
-      dataIn = Array.new
-      mpOut = ms('udp_out')
-      mpIn = ms('udp_in')
-      mpOut.project(:oml_ts_server, :seq_no).each do |sample|
-        dataOut << sample.tuple
-      end
-      mpIn.project(:oml_ts_server, :seq_no).each do |sample|
-        dataIn << sample.tuple
-      end
-      g.addLine(dataOut, :label => "Sender (outgoing UDP)")
-      g.addLine(dataIn, :label => "Receiver (incoming UDP)")
-    end
-  end
+defGraph 'Throughput' do |g|
+  g.ms('udp_in').select {[ oml_ts_client.as(:ts), pkt_length_sum.as(:rate) ]}
+  g.caption "Incoming traffic on receiver."
+  g.type 'line_chart3'
+  g.mapping :x_axis => :ts, :y_axis => :rate
+  g.xaxis :legend => 'time [s]'
+  g.yaxis :legend => 'size [B]', :ticks => {:format => 's'}
 end
 

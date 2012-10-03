@@ -24,6 +24,7 @@
 defProperty('res1', 'omf.nicta.node1', "ID of sender node")
 defProperty('res2', 'omf.nicta.node2', "ID of receiver node")
 defProperty('duration', 60, "Duration of the experiment")
+defProperty('channel', '6', "The WIFI channel to use in this experiment")
 
 defGroup('Sender', property.res1) do |node|
   node.addApplication("test:app:otg2") do |app|
@@ -46,7 +47,7 @@ end
 allGroups.net.w0 do |interface|
   interface.mode = "adhoc"
   interface.type = 'g'
-  interface.channel = "6"
+  interface.channel = property.channel
   interface.essid = "helloworld"
   interface.ip = "192.168.0.%index%"
 end
@@ -62,3 +63,13 @@ onEvent(:ALL_UP_AND_INSTALLED) do |event|
   group("Receiver").stopApplications
   Experiment.done
 end
+
+defGraph 'Throughput' do |g|
+  g.ms('udp_in').select {[ oml_ts_client.as(:ts), pkt_length_sum.as(:rate) ]}
+  g.caption "Incoming traffic on receiver."
+  g.type 'line_chart3'
+  g.mapping :x_axis => :ts, :y_axis => :rate
+  g.xaxis :legend => 'time [s]'
+  g.yaxis :legend => 'size [B]', :ticks => {:format => 's'}
+end
+
