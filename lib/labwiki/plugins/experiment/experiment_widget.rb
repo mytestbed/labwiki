@@ -33,7 +33,8 @@ module LabWiki::Plugin::Experiment
     end
     
     def on_start_experiment(params, req)
-      @experiment.start_experiment
+      #puts "PARAM>>> #{params[:properties].values.inspect}"
+      @experiment.start_experiment(params[:properties].values)
     end
     
     def on_stop_experiment(params, req)

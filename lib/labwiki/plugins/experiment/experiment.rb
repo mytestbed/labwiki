@@ -29,7 +29,7 @@ module LabWiki::Plugin::Experiment
       end
     end
     
-    def start_experiment()
+    def start_experiment(properties)
       unless @state == :new
         warn "Attempt to start an already running or finished experiment"
         return # TODO: Raise appropriate exception
@@ -46,12 +46,9 @@ module LabWiki::Plugin::Experiment
 
       create_oml_tables()
       
-      # Set all unassigned properties to their default value
-      @properties.each do |prop|
-        prop[:value] ||= prop[:default]
-      end
       props = {'experiment-id' => @name}
-      @properties.each { |p| props[p[:name]] = p[:value] }
+      properties.each { |p| props[p[:name]] = p[:value] }
+      @properties.each { |p| p[:value] = props[p[:name]] ||= p[:default] }
       @state = :running
       @start_time = Time.now
       @ec = LabWiki::Plugin::Experiment::RunExpController.new(@name, script, props) do |etype, msg|
