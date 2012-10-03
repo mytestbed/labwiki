@@ -44,7 +44,7 @@ defGroup('Receiver', property.res2) do |node|
   node.addApplication("test:app:otr2") do |app|
     app.setProperty('udp:local_host', '192.168.255.255')
     app.setProperty('udp:local_port', 3000)
-    app.measure('udp_in', :samples => 1)
+    app.measure('udp_in', :interval => 1)
   end
 end
 
@@ -77,35 +77,12 @@ onEvent(:ALL_UP_AND_INSTALLED) do |event|
 end
 
 
-if property.graph.value
-  addTab(:defaults)
-  addTab(:graph2) do |tab|
-    opts1 = { :postfix => %{This graph shows the Sequence Number from CBR and EXP UDP traffic.}, :updateEvery => 1 }
-    tab.addGraph("Sequence Number", opts1) do |g|
-      dataOut = Hash.new
-      mpOut = ms('udp_out')
-      mpOut.project(:oml_sender_id, :oml_ts_server, :seq_no).each do |sample|
-        sender, time, seq = sample.tuple
-        dataOut[sender] = [] if dataOut[sender] == nil
-        dataOut[sender] << [time,seq]
-      end
-      dataOut.each do |source, data|
-        g.addLine(data, :label => "#{msSenderName[source]}")
-      end
-    end
-    opts2 = { :postfix => %{This graph shows the Packet Size (bytes)from CBR and EXP UDP traffic.}, :updateEvery => 1 }
-    tab.addGraph("Packet Size", opts2) do |g|
-      dataOut = Hash.new
-      mpOut = ms('udp_out')
-      mpOut.project(:oml_sender_id, :oml_ts_server, :pkt_length).each do |sample|
-        sender, time, plength = sample.tuple
-        dataOut[sender] = [] if dataOut[sender] == nil
-        dataOut[sender] << [time,plength]
-      end
-      dataOut.each do |source, data|
-        g.addLine(data, :label => "#{msSenderName[source]}")
-      end
-    end
-  end
+defGraph 'Throughput' do |g|
+  g.ms('udp_in').select {[ oml_ts_client.as(:ts), pkt_length_sum.as(:rate) ]}
+  g.caption "Incoming traffic on receiver."
+  g.type 'line_chart3'
+  g.mapping :x_axis => :ts, :y_axis => :rate
+  g.xaxis :legend => 'time [s]'
+  g.yaxis :legend => 'size [B]', :ticks => {:format => 's'}
 end
 
