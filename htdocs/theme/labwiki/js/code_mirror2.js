@@ -1,4 +1,4 @@
-L.provide('OML.code_mirror2', ["graph/code_mirror", "#OML.code_mirror"], function () {
+L.provide('OML.code_mirror2', ["graph/js/code_mirror", "#OML.code_mirror"], function () {
 
   OML.code_mirror2 = OML.code_mirror.extend({
     

@@ -187,8 +187,8 @@ module LabWiki::Plugin::Experiment
         gopts = gd[:graph_descr].render_option()
         # TODO: Locks us into graphs with single data sources
         gopts[:data_sources] = [{
-          :name => 'default', 
-          :stream => tname, 
+          :name => tname, 
+          :stream => tname, # not sure what we need this for?
           :schema => table.schema,
           :update_interval => 1
         }]

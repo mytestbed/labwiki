@@ -16,7 +16,7 @@ module OMF::Web::Theme
     def content
       link :href => '/plugin/plan_text/css/plan_text.css', :rel => "stylesheet", :type => "text/css"
       wid = "w#{@widget.object_id}"
-      div :class => "text", :id => wid do
+      div :class => "text plan_text", :id => wid do
         rawtext @content.to_html
       end
       javascript %{

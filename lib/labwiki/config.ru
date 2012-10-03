@@ -2,7 +2,7 @@
 require 'omf_common/lobject'
 
 use ::Rack::ShowExceptions
-use ::Rack::Lint
+#use ::Rack::Lint
 
 OMF::Web::Runner.instance.life_cycle(:pre_rackup)
 options = OMF::Web::Runner.instance.options
@@ -33,6 +33,7 @@ map '/_ws' do
     OMF::Common::Loggable.logger('web').error "#{ex}"
   end
 end
+
 
 map '/_update' do
   require 'omf-web/rack/update_handler'

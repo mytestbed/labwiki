@@ -59,6 +59,11 @@ module LabWiki::Plugin::Experiment
       end
     end
     
+    def stop_experiment()
+      @ec.stop
+    end
+    
+    
     def create_oml_tables
       @status_ds_name = "status_#{@name}"
       @status_table = OMF::OML::OmlTable.new @status_ds_name, [[:time, :int], :phase, [:completion, :float], :message]
@@ -116,13 +121,14 @@ module LabWiki::Plugin::Experiment
       end
     end
 
-    # As widget are dynamically added, we need register datasources from within the 
+    # As widgets are dynamically added, we need register datasources from within the 
     # widget renderer.
     #
     def datasource_renderer
       lp = @log_proxy ||= OMF::Web::DataSourceProxy.for_source(:name => @log_ds_name)[0]      
       gp = @graph_proxy ||= OMF::Web::DataSourceProxy.for_source(:name => @graph_ds_name)[0]
-      gp.to_javascript(1) + lp.to_javascript(1)
+      #gp.to_javascript(1) + lp.to_javascript(1)
+      gp.to_javascript() + lp.to_javascript()
     end
     
     def parse_oidl_script(content)

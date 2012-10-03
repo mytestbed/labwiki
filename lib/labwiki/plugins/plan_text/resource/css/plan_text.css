@@ -8,3 +8,48 @@ div.widget_body_plan p.drop-target {
   margin-bottom: 0px;  
 }
 
+.plan_text strong {
+  font-weight:bold;
+}
+
+.plan_text p.content em {
+  font-style: italic;
+}
+
+.plan_text h2 {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-bottom: 1em;
+  line-height: 1.3em;
+}
+
+
+.plan_text ul {
+  display: block;
+  list-style-type: disc;
+}
+
+.plan_text li {
+  list-style-type: disc;
+  display: list-item;
+  margin-left: 20;
+  margin-bottom: 10;  
+}
+
+/* .plan_text pre code { */
+.plan_text pre {  
+  margin: 10;
+  padding: 10;
+  border: 1px solid rgba(0, 0, 0, 0.15)
+}
+
+.plan_text code {  
+  border: 0;
+  padding: 0;
+  color: inherit;
+  background-color: transparent;
+  font-family: monospace;
+  line-height: 120%;  
+  font-size: 14px;  
+}
+

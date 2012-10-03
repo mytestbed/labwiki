@@ -68,8 +68,9 @@ L.provide('LW.column_controller', ['#LW.content_selector_widget', '#jquery.ui'],
         type: type
       }).done(function(data) { 
         self.on_drop_handler = null; // remove drop handler as it may be related to old content
+        var content_div = $('#col_content_' + opts.col)
         try {
-          $('#col_content_' + opts.col).replaceWith(data.html);
+          content_div.replaceWith(data.html);
         } catch(err) {
           // TODO: Find a better way of conveying problem
           var s = printStackTrace({e: err});
@@ -77,7 +78,7 @@ L.provide('LW.column_controller', ['#LW.content_selector_widget', '#jquery.ui'],
         }
         delete data['html'];
         self.content_descriptor = data;
-        OHUB.trigger('column.content.showing', {column: self._name, content: data});         
+        OHUB.trigger('column.content.showing', {column: self._name, content: data, selector: content_div});         
         self.fix_toolbar();
         self.init_content_panel();
         self.init_drag_n_drop();

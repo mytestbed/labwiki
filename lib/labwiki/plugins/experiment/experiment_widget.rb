@@ -36,6 +36,10 @@ module LabWiki::Plugin::Experiment
       @experiment.start_experiment
     end
     
+    def on_stop_experiment(params, req)
+      @experiment.stop_experiment
+    end
+
     def new?
       @experiment ? (@experiment.state == :new) : false
     end

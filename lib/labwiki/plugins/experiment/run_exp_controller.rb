@@ -49,9 +49,13 @@ module LabWiki::Plugin::Experiment
       @stdin.flush
     end
   
-    def kill(id, signal = 'KILL')
+    def kill(signal = 'KILL')
       @cleanExit = true
       Process.kill(signal, @pid)
+    end
+    
+    def stop()
+      kill('INT')
     end
   
     #
