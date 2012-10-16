@@ -7,7 +7,7 @@ module LabWiki::Plugin::PlanText
   #
   class PlanTextWidget < LabWiki::ColumnWidget
     
-    def initialize(column, unused)
+    def initialize(column, config_opts, unused)
       unless column == :plan
         raise "Should only be used in ':plan' column"
       end

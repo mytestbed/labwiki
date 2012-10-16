@@ -7,7 +7,7 @@ module LabWiki::Plugin::SourceEdit
   #
   class SourceEditWidget < LabWiki::ColumnWidget
     
-    def initialize(column, unused)
+    def initialize(column, config_opts, unused)
       unless column == :prepare
         raise "Should only be used in ':prepare' column"
       end

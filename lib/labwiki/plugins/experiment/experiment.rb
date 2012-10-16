@@ -2,7 +2,7 @@ require 'time'
 require 'ruby_parser'
 require 'omf_web'
 require 'omf-web/content/repository'
-require 'omf-oml/table'
+require 'omf_oml/table'
 require 'labwiki/plugins/experiment/run_exp_controller'
 require 'labwiki/plugins/experiment/oml_connector'
 require 'labwiki/plugins/experiment/graph_description'
@@ -15,11 +15,12 @@ module LabWiki::Plugin::Experiment
 
     attr_reader :name, :state, :url, :properties
     
-    def initialize(description_url = nil)
+    def initialize(description_url = nil, config_opts)
       unless description_url
         @state = :new
         @graph_descriptions = []
       end
+      @config_opts = config_opts
     end
     
     def script=(url)      
@@ -51,7 +52,7 @@ module LabWiki::Plugin::Experiment
       @properties.each { |p| p[:value] = props[p[:name]] ||= p[:default] }
       @state = :running
       @start_time = Time.now
-      @ec = LabWiki::Plugin::Experiment::RunExpController.new(@name, script, props) do |etype, msg|
+      @ec = LabWiki::Plugin::Experiment::RunExpController.new(@name, script, props, @config_opts) do |etype, msg|
         handle_exp_output @ec, etype, msg
       end
     end
@@ -73,7 +74,7 @@ module LabWiki::Plugin::Experiment
       @graph_ds_name = "graph_#{@name}"
       @graph_table = OMF::OML::OmlTable.new @graph_ds_name, [:id, :description]
       OMF::Web::DataSourceProxy.register_datasource @graph_table
-      @oml_connector = OmlConnector.new(@name, @graph_table)
+      @oml_connector = OmlConnector.new(@name, @graph_table, @config_opts[:oml])
     end    
     
     def to_json

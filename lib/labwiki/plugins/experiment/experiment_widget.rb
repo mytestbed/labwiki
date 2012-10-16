@@ -10,12 +10,13 @@ module LabWiki::Plugin::Experiment
 
     attr_reader :name
     
-    def initialize(column, unused)
+    def initialize(column, config_opts, unused)
       unless column == :execute
         raise "Should only be used in 'execute' column"
       end
       super column, :type => :experiment
       @experiment = nil
+      @config_opts = config_opts
     end
     
     def on_get_content(params, req)      
@@ -25,7 +26,7 @@ module LabWiki::Plugin::Experiment
         # release currenlty used experiment
       end
       
-      @experiment = LabWiki::Plugin::Experiment::Experiment.new
+      @experiment = LabWiki::Plugin::Experiment::Experiment.new(nil, @config_opts)
       if (url = params[:url])
         @experiment.script = url
       end
@@ -34,7 +35,7 @@ module LabWiki::Plugin::Experiment
     
     def on_start_experiment(params, req)
       #puts "PARAM>>> #{params[:properties].values.inspect}"
-      @experiment.start_experiment(params[:properties].values)
+      @experiment.start_experiment((params[:properties] || {}).values)
     end
     
     def on_stop_experiment(params, req)

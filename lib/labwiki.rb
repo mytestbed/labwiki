@@ -8,6 +8,7 @@ require 'omf-web/content/git_repository'
 OMF::Web::GitContentRepository.register_git_repo(:foo, '/tmp/foo', true)
 
 require 'labwiki/plugin_manager'
+require 'labwiki/configurator'
 
 # Configure the web server
 #
@@ -28,6 +29,15 @@ opts = {
     :pre_rackup => lambda { 
       LabWiki::PluginManager.init 
     },
+    :pre_parse => lambda do |p|
+      p.separator ""
+      p.separator "LabWiki options:"
+      p.on("--lw-config CONFIG_FILE", "File to hold LabWiki's local configurations") do |fname|
+        LabWiki::Configurator.load_from(fname)
+      end
+      p.separator ""
+    end
+    
   }
 }
 require 'omf_web'

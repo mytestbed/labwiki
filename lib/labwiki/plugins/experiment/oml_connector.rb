@@ -11,12 +11,7 @@ module LabWiki::Plugin::Experiment
   # single experiment.
   #
   class OmlConnector < OMF::Common::LObject
-    
-    # TODO: The following needs to go into a configure framework
-    DB_HOST = 'norbit.npc.nicta.com.au'
-    DB_USER = 'oml2'
-    DB_PWD = 'omlisgoodforyou'
-    
+        
     TOID2TYPE = {
       17 => :blob,
       20 => :integer,
@@ -111,9 +106,10 @@ module LabWiki::Plugin::Experiment
       3831 => :anyrange
     }
 
-    def initialize(exp_id, graph_table)
+    def initialize(exp_id, graph_table, config_opts)
       @exp_id = exp_id
       @graph_table = graph_table
+      @config_opts = config_opts
       
       @graph_descriptions = []
       @connected = false
@@ -229,9 +225,10 @@ module LabWiki::Plugin::Experiment
           while @connection.nil?
             begin
               sleep 2
-              db_uri = "tcp://#{DB_HOST}"
+              
+              db_uri = "tcp://#{@config_opts[:host]}"
               debug "Attempting to connect to OML backend on '#{db_uri}' - #{object_id}-#{Thread.current}"
-              conn = PostgresPR::Connection.new(exp_id, DB_USER, DB_PWD, db_uri)              
+              conn = PostgresPR::Connection.new(exp_id, @config_opts[:user], @config_opts[:pwd], db_uri)              
               _on_connected(conn)
             rescue Exception => ex
               msg = ex.message.split("\t")

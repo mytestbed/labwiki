@@ -18,7 +18,7 @@ module LabWiki::Plugin::Experiment
   #
   class RunExpController < OMF::Common::LObject
     
-    RUN_CMD = '~/src/omf_labwiki/test/omf_exec/omf_exec-norbit.sh'
+    #RUN_CMD = '~/src/omf_labwiki/test/omf_exec/omf_exec-norbit.sh'
   
     # Holds the pids for all active apps
     @@apps = Hash.new
@@ -66,8 +66,9 @@ module LabWiki::Plugin::Experiment
     # @param id ID of application (used for reporting)
     # @param exp_script Name of OIDL script
     # @param properties Hahs of properties to pass to experiment
+    # @param config_opts - Configuration option, need to contain 'ec_runner'
     #
-    def initialize(id, exp_script, properties, &block)
+    def initialize(id, exp_script, properties, config_opts, &block)
   
       @id = id
       @observer = block
@@ -81,7 +82,11 @@ module LabWiki::Plugin::Experiment
 
       props = properties.map { |k, v| "--#{k} '#{v}'" }
 
-      cmd = "#{RUN_CMD} #{exp_script} #{script_props.join(' ')} -- #{props.join(' ')}" 
+      unless ec_runner = config_opts[:ec_runner]
+        raise "Missing 'ec_runner' declaration in experiment configuration"
+      end
+      #cmd = "#{RUN_CMD} #{exp_script} #{script_props.join(' ')} -- #{props.join(' ')}" 
+      cmd = "#{ec_runner} #{exp_script} #{script_props.join(' ')} -- #{props.join(' ')}" 
       debug "CMD: #{cmd}"
       
       pw = IO::pipe   # pipe[0] for read, pipe[1] for write

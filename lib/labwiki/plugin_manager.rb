@@ -25,11 +25,13 @@ module LabWiki
       if @@plugins[name]
         warn "P{lugin '#{name}' is already registered. Overiding previous settings"
       end
+      description[:name] = name
       @@plugins[name] = description
       (description[:widgets] || {}).each do |wdescr|
         # :context => :execute,
         # :priority => lambda(),
         # :widget_class => Class
+        wdescr[:config_name] ||= name
         ctxt = (@@plugins[wdescr[:context]] ||= [])
         ctxt << wdescr
       end
@@ -42,20 +44,21 @@ module LabWiki
     
     def self.create_widget(column, params)
       debug "Creating widget for '#{column}' from '#{params.inspect}'"
-      widget = @@plugins[column.to_sym].reduce(:priority => 0, :klass => nil) do |best, wdescr|
+      widget = @@plugins[column.to_sym].reduce(:priority => 0, :wdescr => {}) do |best, wdescr|
         if priority = wdescr[:priority].call(params)
           if priority > best[:priority]
-            best = {:priority => priority, :klass => wdescr[:widget_class]}
+            best = {:priority => priority, :wdescr => wdescr}
           end
         end
         best
         #mime_type.match(wdescr[:mime_type]) != nil
       end
-      unless widget_class = widget[:klass]
+      unless widget_class = widget[:wdescr][:widget_class]
         raise "No execute widget available for '#{params.inspect}'"
       end
-      debug "Creating widget for '#{column}' from '#{widget_class}'"      
-      widget = widget_class.new(column, params)
+      options = Configurator["plugins/#{widget[:wdescr][:config_name]}"]
+      debug "Creating widget for '#{column}' from '#{widget_class}' (#{options})"      
+      widget = widget_class.new(column, options, params)
       widget
     end
     
@@ -63,18 +66,6 @@ module LabWiki
       @@plugins[plugin_name.to_sym][:resources]
     end
     
-    
-    # def self.create_execute_widget(params)
-      # mime_type = params[:mime_type]
-      # wdescr = @@plugins[:execute].find do |wdescr|
-        # mime_type.match(wdescr[:mime_type]) != nil
-      # end
-      # unless wdescr
-        # throw "No execute widget available for '#{params[:mime_type]}'"
-      # end
-      # widget_class = wdescr[:widget_class]
-      # widget = widget_class.create_for(params)
-    # end
   end # class
 end # module
 

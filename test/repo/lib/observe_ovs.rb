@@ -1,8 +1,8 @@
 #
 # This is a test program listening for OVS port assignment information
 #
-require 'omf-oml/endpoint'
-require 'omf-oml/table'
+require 'omf_oml/endpoint'
+require 'omf_oml/table'
 
 APPNAME = File.basename($0).split('.')[0]
 
