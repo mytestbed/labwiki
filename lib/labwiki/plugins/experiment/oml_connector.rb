@@ -201,11 +201,11 @@ module LabWiki::Plugin::Experiment
             unless (rows = a.rows).empty?
               puts ">> #{rows.inspect}"
               table.add_rows rows, true
+              offset += rows.length
             end
           end
           Fiber.yield
           begin
-            offset += a.rows.length
             a = @connection.query("#{sql} LIMIT #{limit} OFFSET #{offset}")
           rescue Exception => ex
             warn "Exception while running query '#{sql}' - #{ex}"
