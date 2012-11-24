@@ -17,6 +17,17 @@ module LabWiki
       debug "Config: '#{@@configuration.inspect}'"      
     end
     
+    # Process the configuration parameter for settings specific to the OMF::Web 
+    # library. Current settings include: repository.
+    #
+    def self.init_omf_web
+      require 'omf-web/content/git_repository'
+      self['repositories'].each do |name, path|
+        info "Registering GIT repo '#{name}' -> #{path}"
+        OMF::Web::GitContentRepository.register_git_repo(name.to_sym, File.expand_path(path), true)
+      end
+    end
+    
     # Return configuration value for 'key'. Key can be of the form 'a/b/c' which 
     # returns config[:a][:b][:c]. 
     #

@@ -4,8 +4,6 @@ OMF::Common::Loggable.init_log 'labwiki', :searchPath => File.join(File.dirname(
 
 module OmfLabWiki; end
 
-require 'omf-web/content/git_repository'
-OMF::Web::GitContentRepository.register_git_repo(:foo, '/tmp/foo', true)
 
 require 'labwiki/plugin_manager'
 require 'labwiki/configurator'
@@ -28,6 +26,7 @@ opts = {
     # Should be done in a better way
     :pre_rackup => lambda { 
       LabWiki::PluginManager.init 
+      LabWiki::Configurator.init_omf_web
     },
     :pre_parse => lambda do |p|
       p.separator ""
