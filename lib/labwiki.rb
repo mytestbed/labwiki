@@ -35,8 +35,16 @@ opts = {
         LabWiki::Configurator.load_from(fname)
       end
       p.separator ""
+    end,
+    # post_parse should return true if everything is ok
+    :post_parse => lambda do
+      unless LabWiki::Configurator.configured?
+        OMF::Common::Loggable.logger(:opts).fatal "Missing --lw_config option"
+        false
+      else
+        true
+      end
     end
-    
   }
 }
 require 'omf_web'

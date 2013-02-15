@@ -5,6 +5,7 @@ module LabWiki
   # Holds the local configuration information.
   #
   class Configurator < OMF::Common::LObject
+    @@configuration = nil
     
     # Load a YAML config file from 'fname' and make it available
     # through self[key].
@@ -17,6 +18,10 @@ module LabWiki
       debug "Config: '#{@@configuration.inspect}'"      
     end
     
+    def self.configured?()
+      @@configuration != nil
+    end
+
     # Process the configuration parameter for settings specific to the OMF::Web 
     # library. Current settings include: repository.
     #
