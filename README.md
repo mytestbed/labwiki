@@ -33,7 +33,11 @@ Then create a temporary git repo and populate it with some test data.
 Finally start LabWiki.
 
     cd $LABWIKI_TOP
-    ruby1.9 -I lib -I $OMF_WEB_TOP/lib -rubygems lib/labwiki.rb start
+    ruby1.9 -I lib -I $OMF_WEB_TOP/lib lib/labwiki.rb --lw-config __your_config_file__.yaml start
+    
+The '__your_config_file__.yaml' needs to be replace with a path to a file describing the local setup. A sample 
+of such a file can be found in 'test/config/norbit.yaml'. Please create your own one as this one will very likely 
+NOT work in yoru environment.
     
 This will start a web server at port 4000. Point your browser there and you should see somthing like:
 
@@ -44,5 +48,32 @@ For additional options start the server with -h.
 The introductory video at http://labwiki.mytestbed.net should provide you with some hints on how to proceed. Obviously, 
 more (any) documentation would be even better.
 
-__Please Note:__ There are still quite a few hard coded dependencies to the Norbit Testbed in the current code. I hope to
-add a config file option soon which would allow to better customize an install.
+## Configuration
+
+All the site specific configurations are captured in a YAML file which is provided at startup through
+the '--lw-config' flag.
+
+The structure of this file is as following:
+
+    labwiki:
+      repositories:
+        foo: /tmp/foo
+      plugins:
+        experiment:
+          ec_runner: __LABWIKI_TOP__/test/omf_exec/omf_exec-norbit.sh
+          oml:
+            host: norbit.npc.nicta.com.au
+            user: oml2
+
+Currently, there are two sub sections defined under the top 'labwiki' node.
+
+The 'repositories' is currently just a placeholder and will get flashed out or even removed
+when we add full multi-user support. Currently it expects the path to a single git repository 
+with the hard-coded label 'foo'. See the 'try the simple example' section above for instructions.
+
+The 'plugins' node holds additional configuration options for each of the plugins. The above
+example declares options for the 'experiment' plugin. Please change '__LABWIKI_TOP__' to an absolute path
+for your installation. The 'test/omf_exec/omf_exec-norbit.sh' is included, but will very likely not work
+in your environemnt, but could be a template for something which may work.
+
+ 
