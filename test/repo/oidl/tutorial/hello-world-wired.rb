@@ -1,23 +1,8 @@
-#
-# Copyright (c) 2006-2010 National ICT Australia (NICTA), Australia
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
+# Copyright (c) 2012 National ICT Australia Limited (NICTA).
+# This software may be used and distributed solely under the terms of the MIT license (License).
+# You should find a copy of the License in LICENSE.TXT or at http://opensource.org/licenses/MIT.
+# By downloading or using this software you accept the terms and the liability disclaimer in the License.
+# ------------------
 #
 # Tutorial experiment
 #
@@ -56,24 +41,12 @@ onEvent(:ALL_UP_AND_INSTALLED) do |event|
   Experiment.done
 end
 
-if property.graph.value
-  addTab(:defaults)
-  addTab(:graph2) do |tab|
-    opts = { :postfix => %{This graph shows the Sequence Number from the UDP traffic.}, :updateEvery => 1 }
-    tab.addGraph("Sequence_Number", opts) do |g|
-      dataOut = Array.new
-      dataIn = Array.new
-      mpOut = ms('udp_out')
-      mpIn = ms('udp_in')
-      mpOut.project(:oml_ts_server, :seq_no).each do |sample|
-        dataOut << sample.tuple
-      end
-      mpIn.project(:oml_ts_server, :seq_no).each do |sample|
-        dataIn << sample.tuple
-      end
-      g.addLine(dataOut, :label => "Sender (outgoing UDP)")
-      g.addLine(dataIn, :label => "Receiver (incoming UDP)")
-    end
-  end
+defGraph 'Throughput' do |g|
+  g.ms('udp_in').select {[ oml_ts_client.as(:ts), :seq_no ]}
+  g.caption "Sequence number of received packets."
+  g.type 'line_chart3'
+  g.mapping :x_axis => :ts, :y_axis => :seq_no
+  g.xaxis :legend => 'time [s]'
+  g.yaxis :legend => 'seq. number', :ticks => {:format => 's'}
 end
 
