@@ -64,11 +64,12 @@ module LabWiki::Plugin::Experiment
     # have two arguments, eventType and message.
     #
     # @param id ID of application (used for reporting)
+    # @param slice Name of slice
     # @param exp_script Name of OIDL script
     # @param properties Hahs of properties to pass to experiment
     # @param config_opts - Configuration option, need to contain 'ec_runner'
     #
-    def initialize(id, exp_script, properties, config_opts, &block)
+    def initialize(id, slice, exp_script, properties, config_opts, &block)
   
       @id = id
       @observer = block
@@ -78,6 +79,9 @@ module LabWiki::Plugin::Experiment
       script_props = []
       if exp_id = properties.delete('experiment-id')
         script_props << "--experiment-id #{exp_id}"
+      end
+      if slice && !slice.empty?
+        script_props << "--slice #{slice}"
       end
 
       props = properties.map { |k, v| "--#{k} '#{v}'" }

@@ -16,6 +16,7 @@ module LabWiki::Plugin::Experiment
         if properties
           table :class => 'experiment-setup', :style => 'width: auto' do
             render_field -1, :name => 'Name', :size => 24, :default => @experiment.name
+            render_field -1, :name => 'Slice', :size => 24#, :default => @experiment.name
             render_field_static :name => 'Script', :value => @experiment.url
             properties.each_with_index do |prop, i|
               render_field(i, prop)
@@ -31,8 +32,12 @@ module LabWiki::Plugin::Experiment
             end              
           end
         end
+        render_javascript(fid)
       end
       
+    end
+    
+    def render_javascript(fid)
       opts = {
         :properties => @experiment.properties,
         :url => @experiment.url
@@ -40,10 +45,13 @@ module LabWiki::Plugin::Experiment
       javascript %{
         $("\##{fid}").submit(function(event) {
           event.preventDefault();
-          //LW.execute_controller.start_experiment($(this), #{opts.to_json});
+
           var form_el = $(this);
           var fopts = #{opts.to_json};
-    
+          var ec = $("\##{@data_id}").data('ec');
+          ec.submit(form_el, fopts);
+          return;
+          
           function get_value(name, def_value) {
             var e = form_el.find('td.' + name).children();
             var v = e.val();
@@ -70,8 +78,6 @@ module LabWiki::Plugin::Experiment
         });
       }
     end
-    
-    
     
     def render_properties
       properties = @experiment.properties

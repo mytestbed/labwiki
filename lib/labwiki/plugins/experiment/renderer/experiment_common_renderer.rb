@@ -15,9 +15,15 @@ module LabWiki::Plugin::Experiment
         
     def content
       link :href => '/plugin/experiment/css/experiment.css', :rel => "stylesheet", :type => "text/css"
-      div :class => "experiment-description" do 
+      @data_id = "e#{object_id}"
+      div :class => "experiment-description", :id => @data_id do 
         render_content
       end
+      javascript %{
+        L.require('#LW.plugin.experiment.controller', '/plugin/experiment/js/experiment_controller.js', function() {
+          $("\##{@data_id}").data('ec', LW.plugin.experiment.controller(#{@content_descriptor.to_json}));
+        })
+      }
     end
         
     def render_field(index, prop)

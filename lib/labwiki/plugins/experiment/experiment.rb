@@ -13,7 +13,7 @@ module LabWiki::Plugin::Experiment
   #
   class Experiment < OMF::Common::LObject
 
-    attr_reader :name, :state, :url, :properties
+    attr_reader :name, :state, :url, :slice, :properties
     
     def initialize(description_url = nil, config_opts)
       unless description_url
@@ -30,12 +30,13 @@ module LabWiki::Plugin::Experiment
       end
     end
     
-    def start_experiment(properties)
+    def start_experiment(properties, slice)
       unless @state == :new
         warn "Attempt to start an already running or finished experiment"
         return # TODO: Raise appropriate exception
       end
       
+      @slice = slice
       ts = Time.now.iso8601.split('+')[0].gsub(':', '-')
       @name = "exp-" + ts
       @content_url = "exp:#{@name}"
@@ -52,7 +53,7 @@ module LabWiki::Plugin::Experiment
       @properties.each { |p| p[:value] = props[p[:name]] ||= p[:default] }
       @state = :running
       @start_time = Time.now
-      @ec = LabWiki::Plugin::Experiment::RunExpController.new(@name, script, props, @config_opts) do |etype, msg|
+      @ec = LabWiki::Plugin::Experiment::RunExpController.new(@name, slice, script, props, @config_opts) do |etype, msg|
         handle_exp_output @ec, etype, msg
       end
     end

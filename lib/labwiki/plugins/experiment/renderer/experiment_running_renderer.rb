@@ -35,6 +35,9 @@ module LabWiki::Plugin::Experiment
           table :class => 'experiment-status table table-bordered', :style => 'width: auto'  do
             render_field_static :name => 'Name', :value => @experiment.name
             render_field_static :name => 'Script', :value => @experiment.url
+            if @experiment.slice
+              render_field_static :name => 'Slice', :value => @experiment.slice
+            end
             properties.each_with_index do |prop, i|
               prop[:index] = i
               render_field_static(prop, false)
