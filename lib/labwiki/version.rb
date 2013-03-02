@@ -1,4 +1,4 @@
 
 module OmfLabWiki
-  VERSION = [0, 12]
+  VERSION = [0, 15, 'pre']
 end

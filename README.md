@@ -6,20 +6,17 @@ Visit http://labwiki.mytestbed.net for more information on this project.
 
 ## Installation
 
-Labwiki is built on top of [OMF Web](https://github.com/mytestbed/omf_web) and currently requires the latest
-master of OMF Web. It is therefore best to first 
-[install OMF Web](https://github.com/mytestbed/omf_web/blob/master/README.md). After that, proceed as following:
+Labwiki is currently still under constant devlopment and it is therfore best to fetch the latest version 
+from Github. 
 
     git clone https://github.com/mytestbed/labwiki.git
     cd labwiki
-    bundle
-    rake install
+    bundle update
 
 ## Try the simple example
 
-First set OMF_WEB_TOP and LABWIKI_TOP to wherever you installed them, respectively.
+First set LABWIKI_TOP to wherever you installed them, respectively.
 
-    export OMF_WEB_TOP=...whereever.you.installed.omf.web
     export LABWIKI_TOP=...whereever.you.installed.labwiki
     
 Then create a temporary git repo and populate it with some test data.
@@ -33,11 +30,11 @@ Then create a temporary git repo and populate it with some test data.
 Finally start LabWiki.
 
     cd $LABWIKI_TOP
-    ruby1.9 -I lib -I $OMF_WEB_TOP/lib lib/labwiki.rb --lw-config __your_config_file__.yaml start
+    ruby1.9 $LABWIKI_TOP/bin/labwiki --lw-config __your_config_file__.yaml start
     
 The '__your_config_file__.yaml' needs to be replace with a path to a file describing the local setup. A sample 
 of such a file can be found in 'test/config/norbit.yaml'. Please create your own one as this one will very likely 
-NOT work in yoru environment.
+NOT work in yor environment.
     
 This will start a web server at port 4000. Point your browser there and you should see somthing like:
 
