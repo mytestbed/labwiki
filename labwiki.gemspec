@@ -22,5 +22,5 @@ Gem::Specification.new do |s|
   # specify any dependencies here; for example:
 #  s.add_development_dependency "minitest", "~> 2.11.3"
   s.add_runtime_dependency "ruby_parser", "~> 2.3.1"
-  s.add_runtime_dependency "omf_web", "~> 0.9"  
+  s.add_runtime_dependency "omf_web", "~> 0.9"
 end
