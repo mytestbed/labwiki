@@ -7,10 +7,38 @@ use ::Rack::ShowExceptions
 OMF::Web::Runner.instance.life_cycle(:pre_rackup)
 options = OMF::Web::Runner.instance.options
 
+require 'omf-web/rack/session_authenticator'                               
+use OMF::Web::Rack::SessionAuthenticator, #:expire_after => 10, 
+          :login_page_url => '/resource/login/login.html',
+          :no_session => ['^/resource/', '^/login', '^/logout']
+
+require 'labwiki/authenticator'
+
 map "/labwiki" do
   require 'labwiki/rack/top_handler'
   run LabWiki::TopHandler.new(options)
 end
+
+map '/login' do
+  handler = Proc.new do |env| 
+    req = ::Rack::Request.new(env)
+    #puts req.POST.inspect
+    if req.post?
+      Labwiki::Authenticator.signon(req.params)
+    end
+    [307, {'Location' => '/', "Content-Type" => ""}, ['Next window!']]
+  end
+  run handler
+end
+
+map '/logout' do
+  handler = Proc.new do |env| 
+    OMF::Web::Rack::SessionAuthenticator.logout
+    [307, {'Location' => '/', "Content-Type" => ""}, ['Next window!']]
+  end
+  run handler
+end
+
 
 map "/resource" do
   require 'omf-web/rack/multi_file'
@@ -61,7 +89,7 @@ map "/" do
     req = ::Rack::Request.new(env)
     case req.path_info
     when '/'
-      [301, {'Location' => '/labwiki', "Content-Type" => ""}, ['Next window!']]
+      [307, {'Location' => '/labwiki', "Content-Type" => ""}, ['Next window!']]
     when '/favicon.ico'
       [301, {'Location' => '/resource/image/favicon.ico', "Content-Type" => ""}, ['Next window!']]
     else

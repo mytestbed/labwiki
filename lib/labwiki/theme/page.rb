@@ -60,7 +60,7 @@ module OMF::Web::Theme
                 end
               end
               li do
-                a :href => '#', :class => 'logout' do
+                a :href => '/logout', :class => 'logout' do
                   i :class => "icon-off icon-white"
                   text 'Log out'
                 end 

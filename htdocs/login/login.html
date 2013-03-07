@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Login | LabWiki</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="/resource/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <script src="/resource/vendor/jquery/jquery.js"></script>
+    <script src="/resource/vendor/bootstrap/js/bootstrap.js"></script>
+    
+    <style type="text/css">
+      /* Override some defaults */
+      html, body {
+        background-color: #eee;
+      }
+      body {
+        padding-top: 40px; 
+      }
+      
+      .navbar-fixed-top .container {
+        width: 100%;
+      }
+            
+      .container {
+        width: 300px;
+      }
+      
+      .navbar-inverse .brand {
+        padding-left: 25px;
+      }
+
+      /* The white background content wrapper */
+      .container > .content {
+        background-color: #fff;
+        padding: 20px;
+        margin: 80px -20px; 
+        -webkit-border-radius: 10px 10px 10px 10px;
+           -moz-border-radius: 10px 10px 10px 10px;
+                border-radius: 10px 10px 10px 10px;
+        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+           -moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+                box-shadow: 0 1px 2px rgba(0,0,0,.15);
+      }
+      
+      .form-signin-heading {
+        margin-bottom: 30px;
+      }
+
+      button.sign-in {
+        margin-top: 20px;
+      }
+      
+      .login-form {
+        margin-left: 65px;
+        margin-right: 30px;        
+      }
+    
+    
+      legend {
+        margin-right: -50px;
+        font-weight: bold;
+        color: #404040;
+      }
+
+    </style>
+    
+
+</head>
+<body>
+  
+  <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container-fluid">
+        <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="brand" href="#aboutModal" data-toggle="modal">LabWiki</a>
+        <div class="nav-collapse collapse pull-right">
+            <ul class="nav">
+              <li><a href="#aboutModal" data-toggle="modal" >About</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+  </div>
+  
+  
+
+  <div id="aboutModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3>About</h3>
+    </div>
+    <div class="modal-body">
+      <p>Labwiki is a web-based workspace for experimenters. It strives to support the entire
+      investigative life-cycle from planning to preparation to execution to analysis.</p>
+      
+      <p>It is still under active development and more details can (should) be found on
+        LabWiki's <a href="http://labwiki.mytestbed.net">web site</a>.</p>             
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    </div>
+  </div>   <!-- /About -->
+  
+
+  <div class="container">
+    <div class="content">
+      <div class="row">
+        <div class="login-form">
+          <form class="form-signin" action="/login" method="post">
+            <h2 class="form-signin-heading">Please sign in</h2>
+            <div class="alert" style="display:none;">
+              <p id="error_msg">Best check yo self, you're not looking too good.</p> 
+            </div>
+            <input type="text" name="email" class="input-block-level" placeholder="Email address">
+            <input type="password" name="password" class="input-block-level" placeholder="Password">
+            <label class="checkbox">
+              <input type="checkbox" name="remember" value="remember-me"> Remember me
+            </label>
+            <button class="btn btn-large btn-primary sign-in" type="submit">Sign in</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div> <!-- /container -->
+
+  <script type="text/javascript">
+    function getParameterByName(name) {
+      name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+      var regexS = "[\\?&]" + name + "=([^&#]*)";
+      var regex = new RegExp(regexS);
+      var results = regex.exec(window.location.search);
+      if(results == null)
+        return null;
+      else
+        return decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+    
+    var msg = getParameterByName("msg");
+    if (msg != null) {
+      $('#error_msg').text(msg);
+      $('.alert').show();
+    }
+  </script>
+  
+</body>
+</html>
+  
