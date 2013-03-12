@@ -27,9 +27,10 @@ module LabWiki
     #
     def self.init_omf_web
       require 'omf-web/content/git_repository'
-      self['repositories'].each do |name, path|
-        info "Registering GIT repo '#{name}' -> #{path}"
-        OMF::Web::GitContentRepository.register_git_repo(name.to_sym, File.expand_path(path), true)
+      self['repositories'].each do |name, opts|
+        info "Registering repo '#{name}' -> #{opts}"
+        #File.expand_path(path), true
+        OMF::Web::ContentRepository.register_repo(name, opts)
       end
     end
     

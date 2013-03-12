@@ -1,0 +1,14 @@
+
+labwiki:
+  repositories:
+    default: 
+      type: irods
+      top_dir: /tempZone/home/rods/Foo/repo
+      is_primary: true
+  plugins:
+    experiment:
+      ec_runner: ~/src/omf_labwiki/test/omf_exec/omf_exec-norbit.sh
+      oml:
+        host: norbit.npc.nicta.com.au
+        user: oml2
+        pwd: omlisgoodforyou
