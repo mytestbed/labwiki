@@ -30,7 +30,7 @@ module LabWiki::Plugin::Experiment
       end
     end
     
-    def start_experiment(properties, slice)
+    def start_experiment(properties, slice, name)
       unless @state == :new
         warn "Attempt to start an already running or finished experiment"
         return # TODO: Raise appropriate exception
@@ -38,13 +38,19 @@ module LabWiki::Plugin::Experiment
       
       @slice = slice
       ts = Time.now.iso8601.split('+')[0].gsub(':', '-')
-      @name = "exp-" + ts
+      @name = (OMF::Web::SessionStore[:name, :user] || 'unknown') + '-'
+      if (!name.nil? && name.to_s.strip.length > 0) 
+        @name += "#{name}-"
+      end
+      @name +=  ts
+      @name.delete(' ')
       @content_url = "exp:#{@name}"
       url = @url
       unless script = OMF::Web::ContentRepository.absolute_path_for(url)
         warn "Can't find script '#{url}'"
         return # TODO: Raise appropriate exception
       end
+      info "Starting experiment name:#{@name} url: #{url} script: #{script}"
 
       create_oml_tables()
       

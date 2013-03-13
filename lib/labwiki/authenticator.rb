@@ -1,3 +1,4 @@
+require 'omf-web/session_store'
 
 
 module Labwiki
@@ -17,10 +18,11 @@ module Labwiki
         return
       end
       
-      info "SIGNED IN!!!!"
-      OMF::Web::Rack::SessionAuthenticator.authenticate  
+      OMF::Web::Rack::SessionAuthenticator.authenticate
       OMF::Web::Rack::SessionAuthenticator[:name] = email
-      info "Authenticated '#{email}' (#{Thread.current["sessionID"]})"
+      info "Authenticated '#{email}' (#{OMF::Web::SessionStore.session_id})"
+      OMF::Web::SessionStore[:email, :user] = email 
+      OMF::Web::SessionStore[:name, :user] = email      
     end
   end
 end

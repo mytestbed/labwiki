@@ -3,10 +3,12 @@ labwiki:
   repositories:
     default: 
       type: irods
-      top_dir: /tempZone/home/rods/Foo/repo
+      #top_dir: /geniRenci/home/mott/LABWIKI
+      to_dir: /tempZone/home/rods/FooZ
       is_primary: true
   plugins:
     experiment:
+      artifact_dir: irods:default:/experiments  # Where to store experiment related artifacts 
       ec_runner: ~/src/omf_labwiki/test/omf_exec/omf_exec-norbit.sh
       oml:
         host: norbit.npc.nicta.com.au

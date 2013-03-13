@@ -32,19 +32,6 @@ module LabWiki
     
     
     def get_lw_widget(req, requires_session_id = true)
-      sessionID = req.params['sid']
-      if sessionID.nil? || sessionID.empty?
-        if requires_session_id
-          raise OMF::Web::Rack::MissingArgumentException.new "Missing session id"
-        end
-
-        sessionID = "s#{(rand * 10000000).to_i}"
-        # Ensure we have a proper sid on the browser
-        raise OMF::Web::Rack::RedirectException.new "/labwiki?sid=#{sessionID}"
-        #return [301, {'Location' => "/labwiki?sid=#{sessionID}", "Content-Type" => ""}, ['Try again!']]
-      end
-      Thread.current["sessionID"] = sessionID
-      
       unless widget = OMF::Web::SessionStore[:lw_widget, :rack]
         widget = OMF::Web::SessionStore[:lw_widget, :rack] = LabWiki::LWWidget.new
       end

@@ -32,7 +32,7 @@ module OMF::Web::Theme
           div :class => "loader"
         end
       end
-      opts = {:sid => Thread.current["sessionID"], :col => @col_name}
+      opts = {:sid => OMF::Web::SessionStore.session_id, :col => @col_name}
       if @widget
         opts.merge!(@widget.content_descriptor)
         # if cd = @widget.content_url

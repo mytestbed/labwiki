@@ -114,7 +114,7 @@ module LabWiki::Plugin::Experiment
       @graph_descriptions = []
       @connected = false
       @lock = Monitor.new
-      @session_id = Thread.current["sessionID"]
+      #@session_id = Thread.current["sessionID"]
       
       _connect(exp_id)
     end
