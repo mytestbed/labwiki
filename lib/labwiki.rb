@@ -18,14 +18,15 @@ opts = {
     text 'Imagined by NICTA'
   end,
   :footer_right => 'git:labwiki',
-  
+
   :theme => 'labwiki/theme',
   :port => 4000,
   :rackup => File.dirname(__FILE__) + '/labwiki/config.ru',
+  #:login_required => true,
   :handlers => {
     # Should be done in a better way
-    :pre_rackup => lambda { 
-      LabWiki::PluginManager.init 
+    :pre_rackup => lambda {
+      LabWiki::PluginManager.init
       LabWiki::Configurator.init_omf_web
     },
     :pre_parse => lambda do |p|
@@ -33,6 +34,9 @@ opts = {
       p.separator "LabWiki options:"
       p.on("--lw-config CONFIG_FILE", "File to hold LabWiki's local configurations") do |fname|
         LabWiki::Configurator.load_from(fname)
+      end
+      p.on("--lw-no-login", "If set, all sessions are automatically assigned to local account") do
+        OMF::Web::Runner.instance.options[:no_login_required] = true
       end
       p.separator ""
     end,
