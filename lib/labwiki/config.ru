@@ -42,8 +42,8 @@ use SessionAuthenticatorHack
 unless options[:no_login_required]
   require 'omf-web/rack/session_authenticator'
   use OMF::Web::Rack::SessionAuthenticator, #:expire_after => 10,
-            :login_page_url => '/resource/login/login.html',
-            #:login_page_url => '/resource/login/openid.html',
+            #:login_page_url => '/resource/login/login.html',
+            :login_page_url => '/resource/login/openid.html',
             :no_session => ['^/resource/', '^/login', '^/logout']
 end
 require 'labwiki/authenticator'
@@ -58,7 +58,13 @@ map '/login' do
     req = ::Rack::Request.new(env)
     #puts req.POST.inspect
     if req.post?
-      Labwiki::Authenticator.signon(req.params)
+      begin
+        Labwiki::Authenticator.signon(req.params)
+      rescue Labwiki::AuthenticationRedirect => rex
+        next [307, {'Location' => rex.redirect_url, "Content-Type" => ""}, ['Authenticate!']]
+      rescue Labwiki::AuthenticationFailed
+        # fine
+      end
     end
     [307, {'Location' => '/', "Content-Type" => ""}, ['Next window!']]
   end

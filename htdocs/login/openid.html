@@ -133,7 +133,7 @@
               <div id="collapseOne" class="collapse">
                 <div class="accordion-inner">
                   OpenID URL:
-                  <input type="text" id="inputEmail" placeholder="http://myblog.domain.com">
+                  <input type="text" name="openid_url" id="openIdUrl" placeholder="http://myblog.domain.com">
                   <button type="submit" class="btn">Sign in</button>
                 </div>
               </div>
@@ -153,7 +153,7 @@
       $(".alert").alert();
 
     $(".openurlbutton").click(function() {
-      provider = $(this).attr('id');
+      var provider = $(this).attr('id');
       if (setProvider(provider)) {
         $('form').submit();
       }
@@ -178,12 +178,12 @@
       // it will also deal with the page aesthetics of clicking a provider
       function setProvider(provider)
       {
-        providerBox = $('#id_openid_identifier');
-        userName = $('#openid_username').val();
-        if (userName == '') {
-          $("#missing_name").show();
-          return false;
-        }
+        var providerBox = $('#openIdUrl');
+        // userName = $('#openid_username').val();
+        // if (userName == '') {
+          // $("#missing_name").show();
+          // return false;
+        // }
 
         var selected = 0;
 
@@ -202,6 +202,7 @@
     break;
     case "google":
     providerBox.val("https://www.google.com/accounts/o8/id");
+    providerBox.val("http://www.google.com/accounts/o8/id");
     break;
     case "livejournal":
     providerBox.val("http://" + userName + ".livejournal.com");
