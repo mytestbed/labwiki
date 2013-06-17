@@ -4,7 +4,7 @@ labwiki:
     default: 
       type: irods
       #top_dir: /geniRenci/home/mott/LABWIKI
-      to_dir: /tempZone/home/rods/FooZ
+      top_dir: /tempZone/home/rods/Foo/repo
       is_primary: true
   plugins:
     experiment:

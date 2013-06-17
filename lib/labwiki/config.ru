@@ -43,6 +43,7 @@ unless options[:no_login_required]
   require 'omf-web/rack/session_authenticator'
   use OMF::Web::Rack::SessionAuthenticator, #:expire_after => 10,
             :login_page_url => '/resource/login/login.html',
+            #:login_page_url => '/resource/login/openid.html',
             :no_session => ['^/resource/', '^/login', '^/logout']
 end
 require 'labwiki/authenticator'

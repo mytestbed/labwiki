@@ -4,16 +4,17 @@ require 'labwiki/rack/abstract_handler'
 require 'labwiki/labwiki_widget'
 require 'omf-web/content/repository'
 
-module LabWiki     
+module LabWiki
   class SearchHandler < AbstractHandler
-        
+
     def on_request(req)
       debug "Search params: #{req.params.inspect}"
 
       opts = {:max => 10}
-      if (req.params['col'] == 'plan') 
+      if (col = req.params['col']) == 'plan'
         opts[:mime_type] = 'text/markup'
       end
+      opts[:repo_iterator] = OMF::Web::SessionStore[col.to_sym, :repos]
       unless (pat = req.params['pat'])
         raise OMF::Web::Rack::MissingArgumentException.new "Missing parameter 'pat'"
       end
