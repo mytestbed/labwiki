@@ -20,7 +20,7 @@ module Labwiki
 
       params['openid_identifier'] || req.env['rack.openid.response'] ? _signon_openid(req.env) : _signon_password(params)
 
-      OMF::Web::Rack::SessionAuthenticator.authenticate
+      #OMF::Web::Rack::SessionAuthenticator.authenticate
       name = req.env['warden'].user
       OMF::Web::Rack::SessionAuthenticator[:name] = name
       info "Authenticated '#{name}' (#{OMF::Web::SessionStore.session_id})"

@@ -21,6 +21,17 @@ module FailedApp
       identity_url = openid[:response].identity_url
       $users[identity_url] = identity_url
       env['warden'].set_user identity_url
+
+      #OMF::Web::Rack::SessionAuthenticator[:name] = name
+      info "Authenticated '#{name}' (#{OMF::Web::SessionStore.session_id})"
+      OMF::Web::SessionStore[:email, :user] = name
+      OMF::Web::SessionStore[:name, :user] = name
+
+      # Set the repos to search for content for each column
+      OMF::Web::SessionStore[:plan, :repos] = nil
+      OMF::Web::SessionStore[:prepare, :repos] = nil
+      OMF::Web::SessionStore[:execute, :repos] = nil
+
       [307, {'Location' => '/labwiki', "Content-Type" => ""}, ['Next window!']]
     else
       # OpenID authenticate failure
@@ -69,41 +80,59 @@ class SessionAuthenticatorHack
 end
 use SessionAuthenticatorHack
 
-unless options[:no_login_required]
-  require 'omf-web/rack/session_authenticator'
-  use OMF::Web::Rack::SessionAuthenticator, #:expire_after => 10,
-            #:login_page_url => '/resource/login/login.html',
-            :login_page_url => '/resource/login/openid.html',
-            :no_session => ['^/resource/', '^/login', '^/logout']
-end
-require 'labwiki/authenticator'
+#unless options[:no_login_required]
+#  require 'omf-web/rack/session_authenticator'
+#  use OMF::Web::Rack::SessionAuthenticator, #:expire_after => 10,
+#            #:login_page_url => '/resource/login/login.html',
+#            :login_page_url => '/resource/login/openid.html',
+#            :no_session => ['^/resource/', '^/login', '^/logout']
+#end
+#require 'labwiki/authenticator'
 
 map "/labwiki" do
-  require 'labwiki/rack/top_handler'
-  run LabWiki::TopHandler.new(options)
+  handler = proc do |env|
+    if env['warden'].authenticated?
+      require 'labwiki/rack/top_handler'
+      LabWiki::TopHandler.new(options).call(env)
+    else
+      [307, {'Location' => '/resource/login/openid.html', "Content-Type" => ""}, ['Authenticate!']]
+    end
+  end
+  run handler
 end
 
+#map '/login' do
+#  handler = Proc.new do |env|
+#    req = ::Rack::Request.new(env)
+#    #puts req.POST.inspect
+#    if req.post?
+#      begin
+#        Labwiki::Authenticator.signon(req)
+#      rescue Labwiki::AuthenticationRedirect => rex
+#        next [307, {'Location' => rex.redirect_url, "Content-Type" => ""}, ['Authenticate!']]
+#      rescue Labwiki::AuthenticationFailed
+#        # fine
+#      end
+#    end
+#    [307, {'Location' => '/', "Content-Type" => ""}, ['Next window!']]
+#  end
+#  run handler
+#end
+
 map '/login' do
-  handler = Proc.new do |env|
+  handler = proc do |env|
     req = ::Rack::Request.new(env)
-    #puts req.POST.inspect
     if req.post?
-      begin
-        Labwiki::Authenticator.signon(req)
-      rescue Labwiki::AuthenticationRedirect => rex
-        next [307, {'Location' => rex.redirect_url, "Content-Type" => ""}, ['Authenticate!']]
-      rescue Labwiki::AuthenticationFailed
-        # fine
-      end
+      env['warden'].authenticate!
+      [307, {'Location' => '/', "Content-Type" => ""}, ['Next window!']]
     end
-    [307, {'Location' => '/', "Content-Type" => ""}, ['Next window!']]
   end
   run handler
 end
 
 map '/logout' do
   handler = Proc.new do |env|
-    OMF::Web::Rack::SessionAuthenticator.logout
+    #OMF::Web::Rack::SessionAuthenticator.logout
     env['warden'].logout(:default)
     [307, {'Location' => '/', "Content-Type" => ""}, ['Next window!']]
   end
@@ -166,6 +195,8 @@ map "/" do
     when '/'
       [307, {'Location' => '/labwiki', "Content-Type" => ""}, ['Next window!']]
     when '/favicon.ico'
+      [301, {'Location' => '/resource/image/favicon.ico', "Content-Type" => ""}, ['Next window!']]
+    when '/image/favicon.ico'
       [301, {'Location' => '/resource/image/favicon.ico', "Content-Type" => ""}, ['Next window!']]
     else
       OMF::Common::Loggable.logger('rack').warn "Can't handle request '#{req.path_info}'"
