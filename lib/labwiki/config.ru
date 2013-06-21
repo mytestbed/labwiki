@@ -22,8 +22,6 @@ module FailedApp
       $users[identity_url] = identity_url
       env['warden'].set_user identity_url
 
-      #OMF::Web::Rack::SessionAuthenticator[:name] = name
-      info "Authenticated '#{name}' (#{OMF::Web::SessionStore.session_id})"
       OMF::Web::SessionStore[:email, :user] = name
       OMF::Web::SessionStore[:name, :user] = name
 
