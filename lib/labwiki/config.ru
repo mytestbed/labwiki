@@ -1,8 +1,38 @@
-
 require 'omf_common/lobject'
+require 'warden-openid'
 
 use ::Rack::ShowExceptions
 #use ::Rack::Lint
+use ::Rack::Session::Cookie
+use ::Rack::OpenID
+
+$users = {}
+
+Warden::OpenID.configure do |config|
+  config.user_finder do |response|
+    $users[response.identity_url]
+  end
+end
+
+module FailedApp
+  def self.call(env)
+    if openid = env['warden.options'][:openid]
+      # OpenID authenticate success, but user is missing (Warden::OpenID.user_finder returns nil)
+      identity_url = openid[:response].identity_url
+      $users[identity_url] = identity_url
+      env['warden'].set_user identity_url
+      [307, {'Location' => '/labwiki', "Content-Type" => ""}, ['Next window!']]
+    else
+      # OpenID authenticate failure
+      [401, {'Location' => '/labwiki', "Content-Type" => ""}, ['Next window!']]
+    end
+  end
+end
+
+use Warden::Manager do |manager|
+  manager.default_strategies :openid
+  manager.failure_app = FailedApp
+end
 
 OMF::Web::Runner.instance.life_cycle(:pre_rackup)
 options = OMF::Web::Runner.instance.options
@@ -59,7 +89,7 @@ map '/login' do
     #puts req.POST.inspect
     if req.post?
       begin
-        Labwiki::Authenticator.signon(req.params)
+        Labwiki::Authenticator.signon(req)
       rescue Labwiki::AuthenticationRedirect => rex
         next [307, {'Location' => rex.redirect_url, "Content-Type" => ""}, ['Authenticate!']]
       rescue Labwiki::AuthenticationFailed
@@ -74,6 +104,7 @@ end
 map '/logout' do
   handler = Proc.new do |env|
     OMF::Web::Rack::SessionAuthenticator.logout
+    env['warden'].logout(:default)
     [307, {'Location' => '/', "Content-Type" => ""}, ['Next window!']]
   end
   run handler
@@ -145,6 +176,4 @@ map "/" do
 end
 
 OMF::Web::Runner.instance.life_cycle(:post_rackup)
-
-
 
