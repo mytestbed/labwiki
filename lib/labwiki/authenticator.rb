@@ -1,6 +1,5 @@
 require 'omf-web/session_store'
 
-
 module Labwiki
 
   class AuthenticatorException < Exception; end
@@ -14,18 +13,19 @@ module Labwiki
   end
 
   class Authenticator < OMF::Common::LObject
+    def self.signon(req)
+      params = req.params
 
+      info "SIGNON - #{params.inspect}"
 
-    def self.signon(params)
-      debug "SIGNON - #{params.inspect}"
+      params['openid_identifier'] || req.env['rack.openid.response'] ? _signon_openid(req.env) : _signon_password(params)
 
-      params['openid_url'] ? _signon_openid(params) : _signon_password(params)
-
-      OMF::Web::Rack::SessionAuthenticator.authenticate
-      OMF::Web::Rack::SessionAuthenticator[:name] = email
-      info "Authenticated '#{email}' (#{OMF::Web::SessionStore.session_id})"
-      OMF::Web::SessionStore[:email, :user] = email
-      OMF::Web::SessionStore[:name, :user] = email
+      #OMF::Web::Rack::SessionAuthenticator.authenticate
+      name = req.env['warden'].user
+      OMF::Web::Rack::SessionAuthenticator[:name] = name
+      info "Authenticated '#{name}' (#{OMF::Web::SessionStore.session_id})"
+      OMF::Web::SessionStore[:email, :user] = name
+      OMF::Web::SessionStore[:name, :user] = name
 
       # Set the repos to search for content for each column
       OMF::Web::SessionStore[:plan, :repos] = nil
@@ -48,14 +48,8 @@ module Labwiki
 
     @@openid_session = {}
 
-    def self._signon_openid(params)
-      require 'openid'
-
-      openid_url = params['openid_url']
-      c = OpenID::Consumer.new(@@openid_session, nil)
-      e = c.begin(openid_url)
-      url = e.redirect_url 'labwiki.mytestbed.net', 'http://labwiki.mytestbed.net'
-      raise AuthenticationRedirect.new(url)
+    def self._signon_openid(env)
+      env['warden'].authenticate!
     end
   end
 end

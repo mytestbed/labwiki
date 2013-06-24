@@ -54,7 +54,7 @@ module OMF::Web::Theme
           tbody do
             tr do
               td :class => "left" do
-                button :id => prefix + 'maximize_left_buttom', :class => "tool maximize", :title => "Resize", :style => "display:none"                
+                button :id => prefix + 'maximize_left_buttom', :class => "tool maximize", :title => "Resize", :style => "display:none"
                 #button :class => "tool reload", :title => "Reload"
               end
               td :class => "center" do
@@ -64,15 +64,15 @@ module OMF::Web::Theme
               end
               td :class => "right" do
                 button :id => prefix + 'maximize_right_buttom', :class => "tool maximize", :title => "Resize", :style => "display:none"
-                #button :class => "tool newtab", :title => "Open this panel in a new tab" 
+                #button :class => "tool newtab", :title => "Open this panel in a new tab"
               end
             end
           end
         end
       end
-      
+
     end
-    
+
     def render_panel_search
       div :id => "lw#{object_id}_search", :class => "block-nav content-selection" do
         table do
@@ -96,16 +96,16 @@ module OMF::Web::Theme
               end
             end
           end
-        end        
+        end
         div :class => "suggestion-list", :style => 'display: none;' do
           ul :class => 'suggestion-list ui-menu'
         end
-      end 
-                 
+      end
+
     end
-    
+
     # def render_widget(widget)
-      # div :id => "col_content_#{@col_name}" do      
+      # div :id => "col_content_#{@col_name}" do
         # div :class => "block block-nav widget-title-block" do
           # div :class => "drop-target" do
             # div :class => "summary" do
@@ -124,7 +124,7 @@ module OMF::Web::Theme
           # div :class => "block block-content widget_container" do
             # if widget
               # div :class => "widget_body widget_body_#{widget.widget_type}" do
-                # rawtext widget.content().to_html 
+                # rawtext widget.content().to_html
               # end
             # else
               # 10.times do
@@ -134,11 +134,11 @@ module OMF::Web::Theme
                     # pellentesque imperdiet, nisi massa accumsan lorem, gravida scelerisque
                     # velit est vitae eros. Suspendisse eu lacinia elit.}
               # end
-            # end 
-#    
+            # end
+#
           # end
         # end
       # end
    # end
-  end # class 
+  end # class
 end # OMF::Web::Theme
