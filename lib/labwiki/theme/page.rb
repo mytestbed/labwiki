@@ -36,7 +36,7 @@ module OMF::Web::Theme
     def content
       javascript %{
         if (typeof(LW) == "undefined") LW = {};
-        LW.session_id = OML.session_id;
+        LW.session_id = OML.session_id = '#{OMF::Web::SessionStore.session_id}';
 
         L.provide('jquery', ['/resource/vendor/jquery/jquery.js']);
         L.provide('jquery.periodicalupdater', ['/resource/vendor/jquery/jquery.periodicalupdater.js']);
@@ -56,8 +56,7 @@ module OMF::Web::Theme
               li do
                 a :href => '#', :class => 'user' do
                   i :class => "icon-user icon-white"
-                  #text OMF::Web::SessionStore[:name, :user] || 'Unknown'
-                  text @opts[:request].env['warden'].user || 'Unknown'
+                  text OMF::Web::SessionStore[:id, :user] || 'Unknown'
                 end
               end
               li do

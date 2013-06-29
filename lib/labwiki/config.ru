@@ -3,7 +3,7 @@ require 'warden-openid'
 
 use ::Rack::ShowExceptions
 #use ::Rack::Lint
-use ::Rack::Session::Cookie
+use ::Rack::Session::Cookie, secret: "715aba35a6980113aa418ec18af31411"
 use ::Rack::OpenID
 
 $users = {}
@@ -14,22 +14,18 @@ Warden::OpenID.configure do |config|
   end
 end
 
-module FailedApp
+module AuthFailureApp
   def self.call(env)
+    req = ::Rack::Request.new(env)
     if openid = env['warden.options'][:openid]
       # OpenID authenticate success, but user is missing (Warden::OpenID.user_finder returns nil)
       identity_url = openid[:response].identity_url
       $users[identity_url] = identity_url
       env['warden'].set_user identity_url
 
-      OMF::Web::SessionStore[:email, :user] = name
-      OMF::Web::SessionStore[:name, :user] = name
-
-      # Set the repos to search for content for each column
-      OMF::Web::SessionStore[:plan, :repos] = nil
-      OMF::Web::SessionStore[:prepare, :repos] = nil
-      OMF::Web::SessionStore[:execute, :repos] = nil
-
+      OMF::Web::SessionStore[:email, :user] = identity_url
+      OMF::Web::SessionStore[:name, :user] = identity_url
+      OMF::Web::SessionStore[:id, :user] = identity_url.split('=').last
       [307, {'Location' => '/labwiki', "Content-Type" => ""}, ['Next window!']]
     else
       # OpenID authenticate failure
@@ -40,7 +36,7 @@ end
 
 use Warden::Manager do |manager|
   manager.default_strategies :openid
-  manager.failure_app = FailedApp
+  manager.failure_app = AuthFailureApp
 end
 
 OMF::Web::Runner.instance.life_cycle(:pre_rackup)
@@ -53,30 +49,51 @@ options = OMF::Web::Runner.instance.options
 # in debugging environments) It also initialises the session user
 # to the account name this service is running under.
 #
-class SessionAuthenticatorHack
+#class SessionAuthenticatorHack
+#  def initialize(app, opts = {})
+#    @app = app
+#  end
+#
+#  def call(env)
+#    req = ::Rack::Request.new(env)
+#    unless sid = req.cookies['sid']
+#      sid = "s#{(rand * 10000000).to_i}_#{(rand * 10000000).to_i}"
+#    end
+#    Thread.current["sessionID"] = sid  # needed for Session Store
+#    unless OMF::Web::SessionStore[:email, :user]
+#      require 'etc'
+#      user = Etc.getlogin
+#      OMF::Web::SessionStore[:email, :user] = user
+#      OMF::Web::SessionStore[:name, :user] = user
+#    end
+#
+#    status, headers, body = @app.call(env)
+#    Rack::Utils.set_cookie_header!(headers, 'sid', sid) if sid
+#    [status, headers, body]
+#  end
+#end
+#use SessionAuthenticatorHack
+
+class SessionInit
   def initialize(app, opts = {})
     @app = app
   end
 
   def call(env)
     req = ::Rack::Request.new(env)
-    unless sid = req.cookies['sid']
-      sid = "s#{(rand * 10000000).to_i}_#{(rand * 10000000).to_i}"
+    req.session['sid'] ||= "s#{(rand * 10000000).to_i}_#{(rand * 10000000).to_i}"
+    Thread.current["sessionID"] = req.session['sid'] # needed for Session Store
+    if env['warden'].authenticated?
+      id = env['warden'].user
+      OMF::Web::SessionStore[:email, :user] = id
+      OMF::Web::SessionStore[:name, :user] = id
+      OMF::Web::SessionStore[:id, :user] = id.split('=').last
     end
-    Thread.current["sessionID"] = sid  # needed for Session Store
-    unless OMF::Web::SessionStore[:email, :user]
-      require 'etc'
-      user = Etc.getlogin
-      OMF::Web::SessionStore[:email, :user] = user
-      OMF::Web::SessionStore[:name, :user] = user
-    end
-
-    status, headers, body = @app.call(env)
-    Rack::Utils.set_cookie_header!(headers, 'sid', sid) if sid
-    [status, headers, body]
+    @app.call(env)
   end
 end
-use SessionAuthenticatorHack
+
+use SessionInit
 
 #unless options[:no_login_required]
 #  require 'omf-web/rack/session_authenticator'
