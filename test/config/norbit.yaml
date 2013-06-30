@@ -1,5 +1,7 @@
 
 labwiki:
+  #repos_dir: /tmp/lw_repos
+  #sample_repo_dir: ~/tmp/foo
   repositories:
     foo: ~/tmp/labwiki
   plugins:
