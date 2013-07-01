@@ -27,12 +27,12 @@ module LabWiki
     #
     def self.init_omf_web
       #require 'omf-web/content/git_repository'
-      self[:repositories].each do |name, opts|
+      (self[:repositories] || []).each do |name, opts|
         info "Registering repo '#{name}' -> #{opts}"
         #File.expand_path(path), true
         OMF::Web::ContentRepository.register_repo(name, opts)
       end
-      self[:plugins].each do |name, opts|
+      (self[:plugins] || []).each do |name, opts|
         if init = opts[:init]
           info "Initialising plugin '#{name}'"
           require init
