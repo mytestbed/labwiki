@@ -89,7 +89,7 @@ use SessionAuthenticatorHack
 
 map "/labwiki" do
   handler = proc do |env|
-    if env['warden'].authenticated?
+    if env['warden'].authenticated? || options[:no_login_required]
       require 'labwiki/rack/top_handler'
       LabWiki::TopHandler.new(options).call(env)
     else
