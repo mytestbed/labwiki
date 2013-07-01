@@ -6,3 +6,5 @@ doc/teaser/teaser2.screenflow
 pkg
 doc/teaser/teaser2-high.mov
 .settings/org.eclipse.core.resources.prefs
+Gemfile.lock
+*.gem

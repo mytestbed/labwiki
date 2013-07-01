@@ -2,8 +2,7 @@ require 'omf_common/lobject'
 require 'warden-openid'
 
 use ::Rack::ShowExceptions
-#use ::Rack::Lint
-use ::Rack::Session::Cookie
+use ::Rack::Session::Cookie, secret: "715aba35a6980113aa418ec18af31411", key: 'labwiki.session'
 use ::Rack::OpenID
 
 $users = {}
@@ -14,25 +13,17 @@ Warden::OpenID.configure do |config|
   end
 end
 
-module FailedApp
+module AuthFailureApp
   def self.call(env)
+    req = ::Rack::Request.new(env)
     if openid = env['warden.options'][:openid]
       # OpenID authenticate success, but user is missing (Warden::OpenID.user_finder returns nil)
       identity_url = openid[:response].identity_url
       $users[identity_url] = identity_url
       env['warden'].set_user identity_url
-
-      OMF::Web::SessionStore[:email, :user] = name
-      OMF::Web::SessionStore[:name, :user] = name
-
-      # Set the repos to search for content for each column
-      OMF::Web::SessionStore[:plan, :repos] = nil
-      OMF::Web::SessionStore[:prepare, :repos] = nil
-      OMF::Web::SessionStore[:execute, :repos] = nil
-
       [307, {'Location' => '/labwiki', "Content-Type" => ""}, ['Next window!']]
     else
-      # OpenID authenticate failure
+      # When OpenID authenticate failure
       [401, {'Location' => '/labwiki', "Content-Type" => ""}, ['Next window!']]
     end
   end
@@ -40,52 +31,14 @@ end
 
 use Warden::Manager do |manager|
   manager.default_strategies :openid
-  manager.failure_app = FailedApp
+  manager.failure_app = AuthFailureApp
 end
 
 OMF::Web::Runner.instance.life_cycle(:pre_rackup)
 options = OMF::Web::Runner.instance.options
 
-# This Rack element sets the SessionID which is used in many
-# different places. The session ID is stored in a cookie.
-#
-# If there is no specific authenticator configured (for instance
-# in debugging environments) It also initialises the session user
-# to the account name this service is running under.
-#
-class SessionAuthenticatorHack
-  def initialize(app, opts = {})
-    @app = app
-  end
-
-  def call(env)
-    req = ::Rack::Request.new(env)
-    unless sid = req.cookies['sid']
-      sid = "s#{(rand * 10000000).to_i}_#{(rand * 10000000).to_i}"
-    end
-    Thread.current["sessionID"] = sid  # needed for Session Store
-    unless OMF::Web::SessionStore[:email, :user]
-      require 'etc'
-      user = Etc.getlogin
-      OMF::Web::SessionStore[:email, :user] = user
-      OMF::Web::SessionStore[:name, :user] = user
-    end
-
-    status, headers, body = @app.call(env)
-    Rack::Utils.set_cookie_header!(headers, 'sid', sid) if sid
-    [status, headers, body]
-  end
-end
-use SessionAuthenticatorHack
-
-#unless options[:no_login_required]
-#  require 'omf-web/rack/session_authenticator'
-#  use OMF::Web::Rack::SessionAuthenticator, #:expire_after => 10,
-#            #:login_page_url => '/resource/login/login.html',
-#            :login_page_url => '/resource/login/openid.html',
-#            :no_session => ['^/resource/', '^/login', '^/logout']
-#end
-#require 'labwiki/authenticator'
+require 'labwiki/session_init'
+use SessionInit
 
 map "/labwiki" do
   handler = proc do |env|
@@ -98,24 +51,6 @@ map "/labwiki" do
   end
   run handler
 end
-
-#map '/login' do
-#  handler = Proc.new do |env|
-#    req = ::Rack::Request.new(env)
-#    #puts req.POST.inspect
-#    if req.post?
-#      begin
-#        Labwiki::Authenticator.signon(req)
-#      rescue Labwiki::AuthenticationRedirect => rex
-#        next [307, {'Location' => rex.redirect_url, "Content-Type" => ""}, ['Authenticate!']]
-#      rescue Labwiki::AuthenticationFailed
-#        # fine
-#      end
-#    end
-#    [307, {'Location' => '/', "Content-Type" => ""}, ['Next window!']]
-#  end
-#  run handler
-#end
 
 map '/login' do
   handler = proc do |env|
@@ -130,7 +65,6 @@ end
 
 map '/logout' do
   handler = Proc.new do |env|
-    #OMF::Web::Rack::SessionAuthenticator.logout
     env['warden'].logout(:default)
     [307, {'Location' => '/', "Content-Type" => ""}, ['Next window!']]
   end
