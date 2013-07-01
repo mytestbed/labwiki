@@ -15,8 +15,8 @@ class SessionInit < OMF::Common::LObject
     if env['warden'].authenticated?
       user = env['warden'].user
       id = user.split('=').last
-      OMF::Web::SessionStore[:email, :user] = user
-      OMF::Web::SessionStore[:name, :user] = user
+      OMF::Web::SessionStore[:email, :user] = id
+      OMF::Web::SessionStore[:name, :user] = id
       OMF::Web::SessionStore[:id, :user] = id
       init_git_repository(id)
       init_gimi_experiments(id)
