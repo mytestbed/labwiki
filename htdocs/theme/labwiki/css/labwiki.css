@@ -67,7 +67,7 @@ body {
 }
 
 /** SEARCH BOX **/
-  
+
 .content-selection .action-buttons {
   background: #AAAAAA;
 }
@@ -75,7 +75,7 @@ body {
 .content-selection .action-buttons:hover {
   background: black;
 }
-  
+
 .content-selection .new-button {
     background: url("../images/sprites-32.png") no-repeat scroll -96px 0 transparent;
     border: 0 none;
@@ -123,19 +123,19 @@ body {
 .ui-menu .ui-menu-item a.ui-state-hover,
 .ui-menu .ui-menu-item a.ui-state-active {
   font-weight: normal;
-/*  
+/*
   margin: -1px;
-  border: 1px solid #fbd850; 
-  font-weight: bold; 
+  border: 1px solid #fbd850;
+  font-weight: bold;
   */
-  color: #eb8f00; 
-  outline: none;  
+  color: #eb8f00;
+  outline: none;
   background: #fdf5ce
 }
 
 .ui-menu .ui-menu-item-first-hist {
   margin-top: 5px;
-  padding-top: 5px;  
+  padding-top: 5px;
   border-top: 1px solid #BBB;
 }
 
@@ -155,15 +155,15 @@ body {
   */
     padding: 5px;
     padding-left: 15px;
-    padding-top: 10px;    
-    padding-bottom: 10px;    
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .k-panel .summary .label {
     margin: 0px;
     text-align: left;
-    
-/* 
+
+/*
     line-height: 1;
     font-size: 30px;
     line-height: 36px;
@@ -173,8 +173,8 @@ body {
     font-family: inherit;
     font-weight: bold;
     color: inherit;
-    text-rendering: optimizelegibility;   
-    background-color: white; 
+    text-rendering: optimizelegibility;
+    background-color: white;
 }
 
 .k-panel .summary img {
@@ -201,7 +201,7 @@ ol.codemirror_toolbar li {
 }
 /*ol.codemirror_toolbar li a {
     background-size: 16px 16px;
-}  
+}
 
 ol.codemirror_toolbar li a {
   height: 30px;
@@ -241,8 +241,8 @@ ol.codemirror_toolbar li a {
   width: 16px;
   background: url(/plugin/experiment/img/toggle.png) 0px -16px no-repeat;
 }
-  
-.widget_body h3 a.toggle-closed {   
+
+.widget_body h3 a.toggle-closed {
   background: url(/plugin/experiment/img/toggle.png) 0px 3px no-repeat;
 }
 
@@ -261,6 +261,54 @@ ol.codemirror_toolbar li a {
 .codemirror_toolbar_container {
   border-bottom: 1px solid silver;
   text-align: left;
+}
+
+/** TOOL BAR **/
+
+div.widget_toolbar
+{
+  border-bottom: 1px solid silver;
+  width: 100%;
+  padding: 2px;
+}
+
+div.widget_toolbar ol {
+  display: block;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+div.widget_toolbar ol li {
+  display: inline-block;
+  list-style: none;
+}
+
+div.widget_toolbar ol a {
+  text-decoration: none;
+}
+
+div.widget_toolbar ol a {
+  display: inline-block;
+  padding: 22px 0 0 0;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  height: 0px !important;
+  height /**/:22px;
+
+  width: 22px;
+  border: 1px solid transparent;  /* make room for the 'selected' border */
+  background-color: silver
+}
+
+div.widget_toolbar ol a:hover {
+  border: 1px solid silver;
+  background-color: silver;
+}
+
+div.widget_toolbar ol li a {
+  margin: 4px;
+  background-size: 16px 16px;
 }
 
 
