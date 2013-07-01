@@ -19,6 +19,7 @@
 		position: relative !important;
 		left: 0 !important;
 		top: 0 !important;
+		text-align: left;
 	}
 	div.panel-body
 	{
@@ -61,6 +62,8 @@ body
 	overflow:hidden;
 	font-family:Helvetica, Arial, Verdana, sans-serif;
 	font-size:0.9em;
+    text-align: left;
+
 }
 
 h1, h2, h3
@@ -84,7 +87,7 @@ table
     width:100%;
     border-spacing: 0;
     border-collapse: collapse;
-    border:0 none;  
+    border:0 none;
 }
 
 iframe
@@ -99,7 +102,7 @@ button
 
 /* MAIN WINDOW */
 
-#k-window 
+#k-window
 {
 	width:100%;
 	height:100%;
@@ -186,7 +189,7 @@ button
 	width:260px;
 	border:1px solid black;
 	background-color:#FCFCFC;
-	display:none;	
+	display:none;
 }
 
 #k-topbar #options-dlg #columns-controls
@@ -260,7 +263,7 @@ button
 /* BREADCRUMB */
 
 #k-breadcrumb
-{	
+{
 	width:auto;
 	height:32px;
 }
@@ -284,7 +287,7 @@ button
 {
 	cursor : pointer;
 	color: #fff;
-	line-height: 32px;    
+	line-height: 32px;
 	display: block;
 	text-decoration:none;
     height: 32px;
@@ -342,7 +345,7 @@ button
 	height:100%;
 	overflow:hidden;
 	position:absolute;
-	top:32px;	
+	top:32px;
 }
 
 /* PANELS */
@@ -388,7 +391,7 @@ button
 }
 /* panel focus via keyboard */
 .k-panel.k-focus .titlebar
-{	
+{
 	background: -o-linear-gradient(top,#6BA5DD,#196BBA) repeat scroll 0 0 #196BBA;
 	background: -moz-linear-gradient(top,#6BA5DD,#196BBA) repeat scroll 0 0 #196BBA;
 	background: -ms-linear-gradient(top,#6BA5DD,#196BBA) repeat scroll 0 0 #196BBA;
@@ -414,7 +417,7 @@ button
 	width:auto;
 	height: 30px;
 	line-height: 30px;
-	margin:0 auto; 
+	margin:0 auto;
 	font-size:1.3em;
 	font-weight:bold;
 	color:white;
@@ -537,7 +540,7 @@ button
 }
 
 .k-panel .block-noresults
-{	
+{
 	color: #A0A0A0;
 	text-align: center;
 	padding: 2em 0;
@@ -548,7 +551,7 @@ button
 }
 
 .k-panel .block-exit
-{	
+{
 	width:auto;
 	height:auto;
 	overflow:hidden;
@@ -573,7 +576,7 @@ button
 }
 
 .k-panel .block-iframe
-{	
+{
 	width:100%;
 	height:100%;
 	overflow:hidden;
@@ -600,7 +603,7 @@ button
   margin: 0;
   background-repeat: no-repeat;
   background-position: center center;
-  cursor: pointer;  
+  cursor: pointer;
 }
 
 /* NAVIGATION LINKS */
@@ -610,8 +613,8 @@ button
 {
 	color: #0645AD;
 	text-decoration:none;
-	/** PADDING IS CAUSING PROBLEMS in code mirrors 's tool bar 
-	 * padding:2px 4px;  
+	/** PADDING IS CAUSING PROBLEMS in code mirrors 's tool bar
+	 * padding:2px 4px;
 	 */
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
@@ -776,7 +779,7 @@ button
     padding: 15px 10px 10px;
 }
 
-.k-panel .summary img 
+.k-panel .summary img
 {
 	float:left;
 	margin:0 8px 8px 0;
@@ -818,14 +821,14 @@ button
 /* BUTTONS */
 
 .button
-{		
+{
 	color:black;
 	text-decoration:none;
 	padding: 4px 20px;
 	margin:0 0 10px 0;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
-    border-radius: 5px;		
+    border-radius: 5px;
     background: -o-linear-gradient(top,#fafafa 0%,#eeeeee 49%,#d3d3d3 51%,#eeeeee 100%);
     background: -moz-linear-gradient(top,#fafafa 0%,#eeeeee 49%,#d3d3d3 51%,#eeeeee 100%);
     background: -ms-linear-gradient(top,#fafafa 0%,#eeeeee 49%,#d3d3d3 51%,#eeeeee 100%);
@@ -845,7 +848,7 @@ button
 	background: -webkit-gradient(linear,left top,left bottom,from(#dedede),color-stop(0.49,#bdbebf),color-stop(0.51,#adaeaf),to(#bdbebf));
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#dedede, endColorStr=#bdbebf)";
     background-color: #0033ff;
-	border: 1px solid #999;	
+	border: 1px solid #999;
 
 }
 
@@ -858,7 +861,7 @@ button
 	background: -webkit-gradient(linear,left top,left bottom, from(#d0ecff), color-stop(0.49,#99d0fe),color-stop(0.51,#76c5fe),to(#bff5ff));
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#d0ecff, endColorStr=#99d0fe)";
     background-color: #99d0fe;
-	border: 1px solid #999;	
+	border: 1px solid #999;
 	color:black;
 }
 
@@ -882,7 +885,7 @@ button
     background: -webkit-gradient(linear,left top,left bottom, from(#FFCCCC), color-stop(0.49,#FF6666),color-stop(0.51,#ff0000),to(#FF8080));
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#FFCCCC, endColorStr=#FF6666)";
     background-color: #FF6666;
-	border: 1px solid #999;	
+	border: 1px solid #999;
 
 }
 .button.warning:active
@@ -896,7 +899,7 @@ button
 }
 
 .button.cancel
-{	
+{
 	color:#FFA500;
 	text-decoration:underline;
 	border:0 none;
@@ -908,15 +911,15 @@ button
 }
 
 .button.disabled
-{ 
-	opacity:.5;  
+{
+	opacity:.5;
 }
 
 /* INPUTS */
 
-.block-nav form.quicksearch 
-{   
-	width:100%;	
+.block-nav form.quicksearch
+{
+	width:100%;
 	height:32px;
 	padding:4px;
 	background: -o-linear-gradient(top,#e8e8e8,#d1d1d1) repeat scroll 0 0 #d1d1d1;
@@ -933,7 +936,7 @@ button
 }
 
 .block-nav form.quicksearch .container
-{ 
+{
 	height:100%;
 	background-color: white;
 	padding:0 22px;
@@ -1222,7 +1225,7 @@ a h1,a h2,a h3,a h4,a h5,a h6{
 }
 .boilerpipe-content h6{
 	line-height:1.25em;
-	margin:.6em 0 1em;	
+	margin:.6em 0 1em;
 }
 .boilerpipe-content p{
 	line-height:1.4em;
@@ -1241,7 +1244,7 @@ a h1,a h2,a h3,a h4,a h5,a h6{
 	margin-left:25px;
 }
 .boilerpipe-content ul li{
-	
+
 }
 
 /* navigation lists */
