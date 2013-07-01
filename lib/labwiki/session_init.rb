@@ -1,4 +1,5 @@
 require 'grit'
+require 'httparty'
 require 'omf-web/content/git_repository'
 require 'omf-web/session_store'
 
@@ -18,11 +19,24 @@ class SessionInit < OMF::Common::LObject
       OMF::Web::SessionStore[:name, :user] = user
       OMF::Web::SessionStore[:id, :user] = id
       init_git_repository(id)
+      init_gimi_experiments(id)
     end
     @app.call(env)
   end
 
   private
+
+  def init_gimi_experiments(id)
+    ges_url = LabWiki::Configurator[:ges_url]
+    id = 'user1'
+    response = HTTParty.get("#{ges_url}/users/#{id}")
+
+    gimi_experiments = response['projects'].map do |p|
+      HTTParty.get("#{ges_url}/projects/#{p['name']}/experiments")['experiments']
+    end.flatten.compact
+
+    OMF::Web::SessionStore[:exps, :gimi] = gimi_experiments
+  end
 
   def init_git_repository(id)
     git_path = "#{LabWiki::Configurator[:repos_dir]}/#{id}/"
