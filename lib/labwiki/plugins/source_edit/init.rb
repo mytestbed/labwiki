@@ -11,7 +11,7 @@ LabWiki::PluginManager.register :source_edit, {
     {
       :context => :prepare,
       :priority => lambda do |opts|
-        (opts[:mime_type].start_with? 'text') ? 500 : nil
+        (opts[:mime_type].start_with? 'text') ? 100 : nil
       end,
       :widget_class => LabWiki::Plugin::SourceEdit::SourceEditWidget
     }
@@ -19,5 +19,5 @@ LabWiki::PluginManager.register :source_edit, {
   :renderers => {
     :code_renderer => OMF::Web::Theme::CodeRenderer
   }
-} 
+}
 

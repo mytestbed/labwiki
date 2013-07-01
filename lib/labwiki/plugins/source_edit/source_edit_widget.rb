@@ -1,23 +1,23 @@
 require 'labwiki/column_widget'
 require 'omf-web/content/repository'
 
-module LabWiki::Plugin::SourceEdit  
-      
+module LabWiki::Plugin::SourceEdit
+
   # Maintains the context for a particular editing session on a file.
   #
   class SourceEditWidget < LabWiki::ColumnWidget
-    
+
     def initialize(column, config_opts, unused)
       unless column == :prepare
         raise "Should only be used in ':prepare' column"
       end
       super column, :type => :source_edit
     end
-    
+
 
     def on_get_content(params, req)
       debug "on_get_content: '#{params.inspect}'"
-      
+
       @mime_type = (params[:mime_type] || 'text')#.gsub('text', 'code')
       @content_url = params[:url]
       content_proxy = OMF::Web::ContentRepository.create_content_proxy_for(@content_url, params)
@@ -33,13 +33,13 @@ module LabWiki::Plugin::SourceEdit
     def content_renderer()
       @code_widget.content()
     end
-    
+
     # def title
       # @title
-    # end    
-    
-    
-    
+    # end
+
+
+
   end # class
 
 end # module
