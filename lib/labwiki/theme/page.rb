@@ -36,6 +36,8 @@ module OMF::Web::Theme
     def content
       javascript %{
         if (typeof(LW) == "undefined") LW = {};
+        if (typeof(LW.plugin) == "undefined") LW.plugin = {};
+
         LW.session_id = OML.session_id = '#{OMF::Web::SessionStore.session_id}';
 
         L.provide('jquery', ['/resource/vendor/jquery/jquery.js']);
