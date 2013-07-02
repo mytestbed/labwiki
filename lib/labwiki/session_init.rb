@@ -18,8 +18,11 @@ class SessionInit < OMF::Common::LObject
       OMF::Web::SessionStore[:email, :user] = id
       OMF::Web::SessionStore[:name, :user] = id
       OMF::Web::SessionStore[:id, :user] = id
-      init_git_repository(id)
-      init_gimi_experiments(id)
+      if LabWiki::Configurator[:gimi]
+        init_git_repository(id) if LabWiki::Configurator[:gimi][:git]
+        init_irods_repository(id) if LabWiki::Configurator[:gimi][:irods]
+        init_gimi_experiments(id) if LabWiki::Configurator[:gimi][:ges]
+      end
     end
     @app.call(env)
   end
@@ -27,8 +30,8 @@ class SessionInit < OMF::Common::LObject
   private
 
   def init_gimi_experiments(id)
-    ges_url = LabWiki::Configurator[:ges_url]
-    id = 'user1'
+    ges_url = LabWiki::Configurator[:gimi][:ges]
+    id = 'user1' # FIXME use real uid when integrated
     response = HTTParty.get("#{ges_url}/users/#{id}")
 
     gimi_experiments = response['projects'].map do |p|
@@ -38,14 +41,19 @@ class SessionInit < OMF::Common::LObject
     OMF::Web::SessionStore[:exps, :gimi] = gimi_experiments
   end
 
+  def init_irods_repository(id)
+    raise NotImplementedError
+  end
+
   def init_git_repository(id)
-    git_path = "#{LabWiki::Configurator[:repos_dir]}/#{id}/"
-    sample_path = LabWiki::Configurator[:sample_repo_dir]
+    git_path = File.expand_path("#{LabWiki::Configurator[:gimi][:git][:repos_dir]}/#{id}/")
+    repos_dir_path = File.expand_path(LabWiki::Configurator[:gimi][:git][:repos_dir])
+    sample_path = File.expand_path(LabWiki::Configurator[:gimi][:git][:sample_repo])
 
     begin
       unless File.exist?("#{git_path}.git")
         FileUtils.mkdir_p(git_path)
-        Dir.chdir(LabWiki::Configurator[:repos_dir]) do
+        Dir.chdir(repos_dir_path) do
           system "git clone #{sample_path} #{id}"
         end
       end

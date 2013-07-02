@@ -28,18 +28,23 @@ div.experiment-log {
 }
 
 /** Experiment Running Toolbar ***/
-  
+
 .btn-stop-experiment {
   margin: 7px;
   float: left;
 }
-  
+
+.btn-dump {
+  margin: 7px;
+  float: left;
+}
+
 /*** Log messages ***/
 table.experiment-log td,
 table.experiment-log tr {
   padding: 3px;
-  padding-left: 5px;  
-  padding-right: 5px;  
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 /*** GRAPHS ***/
@@ -60,7 +65,7 @@ div.experiment-graph-caption {
 
 .experiment-graph-caption-figure {
   margin-left: 5px;
-  margin-right: 0.2em;  
+  margin-right: 0.2em;
   font-weight: bold;
 }
 
@@ -94,12 +99,12 @@ div.experiment-graph-caption {
 }
 
 .experiment-setup td.input {
-  /* width: 60%; */  
+  /* width: 60%; */
   font-family: inherit;
   font-style: normal;
   font-weight: bold;
-} 
- 
+}
+
 .experiment-setup td.comment {
 /*
  *   width: 100%;
@@ -111,7 +116,7 @@ div.experiment-graph-caption {
 .experiment-setup input.button-text {
   padding: 0px 7px;
   width: auto;
-  overflow: visible;  
+  overflow: visible;
   font-size: 120%;
 }
 

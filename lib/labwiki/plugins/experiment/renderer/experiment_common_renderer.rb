@@ -34,13 +34,15 @@ module LabWiki::Plugin::Experiment
 
       fname = "prop" + (index >= 0 ? index.to_s : name)
       tr :class => fname do
-        td name + ':', :class => "desc"
+        td name + ':', :class => "desc" unless type.to_sym == :hidden
         td :class => "input #{fname}", :colspan => (comment ? 1 : 2) do
           case type.to_sym
           when :text
             input :name => fname, :type => "text", :class => "field text fn",
               :placeholder => prop[:default] || "", :size => prop[:size] || 16, :tabindex => (@tab_index += 1)
               #:onkeyup => "handleInput(this);", :onchange => "handleInput(this);"
+          when :hidden
+            input :name => fname, :type => "hidden", :value => prop[:default] || "", :tabindex => (@tab_index += 1)
           when :select
             select(name: fname) do
               prop[:options].each do |opt|

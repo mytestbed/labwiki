@@ -2,30 +2,31 @@
 require 'labwiki/plugins/experiment/renderer/experiment_common_renderer'
 
 module LabWiki::Plugin::Experiment
-  
+
   class ExperimentRunningRenderer < ExperimentCommonRenderer
-    
+
     def render_content
       render_toolbar
       render_properties
       render_logging
       render_graphs
-      
+
       javascript %{
         L.require('#LW.plugin.experiment.experiment_monitor', '/plugin/experiment/js/experiment_monitor.js', function() {
           #{@experiment.datasource_renderer};
           var r_#{object_id} = LW.plugin.experiment.experiment_monitor('#{@experiment.name}');
         })
       }
-      
+
     end
-    
+
     def render_toolbar
       div :class => 'widget-toolbar' do
-        button "Stop Experiment", :class => 'btn-stop-experiment btn-mini btn-danger'
+        button "Stop Experiment", :class => 'btn-stop-experiment btn btn-danger'
+        button("Dump", id: 'btn-dump', class: 'btn-dump btn btn-inverse')
       end
     end
-    
+
     def render_properties
       properties = @experiment.properties
       #puts ">>>> #{properties}"
@@ -46,7 +47,7 @@ module LabWiki::Plugin::Experiment
         end
       end
     end
-    
+
     def render_logging
       render_header  "Logging"
       div :class => 'experiment-log' do
@@ -67,6 +68,6 @@ module LabWiki::Plugin::Experiment
         text header_text
       end
     end
-    
+
   end # class
 end # module

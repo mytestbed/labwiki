@@ -16,8 +16,8 @@ module LabWiki::Plugin::Experiment
         if properties
           table :class => 'experiment-setup', :style => 'width: auto' do
             render_field -1, :name => 'Name', :size => 24, :default => @experiment.name
-            render_field -1, :name => 'Slice', :size => 24#, :default => @experiment.name
             render_field(-1, name: 'Experiment', type: :select, options: OMF::Web::SessionStore[:exps, :gimi].map {|v| v['name']})
+            render_field(-1, name: 'Slice', type: :hidden, default: "default_slice")
 
             render_field_static :name => 'Script', :value => @experiment.url
             properties.each_with_index do |prop, i|
