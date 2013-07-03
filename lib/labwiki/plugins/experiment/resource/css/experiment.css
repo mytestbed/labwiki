@@ -29,14 +29,8 @@ div.experiment-log {
 
 /** Experiment Running Toolbar ***/
 
-.btn-stop-experiment {
-  margin: 7px;
-  float: left;
-}
-
-.btn-dump {
-  margin: 7px;
-  float: left;
+.btn-stop-experiment, .btn-dump {
+  margin: 7px 0 7px 7px;
 }
 
 /*** Log messages ***/

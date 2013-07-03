@@ -23,7 +23,8 @@ module LabWiki::Plugin::Experiment
     def render_toolbar
       div :class => 'widget-toolbar' do
         button "Stop Experiment", :class => 'btn-stop-experiment btn btn-danger'
-        button("Dump", id: 'btn-dump', class: 'btn-dump btn btn-inverse')
+        button "Dump", :id => 'btn-dump', :exp_id => @experiment.name, :class => 'btn-dump btn btn-inverse'
+        div :class => 'alert-dump', :style => "display: none; margin: 7px 0 7px 7px; padding: 5px;"
       end
     end
 
