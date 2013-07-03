@@ -8,17 +8,3 @@ labwiki:
         host: norbit.npc.nicta.com.au
         user: oml2
         pwd: omlisgoodforyou
-  # This is added temporarily for gimi integration
-  gimi:
-    # Use git
-    git:
-      repos_dir: /tmp/lw_repos
-      sample_repo: /tmp/foo
-    # Use irdos
-    irods:
-      # Where irods hosted
-      host: bob
-      # Location for OML db dumping script
-      dumper: bob
-    # URL where Gimi experiment service hosted
-    ges_url: http://localhost:8002

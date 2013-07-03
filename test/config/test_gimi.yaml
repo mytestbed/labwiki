@@ -1,0 +1,25 @@
+labwiki:
+  plugins:
+    experiment:
+      ec_runner: ~/src/omf_labwiki/test/omf_exec/omf_exec-norbit.sh
+      oml:
+        host: norbit.npc.nicta.com.au
+        user: oml2
+        pwd: omlisgoodforyou
+  # This is added temporarily for gimi integration
+  gimi:
+    # Use git
+    git:
+      repos_dir: /tmp/lw_repos
+      sample_repo: ~/tmp/foo
+    # Use irdos
+    #irods:
+      # Where irods hosted
+      #host: bob
+    # URL where Gimi experiment service hosted
+    ges: http://localhost:8023
+    # If use mocked data
+    mocking: true
+
+    # Path to the magic OML sql dump script
+    dump_script: ~/dump_oml_sql
