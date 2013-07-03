@@ -36,7 +36,9 @@ module LabWiki::Plugin::Experiment
     def on_start_experiment(params, req)
       #puts "START EXPERIMENT>>> #{params.inspect}"
       if (gimi_exp = OMF::Web::SessionStore[:exps, :gimi].find { |v| v['name'] == params[:gimi_exp] })
-        slice = gimi_exp['slice'] && gimi_exp['slice']['sliceID']
+        unless LabWiki::Configurator[:gimi][:mocking]
+          slice = gimi_exp['slice'] && gimi_exp['slice']['sliceID']
+        end
         iticket = gimi_exp['iticket']
       end
       slice ||= params[:slice]

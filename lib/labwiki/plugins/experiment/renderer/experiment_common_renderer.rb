@@ -39,7 +39,7 @@ module LabWiki::Plugin::Experiment
           case type.to_sym
           when :text
             input :name => fname, :type => "text", :class => "field text fn",
-              :placeholder => prop[:default] || "", :size => prop[:size] || 16, :tabindex => (@tab_index += 1)
+              :value => prop[:default] || "", :size => prop[:size] || 16, :tabindex => (@tab_index += 1)
               #:onkeyup => "handleInput(this);", :onchange => "handleInput(this);"
           when :hidden
             input :name => fname, :type => "hidden", :value => prop[:default] || "", :tabindex => (@tab_index += 1)
