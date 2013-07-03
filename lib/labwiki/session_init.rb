@@ -18,7 +18,8 @@ class SessionInit < OMF::Common::LObject
       OMF::Web::SessionStore[:email, :user] = id
       OMF::Web::SessionStore[:name, :user] = id
       OMF::Web::SessionStore[:id, :user] = id
-      if LabWiki::Configurator[:gimi]
+
+      if LabWiki::Configurator[:gimi] && uninitialised?
         init_git_repository(id) if LabWiki::Configurator[:gimi][:git]
         init_irods_repository(id) if LabWiki::Configurator[:gimi][:irods]
         init_gimi_experiments(id) if LabWiki::Configurator[:gimi][:ges]
@@ -29,9 +30,17 @@ class SessionInit < OMF::Common::LObject
 
   private
 
+  def uninitialised?
+    OMF::Web::SessionStore[:plan, :repos].nil? ||
+      OMF::Web::SessionStore[:prepare, :repos].nil? ||
+      OMF::Web::SessionStore[:execute, :repos].nil? ||
+      OMF::Web::SessionStore[:exps, :gimi].nil?
+  end
+
   def init_gimi_experiments(id)
     ges_url = LabWiki::Configurator[:gimi][:ges]
-    id = 'user1' # FIXME use real uid when integrated
+    # FIXME use real uid when integrated
+    id = 'user1' if LabWiki::Configurator[:gimi][:mocking]
     response = HTTParty.get("#{ges_url}/users/#{id}")
 
     gimi_experiments = response['projects'].map do |p|

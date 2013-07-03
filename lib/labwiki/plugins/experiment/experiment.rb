@@ -30,7 +30,7 @@ module LabWiki::Plugin::Experiment
       end
     end
 
-    def start_experiment(properties, slice, name)
+    def start_experiment(properties, slice, name, iticket = {})
       unless @state == :new
         warn "Attempt to start an already running or finished experiment"
         return # TODO: Raise appropriate exception
@@ -51,6 +51,15 @@ module LabWiki::Plugin::Experiment
         return # TODO: Raise appropriate exception
       end
       info "Starting experiment name:#{@name} url: #{url} script: #{script}"
+
+      OMF::Web::SessionStore[:exps, :omf] ||= []
+      exp = { id: @name }
+      if iticket
+        exp[:irods_token] = iticket['token']
+        exp[:irods_path] = iticket['path']
+      end
+      info exp
+      OMF::Web::SessionStore[:exps, :omf] << exp
 
       create_oml_tables()
 

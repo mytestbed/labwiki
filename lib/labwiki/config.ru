@@ -40,6 +40,31 @@ options = OMF::Web::Runner.instance.options
 require 'labwiki/session_init'
 use SessionInit
 
+map "/dump" do
+  handler = proc do |env|
+    req = ::Rack::Request.new(env)
+    omf_exp_id = req.params['domain_id']
+    dump_cmd = File.expand_path(LabWiki::Configurator[:gimi][:dump_script])
+
+    exp = nil
+    OMF::Web::SessionStore.find_across_sessions do |content|
+      content["omf:exps"] && (exp = content["omf:exps"].find { |v| v[:id] == omf_exp_id } )
+    end
+
+    if exp
+      i_token = exp[:irods_token]
+      i_path = exp[:irods_path]
+
+      dump_cmd << " --id #{omf_exp_id} --token #{i_token} --path #{i_path}"
+      EM.popen(dump_cmd)
+      [200, {}, "Dumping... using command: #{dump_cmd}"]
+    else
+      [500, {}, "Cannot find experiment(task) by domain id #{omf_exp_id}"]
+    end
+  end
+  run handler
+end
+
 map "/labwiki" do
   handler = proc do |env|
     if env['warden'].authenticated? || options[:no_login_required]
