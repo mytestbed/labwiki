@@ -51,7 +51,9 @@ class SessionInit < OMF::Common::LObject
   end
 
   def init_irods_repository(id)
-    raise NotImplementedError
+    id = 'testuser1' if LabWiki::Configurator[:gimi][:mocking]
+    opts = { type: :irods, top_dir: id }
+    OMF::Web::ContentRepository.register_repo(id, opts)
   end
 
   def init_git_repository(id)
