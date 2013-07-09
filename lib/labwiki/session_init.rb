@@ -54,7 +54,7 @@ class SessionInit < OMF::Common::LObject
     exps.each do |exp|
       if (ticket = exp['iticket'])
         opts = { type: :irods, top_dir: ticket['path'], ticket: ticket['token'] }
-        repo = OMF::Web::ContentRepository.register_repo(exp['name'], opts)
+        repo = OMF::Web::ContentRepository.register_repo(exp['name'], opts) || OMF::Web::ContentRepository.find_repo_for("irods:#{exp['name']}")
 	# Set the repos to search for content for each column
 	#repo = OMF::Web::ContentRepository.find_repo_for("irods:#{exp['name']}")
 	OMF::Web::SessionStore[:plan, :repos] ||= []
