@@ -55,7 +55,7 @@ map "/dump" do
       i_token = exp[:irods_token]
       i_path = exp[:irods_path]
 
-      dump_cmd << " --id #{omf_exp_id} --token #{i_token} --path #{i_path}"
+      dump_cmd << " --domain #{omf_exp_id} --token #{i_token} --path #{i_path}"
       EM.popen(dump_cmd)
       [200, {}, "Dumping... using command: #{dump_cmd}"]
     else
