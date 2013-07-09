@@ -1,7 +1,7 @@
 labwiki:
   plugins:
     experiment:
-      ec_runner: ~/src/omf_labwiki/test/omf_exec/omf_exec-norbit.sh
+      ec_runner: ~/labwiki/test/omf_exec/omf_exec-norbit.sh
       oml:
         host: norbit.npc.nicta.com.au
         user: oml2
@@ -22,4 +22,4 @@ labwiki:
     mocking: true
 
     # Path to the magic OML sql dump script
-    dump_script: ~/dump_oml_sql
+    dump_script: ~/labwiki/test/oml2-irods-dumper.sh
