@@ -43,7 +43,7 @@ use SessionInit
 map "/dump" do
   handler = proc do |env|
     req = ::Rack::Request.new(env)
-    omf_exp_id = req.params['domain_id']
+    omf_exp_id = req.params['domain']
     dump_cmd = File.expand_path(LabWiki::Configurator[:gimi][:dump_script])
 
     exp = nil
