@@ -21,14 +21,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 #
-irodsHost=irods.example.com
-#irodsPort=1247
+irodsHost=221.199.209.240
+irodsPort=1247
 export irodsHost irodsPort
 
 #BACKEND=sqlite
 SQLITEDATAPATH=/var/lib/oml2
 BACKEND=postgresql
-PGDATAPATH=oml2@localhost:5432
+PGDATAPATH=oml@10.129.128.53:5432
 
 LOGFILE=oml2-irods-dumper.log
 function log ()
@@ -106,7 +106,9 @@ case "${DB}" in
 		DBNAME=${TMP}
 		DBFILE=/tmp/${DBNAME}.`date +%Y-%m-%d_%H:%M:%S%z`.pg.sql
 		log "INFO	Dumping PostgreSQL DB ${DBNAME} as ${DBFILE} and pushing to iRODS"
-		${PGDUMP} -U ${USER} -h ${HOST} -p ${PORT} ${DBNAME} > ${DBFILE}
+		log "CMD: ${PGDUMP} -O -U ${USER} -h ${HOST} -p ${PORT} ${DBNAME} > ${DBFILE}"
+
+		${PGDUMP} -O -U ${USER} -h ${HOST} -p ${PORT} ${DBNAME} > ${DBFILE}
 		;;
 	*)
 		log "ERROR	Don't know how to handle ${DB}"
