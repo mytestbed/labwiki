@@ -234,4 +234,5 @@ You probably noticed that we run everything from the source (except OML), so to 
 
 Then re-run whatever you need to run.
 
+_Because we run everything from the source, PLEASE report the git commit id whenever you need to report issues_
 
