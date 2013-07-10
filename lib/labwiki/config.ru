@@ -57,7 +57,7 @@ map "/dump" do
 
       dump_cmd << " --domain #{omf_exp_id} --token #{i_token} --path #{i_path}"
       EM.popen(dump_cmd)
-      [200, {}, "Dumping... using command: #{dump_cmd}"]
+      [200, {}, "Dump script triggered. <br /> Using command: #{dump_cmd} <br /> Unfortunately we cannot show you the progress."]
     else
       [500, {}, "Cannot find experiment(task) by domain id #{omf_exp_id}"]
     end
