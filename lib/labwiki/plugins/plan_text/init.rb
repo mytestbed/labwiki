@@ -9,6 +9,7 @@ require 'labwiki/plugins/plan_text/text_renderer'
 LabWiki::PluginManager.register :plan_text, {
   :widgets => [
     {
+      :name => 'wiki',
       :context => :plan,
       :priority => lambda do |opts|
         (opts[:mime_type].start_with? 'text') ? 500 : nil
@@ -20,5 +21,5 @@ LabWiki::PluginManager.register :plan_text, {
     :text_renderer => OMF::Web::Theme::TextRenderer
   },
   :resources => File.dirname(__FILE__) + '/resource' # should find a more portable solution
-} 
+}
 

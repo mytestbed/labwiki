@@ -44,19 +44,29 @@ module LabWiki
 
     def self.create_widget(column, params)
       debug "Creating widget for '#{column}' from '#{params.inspect}'"
-      widget = @@plugins[column.to_sym].reduce(:priority => 0, :wdescr => {}) do |best, wdescr|
-        if priority = wdescr[:priority].call(params)
-          if priority > best[:priority]
-            best = {:priority => priority, :wdescr => wdescr}
+      if wname = params[:plugin]
+        wdescr = @@plugins[column.to_sym].find {|wd|
+          puts ">>> #{wd[:name] == wname} - #{wd}"
+          wd[:name] == wname}
+      else
+        widget = @@plugins[column.to_sym].reduce(:priority => 0, :wdescr => {}) do |best, wdescr|
+          if priority = wdescr[:priority].call(params)
+            if priority > best[:priority]
+              best = {:priority => priority, :wdescr => wdescr}
+            end
           end
+          best
+          #mime_type.match(wdescr[:mime_type]) != nil
         end
-        best
-        #mime_type.match(wdescr[:mime_type]) != nil
+        wdescr = widget[:wdescr]
       end
-      unless widget_class = widget[:wdescr][:widget_class]
+      unless wdescr
+        raise "Can't find plugin for '#{column}' from '#{params}'"
+      end
+      unless widget_class = wdescr[:widget_class]
         raise "No execute widget available for '#{params.inspect}'"
       end
-      options = Configurator["plugins/#{widget[:wdescr][:config_name]}"]
+      options = Configurator["plugins/#{wdescr[:config_name]}"]
       debug "Creating widget for '#{column}' from '#{widget_class}' (#{options})"
       widget = widget_class.new(column, options, params)
       widget

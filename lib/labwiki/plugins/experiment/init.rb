@@ -14,6 +14,7 @@ LabWiki::PluginManager.register :experiment, {
   end,
   :widgets => [
     {
+      :name => 'experiment',
       :context => :execute,
       :priority => lambda do |opts|
         (opts[:mime_type].start_with? 'text/ruby') ? 500 : nil
@@ -23,9 +24,9 @@ LabWiki::PluginManager.register :experiment, {
   ],
   :renderers => {
     :experiment_setup_renderer => LabWiki::Plugin::Experiment::ExperimentSetupRenderer,
-    :experiment_running_renderer => LabWiki::Plugin::Experiment::ExperimentRunningRenderer    
+    :experiment_running_renderer => LabWiki::Plugin::Experiment::ExperimentRunningRenderer
   },
 #  :resources => File.dirname(__FILE__) + File.SEPARATOR + 'resource'
   :resources => File.dirname(__FILE__) + '/resource' # should find a more portable solution
-} 
+}
 
