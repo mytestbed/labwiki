@@ -1,0 +1,211 @@
+# Installation with GIMI integration
+
+_All the instruction & script sample here assume that you are in the user's home directory if not specified_
+
+## OS
+
+Hopefully you are running a very latest stable Linux release.
+
+## RVM
+
+Refer to RVM official site for details.
+
+Make sure you got RVM installed and configured properly.
+
+Make sure you installed both ruby 1.8.7 and ruby 1.9.3.
+
+## Install OMF EC 5.4
+
+Install ec using git, packages will NOT work.
+
+    git clone git://git.mytestbed.net/omf.git
+
+    cd omf
+
+    git checkout labwiki
+
+    # verify you are in labwiki branch
+    git branch
+
+Now goes back to home directory. Create a temporary folder with a Gemfile inside.
+
+    mkdir omf_5_gems
+
+    cd omf_5_gems
+
+    touch Gemfile
+
+Then add the following to the Gemfile, save it.
+
+    source 'https://rubygems.org'
+    gem "xmpp4r", "0.5"
+    gem "log4r",  "1.1.8"
+    gem "wss4r",  "0.5"
+    gem "rdp-rb-readline",  "0.2.0.1"
+    gem "activesupport",  "3.0.0"
+    gem "gratr",  "0.4.3"
+    gem "oml4r"
+    gem "sequel",  "3.40.0"
+    gem "json",  "1.7.5"
+    gem "pg"
+
+Then use RVM to switch to ruby 1.8.7
+
+    rvm use 1.8.7
+
+    # check ruby version is 1.8.7
+    ruby -v
+
+    bundle
+
+    # check gems have been installed properly against Gemfile
+    gem list
+
+## Get Labwiki & omf-web source
+
+Now switch to ruby 1.9.3
+
+    rvm use 1.9.3
+
+    # check ruby version is 1.9.3
+    ruby -v
+
+Get omf web source
+
+    git clone https://github.com/mytestbed/omf_web.git
+    cd omf_web
+    bundle
+    bundle update
+
+Get labwiki source
+
+    git clone https://github.com/mytestbed/labwiki.git
+    cd labwiki
+    bundle update
+    export LABWIKI_TOP=`pwd`
+
+## Get gimi experiment service
+
+Ensure you are still use ruby 1.9.3
+
+Get omf sfa source
+
+    git clone https://github.com/mytestbed/omf_sfa.git
+    cd omf_sfa
+    export OMF_SFA_HOME=`pwd`
+    bundle
+    bundle update
+
+Get gimi exp service, you can use the source from a temp branch for testing purpose, but ultimately it will be your own implementation & instance.
+
+    git clone https://github.com/jackhong/gimi_experiment_service.git ges_temp
+    git checkout temp
+    cd ges_temp
+    bundle
+    bundle update
+
+Update lib/gimi/exp_service/server.rb to reflect your own testing data
+
+    ruby -I lib -I $OMF_SFA_HOME/lib lib/gimi/exp_service.rb --test-load-state  --dm-auto-upgrade --disable-https start
+
+Record its port number.
+
+MAKE SURE it is running and working properly
+
+## Configure & test run OMF EC
+
+Then switch to ruby 1.8.7
+    rvm use 1.8.7
+
+    cd labwiki/test/omf_exec
+
+Find etc/omf-expctl.norbit.yaml, and update it to suit your environment. Things you mostly likely to change are:
+
+    repository:
+      path:
+
+    omluri:
+
+    xmpp:
+      pubsub_gateway:
+
+Verify these settings carefully.
+
+Then run a oidl experiment script
+
+    bash -l omf_exec-norbit.sh your_script.rb
+
+MAKE SURE, DOUBLE CHECK that it runs properly and it creates OML database and have measurement data stored correctly.
+
+## Test OML dump script
+
+    cd labwiki/test
+
+Edit oml-irods-dumper.sh and make sure you have these variables correct
+
+    irodsHost
+    irodsPort
+    PGDATAPATH
+
+Make sure you have these information with you, and verify them:
+
+* OML server is using postgres
+
+* You know the postgres server uri & port number.
+
+* You know the postgres username & password
+
+* Postgres server has been configured allow you to login remotely
+
+* You have pg\_dump installed
+
+* You have irods commands installed, configured and you can accesss irods
+
+
+Then try the script
+
+    bash  oml2-irods-dumper.sh --domain <oml exp id> --path <irods path> --token <idos token>
+
+MAKE SURE, DOUBLE CHECK that it got the sql dump & write to irods successfully.
+
+## Now configure Labwiki
+
+Now examine labwiki/test/test\_gimi.yaml
+
+Make sure you configure EVERYTHING correctly to meet your environment.
+
+* oml: section here refers to oml's postgres database host, user & password
+* ges: where your gimi experiment service is hosting
+* mocking: ture means all logged in users will act as user 'user1', which should be included in gimi exp service's default data. Set this to false when you are ready to test real data.
+
+    labwiki:
+      plugins:
+        experiment:
+          ec_runner: ~/labwiki/test/omf_exec/omf_exec-norbit.sh
+          oml:
+            host: norbit.npc.nicta.com.au
+            user: oml2
+            pwd: bob
+      # This is added temporarily for gimi integration
+      gimi:
+        irods: true
+        ges: http://localhost:8023
+        # If use mocked data
+        mocking: true
+
+        # Path to the magic OML sql dump script
+        dump_script: ~/labwiki/test/oml2-irods-dumper.sh
+
+Now again, DOUBLE CHECKING EVERYTHING ELSE is working properly.
+
+Switch to ruby 1.9.3
+
+    rvm use 1.9.3
+
+    cd labwiki
+
+    ruby -I lib -I ../omf_web/lib lib/labwiki.rb --lw-config test/config/test_gimi.yaml start
+
+Finger crossed.
+
+
