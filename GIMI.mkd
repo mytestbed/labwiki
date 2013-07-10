@@ -186,6 +186,9 @@ Make sure you configure EVERYTHING correctly to meet your environment.
 * ges: where your gimi experiment service is hosting
 * mocking: ture means all logged in users will act as user 'user1', which should be included in gimi exp service's default data. Set this to false when you are ready to test real data.
 
+
+Content of labwiki/test/test\_gimi.yaml
+
     labwiki:
       plugins:
         experiment:
