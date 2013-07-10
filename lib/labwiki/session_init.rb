@@ -22,6 +22,7 @@ class SessionInit < OMF::Common::LObject
       if LabWiki::Configurator[:gimi] && uninitialised?
         init_git_repository(id) if LabWiki::Configurator[:gimi][:git]
         init_gimi_experiments(id) if LabWiki::Configurator[:gimi][:ges]
+	init_irods_repository(id) if LabWiki::Configurator[:gimi][:irods]
       end
     end
     @app.call(env)
@@ -47,24 +48,18 @@ class SessionInit < OMF::Common::LObject
     end.flatten.compact
 
     OMF::Web::SessionStore[:exps, :gimi] = gimi_experiments
-    init_irods_repository(gimi_experiments) if LabWiki::Configurator[:gimi][:irods]
   end
 
-  def init_irods_repository(exps)
-    exps.each do |exp|
-      if (ticket = exp['iticket'])
-        opts = { type: :irods, top_dir: ticket['path'], ticket: ticket['token'] }
-        repo = OMF::Web::ContentRepository.register_repo(exp['name'], opts)
-	# Set the repos to search for content for each column
-	#repo = OMF::Web::ContentRepository.find_repo_for("irods:#{exp['name']}")
-	OMF::Web::SessionStore[:plan, :repos] ||= []
-	OMF::Web::SessionStore[:prepare, :repos] ||= []
-	OMF::Web::SessionStore[:execute, :repos] ||= []
-	OMF::Web::SessionStore[:plan, :repos] << repo
-	OMF::Web::SessionStore[:prepare, :repos] << repo
-	OMF::Web::SessionStore[:execute, :repos] << repo
-      end
-    end
+  def init_irods_repository(id)
+    irods_home = LabWiki::Configurator[:gimi][:irods][:home]
+    id = 'user1' if LabWiki::Configurator[:gimi][:mocking]
+    opts = { type: :irods, top_dir: "#{irods_home}/#{id}/#{LabWiki::Configurator[:gimi][:irods][:script_folder]}" }
+    repo = OMF::Web::ContentRepository.register_repo(id, opts) 
+    repo ||= OMF::Web::ContentRepository.find_repo_for("irods:#{id}")
+
+    OMF::Web::SessionStore[:plan, :repos] = [repo]
+    OMF::Web::SessionStore[:prepare, :repos] = [repo]
+    OMF::Web::SessionStore[:execute, :repos] = [repo]
   end
 
   def init_git_repository(id)

@@ -9,13 +9,14 @@ labwiki:
   # This is added temporarily for gimi integration
   gimi:
     # Use git
-    git:
-      repos_dir: /tmp/lw_repos
-      sample_repo: ~/tmp/foo
+    #git:
+    #  repos_dir: /tmp/lw_repos
+    #  sample_repo: ~/tmp/foo
     # Use irdos
-    #irods:
-      # Where irods hosted
-      #host: bob
+    irods:
+      home: /tempZone/home/rods
+      script_folder: experimentTemplates
+      measurement_folder: GIMI_meas_data
     # URL where Gimi experiment service hosted
     ges: http://localhost:8023
     # If use mocked data
