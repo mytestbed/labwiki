@@ -161,6 +161,14 @@ Make sure you have these information with you, and verify them:
 
 * You have irods commands installed, configured and you can accesss irods
 
+Then in your home directory, create a file called .pgpass, storing your postgres credential
+
+    touch .pgpass
+    chmod 600 .pgpass
+
+Add following to the file, save.
+
+    <db_host>:<port>:*:<username>:<password>
 
 Then try the script
 
@@ -196,6 +204,7 @@ Make sure you configure EVERYTHING correctly to meet your environment.
         # Path to the magic OML sql dump script
         dump_script: ~/labwiki/test/oml2-irods-dumper.sh
 
+## Run Labwiki
 Now again, DOUBLE CHECKING EVERYTHING ELSE is working properly.
 
 Switch to ruby 1.9.3
@@ -207,5 +216,19 @@ Switch to ruby 1.9.3
     ruby -I lib -I ../omf_web/lib lib/labwiki.rb --lw-config test/config/test_gimi.yaml start
 
 Finger crossed.
+
+Now try it in the browser.
+
+## Future redeployment
+
+You probably noticed that we run everything from the source (except OML), so to do re-deployment, simply go to the repository directory, kill the process and update the repo by:
+
+    cd <code repository>
+    git stash
+    git fetch origin
+    git merge origin/master
+    git stash pop
+
+Then re-run whatever you need to run.
 
 
