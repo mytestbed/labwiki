@@ -41,10 +41,14 @@ require 'labwiki/session_init'
 use SessionInit
 
 map "/dump" do
-  handler = proc do |env|
+  handler = lambda do |env|
     req = ::Rack::Request.new(env)
     omf_exp_id = req.params['domain']
-    dump_cmd = File.expand_path(LabWiki::Configurator[:gimi][:dump_script])
+    if LabWiki::Configurator[:gimi] && LabWiki::Configurator[:gimi][:dump_script]
+      dump_cmd = File.expand_path(LabWiki::Configurator[:gimi][:dump_script])
+    else
+      return [500, {}, "Dump script not configured."]
+    end
 
     exp = nil
     OMF::Web::SessionStore.find_across_sessions do |content|
