@@ -2,6 +2,7 @@ require 'grit'
 require 'httparty'
 require 'omf-web/content/git_repository'
 require 'omf-web/session_store'
+require 'labwiki/plugin_manager'
 
 class SessionInit < OMF::Common::LObject
   def initialize(app, opts = {})
@@ -19,10 +20,14 @@ class SessionInit < OMF::Common::LObject
       OMF::Web::SessionStore[:name, :user] = id
       OMF::Web::SessionStore[:id, :user] = id
 
-      if LabWiki::Configurator[:gimi] && uninitialised?
-        init_git_repository(id) if LabWiki::Configurator[:gimi][:git]
-        init_gimi_experiments(id) if LabWiki::Configurator[:gimi][:ges]
-        init_irods_repository(id) if LabWiki::Configurator[:gimi][:irods]
+      unless OMF::Web::SessionStore[:ininitialized, :session]
+        if LabWiki::Configurator[:gimi]
+          init_git_repository(id) if LabWiki::Configurator[:gimi][:git]
+          init_gimi_experiments(id) if LabWiki::Configurator[:gimi][:ges]
+          init_irods_repository(id) if LabWiki::Configurator[:gimi][:irods]
+        end
+        LabWiki::PluginManager.init_session()
+        OMF::Web::SessionStore[:ininitialized, :session] = true
       end
     end
     @app.call(env)
@@ -30,12 +35,13 @@ class SessionInit < OMF::Common::LObject
 
   private
 
-  def uninitialised?
-    OMF::Web::SessionStore[:plan, :repos].nil? ||
-      OMF::Web::SessionStore[:prepare, :repos].nil? ||
-      OMF::Web::SessionStore[:execute, :repos].nil? ||
-      OMF::Web::SessionStore[:exps, :gimi].nil?
-  end
+  # def uninitialised?
+    # OMF::Web::SessionStore[:plan, :repos].nil? ||
+      # OMF::Web::SessionStore[:prepare, :repos].nil? ||
+      # OMF::Web::SessionStore[:execute, :repos].nil? ||
+      # OMF::Web::SessionStore[:exps, :gimi].nil?
+  # end
+
 
   def init_gimi_experiments(id)
     ges_url = LabWiki::Configurator[:gimi][:ges]

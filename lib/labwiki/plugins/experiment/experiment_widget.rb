@@ -17,6 +17,7 @@ module LabWiki::Plugin::Experiment
       super column, :type => :experiment
       @experiment = nil
       @config_opts = config_opts
+      OMF::Web::SessionStore[self.widget_id, :widgets] = self # Let's stick around a bit
     end
 
     def on_get_content(params, req)
