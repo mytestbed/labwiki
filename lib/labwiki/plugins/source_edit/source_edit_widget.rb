@@ -21,6 +21,24 @@ module LabWiki::Plugin::SourceEdit
       @mime_type = (params[:mime_type] || 'text')#.gsub('text', 'code')
       @content_url = params[:url]
       content_proxy = OMF::Web::ContentRepository.create_content_proxy_for(@content_url, params)
+      _get_content_widget(content_proxy)
+    end
+
+    def on_get_plugin(params, req)
+      opts = params[:params]
+      debug "on_get_plugin: '#{opts.inspect}'"
+      @content_url = opts[:url]
+      content_proxy = OMF::Web::ContentRepository.create_content_proxy_for(@content_url, opts)
+      @mime_type = content_proxy.mime_type
+      _get_content_widget(content_proxy)
+    end
+
+
+    def content_renderer()
+      @code_widget.content()
+    end
+
+    def _get_content_widget(content_proxy)
       if @code_widget
         @code_widget.content_proxy = content_proxy
       else
@@ -28,12 +46,8 @@ module LabWiki::Plugin::SourceEdit
         e = {:type => :code, :height => 800, :content => content_proxy, :margin => margin}
         @code_widget = OMF::Web::Widget.create_widget(e)
       end
-    end
 
-    def content_renderer()
-      @code_widget.content()
     end
-
     # def title
       # @title
     # end

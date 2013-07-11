@@ -230,6 +230,44 @@ L.provide('LW.column_controller', ['#LW.content_selector_widget', '#jquery.ui'],
         this.set({panel_height: panel_height});
         //OHUB.trigger('column.' + this._name + '.panel.height', {height: panel_height});
       }
+
+      // fix links in content panel
+      $('.widget_body_' + opts.name + ' a').each(function() {
+        var el = $(this);
+        var href = el.attr('xhref');
+        if (href != undefined) {
+          href = href.trim()
+          if (href.slice(0, 3) == 'lw:') {
+            var p = href.slice(3).split('?');
+            var a = p[0].split('/');
+            var col = a[0];
+            var plugin = a[1];
+            var controller = LW[col + '_controller'];
+            if (controller != undefined && plugin != undefined) {
+              var cmd = {
+                action: 'get_plugin',
+                col: col,
+                plugin: plugin
+              }
+              if (p[1] != undefined) {
+                var params = cmd['params'] = {};
+                _.each(p[1].split('&'), function (s) {
+                  var kv = s.split('=');
+                  params[kv[0]] = kv[1];
+                })
+              }
+              el.attr('href', '#');
+              el.click(function() {
+                controller.refresh_content(cmd, 'GET');
+                return false;
+              });
+            } else {
+              // Should insert an error statement into 'el'
+            }
+          }
+          var i = 0;
+        }
+      });
     },
 
     // Check if the content panel includes a 'toolbar'. If yes, move it to

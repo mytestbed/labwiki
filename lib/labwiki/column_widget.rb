@@ -45,5 +45,12 @@ module LabWiki
       self
     end
 
+    def on_get_plugin(params, req)
+      @content_opts = params
+
+      debug "on_get_plugin: '#{params.inspect}'"
+      self
+    end
+
   end
 end
