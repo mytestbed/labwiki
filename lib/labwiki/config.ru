@@ -67,7 +67,14 @@ end
 
 map "/labwiki" do
   handler = proc do |env|
-    if env['warden'].authenticated? || options[:no_login_required]
+    if options[:no_login_required]
+      identity_url = "https://localhost?id=user1"
+      $users[identity_url] = identity_url
+      env['warden'].set_user identity_url
+
+      require 'labwiki/rack/top_handler'
+      LabWiki::TopHandler.new(options).call(env)
+    elsif env['warden'].authenticated?
       require 'labwiki/rack/top_handler'
       LabWiki::TopHandler.new(options).call(env)
     else

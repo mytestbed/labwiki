@@ -22,7 +22,7 @@ class SessionInit < OMF::Common::LObject
       if LabWiki::Configurator[:gimi] && uninitialised?
         init_git_repository(id) if LabWiki::Configurator[:gimi][:git]
         init_gimi_experiments(id) if LabWiki::Configurator[:gimi][:ges]
-	init_irods_repository(id) if LabWiki::Configurator[:gimi][:irods]
+        init_irods_repository(id) if LabWiki::Configurator[:gimi][:irods]
       end
     end
     @app.call(env)
@@ -54,7 +54,7 @@ class SessionInit < OMF::Common::LObject
     irods_home = LabWiki::Configurator[:gimi][:irods][:home]
     id = 'user1' if LabWiki::Configurator[:gimi][:mocking]
     opts = { type: :irods, top_dir: "#{irods_home}/#{id}/#{LabWiki::Configurator[:gimi][:irods][:script_folder]}" }
-    repo = OMF::Web::ContentRepository.register_repo(id, opts) 
+    repo = OMF::Web::ContentRepository.register_repo(id, opts)
     repo ||= OMF::Web::ContentRepository.find_repo_for("irods:#{id}")
 
     OMF::Web::SessionStore[:plan, :repos] = [repo]
