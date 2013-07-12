@@ -12,6 +12,7 @@ module LabWiki::Plugin::Experiment
     def render_start_form
       fid = "f#{self.object_id}"
       properties = @experiment.properties
+      #puts "EXP: #{@experiment}--#{properties}"
       form :id => fid, :class => 'start-form' do
         if properties
           table :class => 'experiment-setup', :style => 'width: auto' do
@@ -40,9 +41,12 @@ module LabWiki::Plugin::Experiment
     end
 
     def render_javascript(fid)
+      puts "RENDER JAVASCRIPT"
       opts = {
         :properties => @experiment.properties,
-        :url => @experiment.url
+        :widget_id => @widget.widget_id,
+        :url => "lw:execute/experiment?url=#{@experiment.url}",
+        :script => @experiment.url
       }
       javascript %{
         $("\##{fid}").submit(function(event) {
@@ -52,31 +56,6 @@ module LabWiki::Plugin::Experiment
           var fopts = #{opts.to_json};
           var ec = $("\##{@data_id}").data('ec');
           ec.submit(form_el, fopts);
-          return;
-
-          function get_value(name, def_value) {
-            var e = form_el.find('td.' + name).children();
-            var v = e.val();
-            if (v == "") v = e.text();
-            if (v == "") v = def_value;
-            return v;
-          }
-
-          var opts = {
-            action: 'start_experiment',
-            col: 'execute'
-          };
-
-          opts.name = get_value('propName', fopts.name);
-          opts.script = fopts.script; //get_value('propScript', fopts.script);
-
-          //var pv = opts.properties = {};
-          opts.properties = _.map(fopts.properties, function(prop, index) {
-            var val = get_value('prop' + index, prop['default']);
-            return {name: prop.name, value: val, comment: prop.comment};
-          });
-
-          LW.execute_controller.refresh_content(opts, 'POST');
         });
       }
     end
