@@ -55,7 +55,7 @@ module LabWiki::Plugin::Experiment
     end
     
     def stop()
-      kill('INT')
+      kill("-INT")
     end
   
     #
@@ -100,6 +100,7 @@ module LabWiki::Plugin::Experiment
       debug "Starting application '#{id}' - cmd: '#{cmd}'"
       @observer.call('STARTED', nil)
       @pid = fork do
+        Process.setpgid(0,Process.pid)
         # child will remap pipes to std and exec cmd
         pw[1].close
         STDIN.reopen(pw[0])
