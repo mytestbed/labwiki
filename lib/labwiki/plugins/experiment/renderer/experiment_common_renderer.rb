@@ -45,7 +45,7 @@ module LabWiki::Plugin::Experiment
             input :name => fname, :type => "hidden", :value => prop[:default] || "", :tabindex => (@tab_index += 1)
           when :select
             select(name: fname) do
-              prop[:options].each do |opt|
+              prop[:options] && prop[:options].each do |opt|
                 option(value: opt) { text opt }
               end
             end
