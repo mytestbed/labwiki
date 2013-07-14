@@ -41,7 +41,6 @@ module LabWiki::Plugin::Experiment
     end
 
     def render_javascript(fid)
-      puts "RENDER JAVASCRIPT"
       opts = {
         :properties => @experiment.properties,
         :widget_id => @widget.widget_id,
