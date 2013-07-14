@@ -38,6 +38,8 @@ module LabWiki
             raise "Requesting unknown widget id '#{widget_id}::#{widget_id.class}' -- #{col_widget.inspect}"
           end
         end
+      elsif url = params[:url] && col_widget
+        col_widget = nil if col_widget.content_url != url
       end
       unless col_widget
         col_widget = @widgets[col] = create_column_widget(col, params)
