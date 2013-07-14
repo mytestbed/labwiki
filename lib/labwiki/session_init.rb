@@ -35,14 +35,6 @@ class SessionInit < OMF::Common::LObject
 
   private
 
-  # def uninitialised?
-    # OMF::Web::SessionStore[:plan, :repos].nil? ||
-      # OMF::Web::SessionStore[:prepare, :repos].nil? ||
-      # OMF::Web::SessionStore[:execute, :repos].nil? ||
-      # OMF::Web::SessionStore[:exps, :gimi].nil?
-  # end
-
-
   def init_gimi_experiments(id)
     ges_url = LabWiki::Configurator[:gimi][:ges]
     # FIXME use real uid when integrated
@@ -50,7 +42,7 @@ class SessionInit < OMF::Common::LObject
     response = HTTParty.get("#{ges_url}/users/#{id}")
 
     gimi_experiments = response['projects'].map do |p|
-      HTTParty.get("#{ges_url}/projects/#{p['name']}/experiments")['experiments']
+      HTTParty.get("#{ges_url}/projects/#{p['name']}")['experiments']
     end.flatten.compact
 
     OMF::Web::SessionStore[:exps, :gimi] = gimi_experiments
