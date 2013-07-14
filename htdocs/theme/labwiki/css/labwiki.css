@@ -3,6 +3,14 @@ body {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+em {
+  font-style: italic;
+}
+
+strong, b {
+  font-weight: bold;
+}
+
 #k-topbar .brand {
   color: #BBB;
   display: block;
