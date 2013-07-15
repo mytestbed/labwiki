@@ -66,7 +66,7 @@ module LabWiki::Plugin::Experiment
       properties.each { |p| props[p[:name]] = p[:value] }
       @properties.each { |p| p[:value] = props[p[:name]] ||= p[:default] }
 
-      unless @state == :stop
+      unless @state == :finished
         @state = :running
         @start_time = Time.now
         @ec = LabWiki::Plugin::Experiment::RunExpController.new(@name, slice, script, props, @config_opts) do |etype, msg|
@@ -76,7 +76,7 @@ module LabWiki::Plugin::Experiment
     end
 
     def stop_experiment()
-      @state = :stop
+      @state = :finished
       @ec.stop
     end
 
