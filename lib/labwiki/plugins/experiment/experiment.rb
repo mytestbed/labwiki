@@ -53,7 +53,7 @@ module LabWiki::Plugin::Experiment
       info "Starting experiment name:#{@name} url: #{url} script: #{script}"
 
       OMF::Web::SessionStore[:exps, :omf] ||= []
-      exp = { id: @name }
+      exp = { id: @name, instance: self }
       if iticket
         exp[:irods_token] = iticket['token']
         exp[:irods_path] = iticket['path']

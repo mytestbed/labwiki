@@ -61,6 +61,7 @@ L.provide('LW.column_controller', ['#LW.content_selector_widget', '#jquery.ui'],
       if (selected.content) opts.content = selected.content;
       if (selected.url) opts.url = selected.url;
       if (selected.mime_type) opts.mime_type = selected.mime_type;
+      if (selected.omf_exp_id) opts.omf_exp_id = selected.omf_exp_id;
 
       this.refresh_content(opts, 'GET');
     },
