@@ -47,6 +47,7 @@ module LabWiki::Plugin::Experiment
       end
       slice ||= params[:slice]
       iticket ||= {}
+      iticket['exp_name'] = gimi_exp['name']
       info iticket
       @experiment.start_experiment((params[:properties] || {}).values, slice, params[:name], iticket)
     end

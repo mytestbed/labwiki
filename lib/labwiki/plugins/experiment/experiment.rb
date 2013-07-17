@@ -57,6 +57,7 @@ module LabWiki::Plugin::Experiment
       if iticket
         exp[:irods_token] = iticket['token']
         exp[:irods_path] = iticket['path']
+        exp[:exp_name] = iticket['exp_name']
       end
       OMF::Web::SessionStore[:exps, :omf] << exp
 

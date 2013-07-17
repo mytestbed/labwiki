@@ -114,6 +114,8 @@ case "${DB}" in
 		log "ERROR	Don't know how to handle ${DB}"
 		;;
 esac
+log "INFO	Creating experiment directory first irods://irodsHost:irodsPort${IPATH}"
+imkdir ${IPATH}
 log "INFO	Pushing ${DBFILE} to irods://irodsHost:irodsPort${IPATH}"
-${IPUT} -t ${ITICKET} ${DBFILE} ${IPATH}
+${IPUT} ${DBFILE} ${IPATH}/
 rm ${DBFILE}
