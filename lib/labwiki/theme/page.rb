@@ -27,6 +27,7 @@ module OMF::Web::Theme
       super
       @title = "LabWiki"
       index = -1
+
       @col_renderers = [:plan, :prepare, :execute].map do |name|
         index += 1
         ColumnRenderer.new(name.to_s.capitalize, @widget.column_widget(name), name, index)
@@ -55,6 +56,13 @@ module OMF::Web::Theme
           div :id => "k-topbar" do
             span 'LabWiki', :class => 'brand'
             ul :class => 'secondary-nav' do
+              if OMF::Web::SessionStore[:exps, :gimi].nil?
+                li :style => "padding-top: 6px; margin-right: 10px;" do
+                  span :class => 'label label-warning' do
+                    text "You don't have any projects or experiments associated, certain features might not function properly."
+                  end
+                end
+              end
               li do
                 a :href => '#', :class => 'user' do
                   i :class => "icon-user icon-white"

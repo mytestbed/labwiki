@@ -41,6 +41,11 @@ class SessionInit < OMF::Common::LObject
     id = 'user1' if LabWiki::Configurator[:gimi][:mocking]
     response = HTTParty.get("#{ges_url}/users/#{id}")
 
+    if response['projects'].nil?
+      debug "User, logged in as #{id}, does not have any projects associated "
+      return
+    end
+
     gimi_experiments = response['projects'].map do |p|
       HTTParty.get("#{ges_url}/projects/#{p['name']}")['experiments']
     end.flatten.compact
