@@ -101,7 +101,9 @@ end
 
 map '/logout' do
   handler = Proc.new do |env|
+    req = ::Rack::Request.new(env)
     env['warden'].logout(:default)
+    req.session['sid'] = nil
     [307, {'Location' => '/', "Content-Type" => ""}, ['Next window!']]
   end
   run handler
