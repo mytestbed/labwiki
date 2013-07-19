@@ -44,11 +44,12 @@ module LabWiki::Plugin::Experiment
           slice = gimi_exp['slice'] && gimi_exp['slice']['sliceID']
         end
         iticket = gimi_exp['iticket']
+        iticket ||= {}
+        iticket['exp_name'] = gimi_exp['name']
+        info iticket
       end
       slice ||= params[:slice]
-      iticket ||= {}
-      iticket['exp_name'] = gimi_exp['name']
-      info iticket
+      iticket ||= { "token" => "W4WxkspO1Bn3Qxy", "path" => "/tempZone/home/rods/user1" }
       @experiment.start_experiment((params[:properties] || {}).values, slice, params[:name], iticket)
     end
 

@@ -39,10 +39,15 @@ class SessionInit < OMF::Common::LObject
     ges_url = LabWiki::Configurator[:gimi][:ges]
     # FIXME use real uid when integrated
     id = 'user1' if LabWiki::Configurator[:gimi][:mocking]
-    response = HTTParty.get("#{ges_url}/users/#{id}")
+    begin
+      response = HTTParty.get("#{ges_url}/users/#{id}")
+    rescue
+      error "Gimi experiment service not available"
+      return
+    end
 
     if response['projects'].nil?
-      debug "User, logged in as #{id}, does not have any projects associated "
+      warn "User, logged in as #{id}, does not have any projects associated "
       return
     end
 
