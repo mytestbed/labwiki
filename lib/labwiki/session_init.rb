@@ -20,14 +20,10 @@ class SessionInit < OMF::Common::LObject
       OMF::Web::SessionStore[:name, :user] = id
       OMF::Web::SessionStore[:id, :user] = id
 
-      unless OMF::Web::SessionStore[:ininitialized, :session]
-        if LabWiki::Configurator[:gimi]
-          init_git_repository(id) if LabWiki::Configurator[:gimi][:git]
-          init_gimi_experiments(id) if LabWiki::Configurator[:gimi][:ges]
-          init_irods_repository(id) if LabWiki::Configurator[:gimi][:irods]
-        end
-        LabWiki::PluginManager.init_session()
-        OMF::Web::SessionStore[:ininitialized, :session] = true
+      if LabWiki::Configurator[:gimi] && uninitialised?
+        init_git_repository(id) if LabWiki::Configurator[:gimi][:git]
+        init_gimi_experiments(id) if LabWiki::Configurator[:gimi][:ges]
+        init_irods_repository(id) if LabWiki::Configurator[:gimi][:irods]
       end
     end
     @app.call(env)
@@ -35,24 +31,21 @@ class SessionInit < OMF::Common::LObject
 
   private
 
+  def uninitialised?
+    OMF::Web::SessionStore[:plan, :repos].nil? ||
+      OMF::Web::SessionStore[:prepare, :repos].nil? ||
+      OMF::Web::SessionStore[:execute, :repos].nil? ||
+      OMF::Web::SessionStore[:exps, :gimi].nil?
+  end
+
   def init_gimi_experiments(id)
     ges_url = LabWiki::Configurator[:gimi][:ges]
     # FIXME use real uid when integrated
     id = 'user1' if LabWiki::Configurator[:gimi][:mocking]
-    begin
-      response = HTTParty.get("#{ges_url}/users/#{id}")
-    rescue
-      error "Gimi experiment service not available"
-      return
-    end
-
-    if response['projects'].nil?
-      warn "User, logged in as #{id}, does not have any projects associated "
-      return
-    end
+    response = HTTParty.get("#{ges_url}/users/#{id}")
 
     gimi_experiments = response['projects'].map do |p|
-      HTTParty.get("#{ges_url}/projects/#{p['name']}")['experiments']
+      HTTParty.get("#{ges_url}/projects/#{p['name']}/experiments")['experiments']
     end.flatten.compact
 
     OMF::Web::SessionStore[:exps, :gimi] = gimi_experiments

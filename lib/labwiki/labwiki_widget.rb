@@ -28,30 +28,20 @@ module LabWiki
           # col_widget = create_column_widget(col, params)
         # end
       # end
-      col_widget = @widgets[col]
-      if widget_id = params[:widget_id]
-        unless col_widget && col_widget.widget_id == widget_id
-          if w = OMF::Web::SessionStore[widget_id, :widgets]
-            # good we found an existing old one
-            col_widget = @widgets[col] = w
-          else
-            raise "Requesting unknown widget id '#{widget_id}::#{widget_id.class}' -- #{col_widget.inspect}"
-          end
-        end
-      end
+      col_widget = create_column_widget(col, params) # better create a new one for every request
       unless col_widget
-        col_widget = @widgets[col] = create_column_widget(col, params)
-      end
-      unless col_widget
-        raise "Can't create widget for for column '#{col}' (#{params.inspect})"
+        raise "Don't have widget for for column '#{col}' and action '#{action}' (#{params.inspect})"
       end
       unless col_widget.respond_to? action
         raise "Unknown action '#{action}' for column '#{col}'"
       end
 
       debug "Calling '#{action} on '#{col_widget.class}' widget"
-      OMF::Web::SessionStore[col_widget.widget_id, :widgets] # just to reset expiration timer
       col_widget.send(action, params, req) || {}
+      # res = col_widget.send(action, params, req) || {}
+      # unless res.is_a? Hash
+        # raise "Action '#{action}' for '#{col_widget}' is expected to return a hash, but returned type '#{res.class}'"
+      # end
 
       res = col_widget.content_descriptor.dup
       r = OMF::Web::Theme::ColumnContentRenderer.new(col_widget, col)

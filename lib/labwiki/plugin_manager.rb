@@ -6,7 +6,6 @@ module LabWiki
 
   class PluginManager < OMF::Common::LObject
     @@plugins = {}
-    @@plugins_for_col = { plan: [], prepare: [], execute: []}
 
     def self.init
       info "INITIALIZING PLUGINS"
@@ -33,11 +32,8 @@ module LabWiki
         # :priority => lambda(),
         # :widget_class => Class
         wdescr[:config_name] ||= name
-        if ctxt = @@plugins_for_col[wdescr[:context]]
-          ctxt << wdescr
-        else
-          warn "Ignoring plugin '#{name} for context '#{wdescr[:context]}'"
-        end
+        ctxt = (@@plugins[wdescr[:context]] ||= [])
+        ctxt << wdescr
       end
 
       # Register provided renderers
@@ -49,11 +45,11 @@ module LabWiki
     def self.create_widget(column, params)
       debug "Creating widget for '#{column}' from '#{params.inspect}'"
       if wname = params[:plugin]
-        wdescr = @@plugins_for_col[column.to_sym].find {|wd|
-          #puts ">>> #{wd[:name] == wname} - #{wd}"
+        wdescr = @@plugins[column.to_sym].find {|wd|
+          puts ">>> #{wd[:name] == wname} - #{wd}"
           wd[:name] == wname}
       else
-        widget = @@plugins_for_col[column.to_sym].reduce(:priority => 0, :wdescr => {}) do |best, wdescr|
+        widget = @@plugins[column.to_sym].reduce(:priority => 0, :wdescr => {}) do |best, wdescr|
           if priority = wdescr[:priority].call(params)
             if priority > best[:priority]
               best = {:priority => priority, :wdescr => wdescr}
@@ -86,14 +82,6 @@ module LabWiki
         return nil
       end
       rd
-    end
-
-    def self.init_session()
-      @@plugins.each do |name, plugin_descr|
-        if block = plugin_descr[:on_session_init]
-          block.call()
-        end
-      end
     end
 
   end # class

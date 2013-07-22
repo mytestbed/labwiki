@@ -59,6 +59,7 @@ module LabWiki::Plugin::Experiment
         exp[:irods_path] = iticket['path']
         exp[:exp_name] = iticket['exp_name']
       end
+      info exp
       OMF::Web::SessionStore[:exps, :omf] << exp
 
       create_oml_tables()
@@ -159,8 +160,8 @@ module LabWiki::Plugin::Experiment
         next unless sx[2] == :defProperty
 
         params = sx[3]
-        #puts "PARSE: #{params}--#{sx}"
-        #next unless params.is_a? Hash
+        puts "PARSE: #{params}--#{sx}"
+        next unless params.is_a? Hash
         ph = {}
         [nil, :name, :default, :comment].each_with_index do |key, i|
           next unless (v = params[i]).is_a? Sexp

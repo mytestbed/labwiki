@@ -12,11 +12,6 @@ LabWiki::PluginManager.register :experiment, {
   end,
   :selector => lambda do ||
   end,
-  :on_session_init => lambda do
-    #repo = OMF::Web::ContentRepository.register_repo(id, opts)
-    #OMF::Web::SessionStore[:execute, :repos] << repo
-    puts ">>>> EXPERIMENT NEW SESSION"
-  end,
   :widgets => [
     {
       :name => 'experiment',

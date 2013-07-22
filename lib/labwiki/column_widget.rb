@@ -29,10 +29,6 @@ module LabWiki
       @mime_type || 'unknown'
     end
 
-    def widget_id
-      "wid#{self.object_id}"
-    end
-
     def content_descriptor
       {:mime_type => mime_type, :url => content_url}
     end
