@@ -319,5 +319,6 @@ div.widget_toolbar ol li a {
   background-size: 16px 16px;
 }
 
-
-
+.label-INFO { background-color: #468847; }
+.label-WARN { background-color: #f89406; }
+.label-ERROR { background-color: #b94a48; }

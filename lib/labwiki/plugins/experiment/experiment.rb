@@ -53,12 +53,12 @@ module LabWiki::Plugin::Experiment
       info "Starting experiment name:#{@name} url: #{url} script: #{script}"
 
       OMF::Web::SessionStore[:exps, :omf] ||= []
-      exp = { id: @name }
+      exp = { id: @name, instance: self }
       if iticket
         exp[:irods_token] = iticket['token']
         exp[:irods_path] = iticket['path']
+        exp[:exp_name] = iticket['exp_name']
       end
-      info exp
       OMF::Web::SessionStore[:exps, :omf] << exp
 
       create_oml_tables()
@@ -66,14 +66,18 @@ module LabWiki::Plugin::Experiment
       props = {'experiment-id' => @name}
       properties.each { |p| props[p[:name]] = p[:value] }
       @properties.each { |p| p[:value] = props[p[:name]] ||= p[:default] }
-      @state = :running
-      @start_time = Time.now
-      @ec = LabWiki::Plugin::Experiment::RunExpController.new(@name, slice, script, props, @config_opts) do |etype, msg|
-        handle_exp_output @ec, etype, msg
+
+      unless @state == :finished
+        @state = :running
+        @start_time = Time.now
+        @ec = LabWiki::Plugin::Experiment::RunExpController.new(@name, slice, script, props, @config_opts) do |etype, msg|
+          handle_exp_output @ec, etype, msg
+        end
       end
     end
 
     def stop_experiment()
+      @state = :finished
       @ec.stop
     end
 

@@ -57,7 +57,7 @@ map "/dump" do
 
     if exp
       i_token = exp[:irods_token]
-      i_path = exp[:irods_path]
+      i_path = "#{exp[:irods_path]}/#{LabWiki::Configurator[:gimi][:irods][:measurement_folder]}_#{exp[:exp_name]}" rescue "#{exp[:irods_path]}"
 
       dump_cmd << " --domain #{omf_exp_id} --token #{i_token} --path #{i_path}"
       EM.popen(dump_cmd)
@@ -101,7 +101,9 @@ end
 
 map '/logout' do
   handler = Proc.new do |env|
+    req = ::Rack::Request.new(env)
     env['warden'].logout(:default)
+    req.session['sid'] = nil
     [307, {'Location' => '/', "Content-Type" => ""}, ['Next window!']]
   end
   run handler

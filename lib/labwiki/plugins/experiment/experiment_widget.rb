@@ -16,6 +16,7 @@ module LabWiki::Plugin::Experiment
       end
       super column, :type => :experiment
       @experiment = nil
+
       @config_opts = config_opts
       OMF::Web::SessionStore[self.widget_id, :widgets] = self # Let's stick around a bit
     end
@@ -23,11 +24,13 @@ module LabWiki::Plugin::Experiment
     def on_get_content(params, req)
       debug "on_get_content: '#{params.inspect}'"
 
-      if @experiment
-        # release currenlty used experiment
+      if (omf_exp_id = params[:omf_exp_id])
+        exp_hash =OMF::Web::SessionStore[:exps, :omf].find { |v| v[:id] == omf_exp_id }
+        @experiment = exp_hash[:instance]
+      else
+        @experiment = LabWiki::Plugin::Experiment::Experiment.new(nil, @config_opts)
       end
 
-      @experiment = LabWiki::Plugin::Experiment::Experiment.new(nil, @config_opts)
       if (url = params[:url])
         @experiment.script = url
       end
@@ -41,10 +44,12 @@ module LabWiki::Plugin::Experiment
           slice = gimi_exp['slice'] && gimi_exp['slice']['sliceID']
         end
         iticket = gimi_exp['iticket']
+        iticket ||= {}
+        iticket['exp_name'] = gimi_exp['name']
+        info iticket
       end
       slice ||= params[:slice]
-      iticket ||= {}
-      info iticket
+      iticket ||= { "token" => "W4WxkspO1Bn3Qxy", "path" => "/tempZone/home/rods/user1" }
       @experiment.start_experiment((params[:properties] || {}).values, slice, params[:name], iticket)
     end
 
