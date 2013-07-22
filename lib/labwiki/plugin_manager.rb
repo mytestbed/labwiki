@@ -47,11 +47,12 @@ module LabWiki
     end
 
     def self.create_widget(column, params)
-      debug "Creating widget for '#{column}' from '#{params.inspect}'"
+      debug "Creating widget for '#{column}' from '#{params.inspect}' -- #{@@plugins_for_col[column.to_sym]}"
       if wname = params[:plugin]
-        wdescr = @@plugins_for_col[column.to_sym].find {|wd|
-          #puts ">>> #{wd[:name] == wname} - #{wd}"
-          wd[:name] == wname}
+        wdescr = @@plugins_for_col[column.to_sym].find do |wd|
+          puts ">>> #{wname} - #{wd[:name] == wname} - #{wd}"
+          wd[:name] == wname
+        end
       else
         widget = @@plugins_for_col[column.to_sym].reduce(:priority => 0, :wdescr => {}) do |best, wdescr|
           if priority = wdescr[:priority].call(params)

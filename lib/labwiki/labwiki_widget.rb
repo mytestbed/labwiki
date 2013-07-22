@@ -20,14 +20,7 @@ module LabWiki
       action = "on_#{action}".to_sym
       params = expand_req_params(params, req)
 
-      # col_widget = @widgets[col]
-      # if action == :on_get_content
-        # # that's the time to create a new widget if it doesn't exist yet, or
-        # # if the requested content is different from before
-        # if col_widget.nil? || (col_widget.content_url != params[:url])
-          # col_widget = create_column_widget(col, params)
-        # end
-      # end
+      puts "dispatch params: #{params}"
       col_widget = @widgets[col]
       if widget_id = params[:widget_id]
         unless col_widget && col_widget.widget_id == widget_id
@@ -38,8 +31,10 @@ module LabWiki
             raise "Requesting unknown widget id '#{widget_id}::#{widget_id.class}' -- #{col_widget.inspect}"
           end
         end
-      elsif url = params[:url] && col_widget
-        col_widget = nil if col_widget.content_url != url
+      elsif col_widget
+        if url = params[:url] || (params[:params] || {})[:url]
+          col_widget = nil if col_widget.content_url != url
+        end
       end
       unless col_widget
         col_widget = @widgets[col] = create_column_widget(col, params)

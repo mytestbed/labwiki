@@ -50,10 +50,9 @@ module LabWiki
     end
 
     def on_get_plugin(params, req)
-      @content_opts = params
-
-      debug "on_get_plugin: '#{params.inspect}'"
-      self
+      debug "on_get_plugin: '#{params}'"
+      @content_opts = params[:params]
+      on_get_content(@content_opts, req)
     end
 
   end

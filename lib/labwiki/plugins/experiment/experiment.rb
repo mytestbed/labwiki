@@ -154,6 +154,7 @@ module LabWiki::Plugin::Experiment
       sexp = parser.process(content)
       # Looking for 'defProperty'
       properties = sexp.collect do |sx|
+        #puts "SX: >>> #{sx}"
         next if (sx.is_a? Symbol)
         next unless sx[0] == :call
         next unless sx[2] == :defProperty
@@ -165,6 +166,10 @@ module LabWiki::Plugin::Experiment
         [nil, :name, :default, :comment].each_with_index do |key, i|
           next unless (v = params[i]).is_a? Sexp
           ph[key] = v[1]
+        end
+        if ph.empty?
+          warn "Wrong RubyParser version"
+          ph = nil
         end
         ph
       end.compact
