@@ -274,7 +274,7 @@ _If you start labwiki while using SSH, the instance will die once SSH terminated
 
 If restarting OML server is needed. Simply run:
 
-    /etc/init.d/oml-server restart
+    /etc/init.d/oml2-server restart
 
 Root permission is required.
 
