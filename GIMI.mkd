@@ -227,7 +227,7 @@ Finger crossed.
 
 Now try it in the browser.
 
-## Future redeployment
+## Redeployment
 
 You probably noticed that we run everything from the source (except OML), so to do re-deployment, simply go to the repository directory, kill the process and update the repo by:
 
@@ -240,4 +240,41 @@ You probably noticed that we run everything from the source (except OML), so to 
 Then re-run whatever you need to run.
 
 _Because we run everything from the source, PLEASE report the git commit id whenever you need to report issues_
+
+## Restart Labwiki and/or OML server
+
+### Labwiki
+
+Firstly you need to find out existing running labwiki instances.
+
+    ps -ef | grep labwiki.rb
+
+Double check the processes, record the ids and kill them.
+
+Now locate where labwiki installed, given the example of emmy9, it is located at
+
+    /home/dbhat/labwiki_new/labwiki
+
+However you could also locate it via:
+
+    ls -l /proc/<process_id>/cwd
+
+
+Get inside of the labwiki directory, make sure using right ruby version, and better running the instance as directory owner.
+
+    sudo -i -u dbhat
+    rvm use 1.9.3
+    ruby -I lib -I ../omf_web/lib lib/labwiki.rb --lw-config test/config/test_gimi.yaml -p <port number> start
+
+Need more than one instance? Simply choose a different port number.
+
+_If you start labwiki while using SSH, the instance will die once SSH terminated. To avoid it, make sure you start a screen session, and run labwiki inside the session_
+
+### OML server
+
+If restarting OML server is needed. Simply run:
+
+    /etc/init.d/oml-server restart
+
+Root permission is required.
 
