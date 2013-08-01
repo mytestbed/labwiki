@@ -1,0 +1,6 @@
+--title LabWiki
+--private
+-o documentation
+lib/**/*.rb
+-
+*.mkd
