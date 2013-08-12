@@ -4,19 +4,19 @@
 
 Make a new directory, create parent if needed.
 
-  imkdir -p <directory>
+    imkdir -p <directory>
 
 Write (overwrite if exists) a file, recursively if it is a directory
 
-  iput -f -r <file>
+    iput -f -r <file>
 
 List directory, optionally list sub-directories
 
-  ils <-r>
+    ils <-r>
 
 Read (overwrite if exists) a file, recursively if it is a directory
 
-  iget -f -r <file>
+    iget -f -r <file>
 
 ## With itickets
 
@@ -26,18 +26,18 @@ _As in irods version 3.2, iput & iget with iticket and recusive mode won't work_
 
 Make a new directory, create parent if needed.
 
-  imkdir -t <ticket> -p <directory>
+    imkdir -t <ticket> -p <directory>
 
 Write (overwrite if exists) a file, recursively if it is a directory
 
-  iput -t <ticket> -f -r <file>
+    iput -t <ticket> -f -r <file>
 
 List directory, optionally list sub-directories
 
-  ils -t <ticket> <-r>
+    ils -t <ticket> <-r>
 
 Read (overwrite if exists) a file, recursively if it is a directory
 
-  iget -t <ticket> -f -r <file>
+    iget -t <ticket> -f -r <file>
 
 
