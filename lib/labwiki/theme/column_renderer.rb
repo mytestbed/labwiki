@@ -4,8 +4,8 @@ require 'labwiki/theme/col_content_renderer'
 
 module OMF::Web::Theme
   class ColumnRenderer < Erector::Widget
-    
- 
+
+
     def initialize(title, widget, col_name, position)
       @title = title
       @widget = widget
@@ -13,13 +13,13 @@ module OMF::Web::Theme
       @position = position
       @content_renderer = ColumnContentRenderer.new(widget, col_name)
     end
-        
+
     def content
       title = @title
       #widget = @widget
       pos = @position
       width = 400
-      style = "overflow-y: hidden; left: #{width * pos}px; width: #{width}px; display: block; " 
+      style = "overflow-y: hidden; left: #{width * pos}px; width: #{width}px; display: block; "
       div :class => "k-panel k-focus", :id => "kp#{pos}", :style => style do
         render_panel_titlebar(title)
         # div :class => "panel-options", :style => "display: none; " do
@@ -42,11 +42,25 @@ module OMF::Web::Theme
       javascript %{
         L.require('#LW.init', function() {
           LW.#{@col_name}_controller.init('lw#{object_id}', #{opts.to_json});
+
+          $('#new-button_#{@col_name}').click(function() {
+            $('#new_script_#{@col_name}').toggle();
+          });
+          $('#new_script_form_#{@col_name}').submit(function(event) {
+            $.post("/create_script", $(this).serialize(), function(data) {
+              $(".alert-create-script").html(data).addClass("alert-success").removeClass("alert-error");
+            }).fail(function(data) {
+              $(".alert-create-script").html(data.responseText).addClass("alert-error").removeClass("alert-success");
+            }).always(function(data) {
+              $(".alert-create-script").show();
+            });
+            return false;
+          });
         });
       }
-      
+
     end
-    
+
     def render_panel_titlebar(title)
       prefix = "kp#{@position}_"
       div :class => "titlebar" do
@@ -77,10 +91,9 @@ module OMF::Web::Theme
       div :id => "lw#{object_id}_search", :class => "block-nav content-selection" do
         table do
           tr do
-            unless @col_name == :plan
+            if @col_name == :prepare
               td :class => 'action-buttons', :style => 'width: 32px' do
-                button :class => "new-button", :onclick => "LW.#{@col_name}_controller.on_new_button();return false;"
-                 #, :style => 'width:32px'
+                button :id => "new-button_#{@col_name}", :class => "new-button"
               end
             end
             td do
@@ -97,6 +110,22 @@ module OMF::Web::Theme
             end
           end
         end
+        if @col_name == :prepare
+          div id: "new_script_#{@col_name}", style: "font-size: 1em; display: none;" do
+            div class: "alert-create-script", style: "display: none; margin: 7px 0 7px 7px; padding: 5px;"
+            form id: "new_script_form_#{@col_name}", class: "form-inline", style: "padding: 5px; font-size: 100%;" do
+              input name: "file_name", type: "text", value: "", placeholder: "File name", style: "margin-right: 5px; height: 30px;"
+              select name: "file_ext", style: "margin-right: 5px; width: 60px;" do
+                option(value: 'rb') { text "Ruby" }
+                option(value: 'md') { text "Wiki" }
+              end
+              button :type => "submit", :class => "btn btn-inverse" do
+                text "Create"
+              end
+            end
+          end
+        end
+
         div :class => "suggestion-list", :style => 'display: none;' do
           ul :class => 'suggestion-list ui-menu'
         end
