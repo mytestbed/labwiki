@@ -56,13 +56,13 @@ module OMF::Web::Theme
           div :id => "k-topbar" do
             span 'LabWiki', :class => 'brand'
             ul :class => 'secondary-nav' do
-              if OMF::Web::SessionStore[:exps, :gimi].nil?
-                li :style => "padding-top: 6px; margin-right: 10px;" do
-                  span :class => 'label label-warning' do
-                    text "You don't have any projects or experiments associated, certain features might not function properly."
-                  end
-                end
-              end
+              #if OMF::Web::SessionStore[:exps, :gimi].nil?
+              #  li :style => "padding-top: 6px; margin-right: 10px;" do
+              #    span :class => 'label label-warning' do
+              #      text "You don't have any projects or experiments associated, certain features might not function properly."
+              #    end
+              #  end
+              #end
               li do
                 a :href => '#', :class => 'user' do
                   i :class => "icon-user icon-white"
