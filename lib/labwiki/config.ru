@@ -58,8 +58,13 @@ map "/create_script" do
     end
     repo ||= (OMF::Web::SessionStore[:prepare, :repos] || []).first
 
-
-    repo.write("repo/#{sub_folder}/#{file_name}", "", "Adding new script #{file_name}")
+    begin
+      repo.write("repo/#{sub_folder}/#{file_name}", "", "Adding new script #{file_name}")
+    rescue => e
+      if e.class == RuntimeError && e.message =~ /Cannot write to file/
+        repo.write("#{sub_folder}/#{file_name}", "", "Adding new script #{file_name}")
+      end
+    end
     [200, {}, "#{file_name} created"]
   end
   run handler
