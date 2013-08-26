@@ -195,9 +195,9 @@ map "/" do
     when '/'
       [307, {'Location' => '/labwiki', "Content-Type" => ""}, ['Next window!']]
     when '/favicon.ico'
-      [301, {'Location' => '/resource/image/favicon.ico', "Content-Type" => ""}, ['Next window!']]
+      [307, {'Location' => '/resource/image/favicon.ico', "Content-Type" => ""}, ['Next window!']]
     when '/image/favicon.ico'
-      [301, {'Location' => '/resource/image/favicon.ico', "Content-Type" => ""}, ['Next window!']]
+      [307, {'Location' => '/resource/image/favicon.ico', "Content-Type" => ""}, ['Next window!']]
     else
       OMF::Common::Loggable.logger('rack').warn "Can't handle request '#{req.path_info}'"
       [401, {"Content-Type" => ""}, "Sorry!"]
