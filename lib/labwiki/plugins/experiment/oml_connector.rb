@@ -1,146 +1,66 @@
-
-require 'postgres-pr/connection'
-#require 'sequel'
+require 'eventmachine'
+require 'em-synchrony'
+require 'sequel'
+require 'em-pg-sequel'
 require 'monitor'
-#require 'em-postgresql-sequel'
-#require 'postgres_connection'
-      
+
 module LabWiki::Plugin::Experiment
-        
-  # Establishes a connection to the database associated with a 
+  # Establishes a connection to the database associated with a
   # single experiment.
   #
   class OmlConnector < OMF::Common::LObject
-        
-    TOID2TYPE = {
-      17 => :blob,
-      20 => :integer,
-      21 => :integer,
-      23 => :integer,
-      25 => :string,
-      700 => :float,
-      701 => :float,
-      1700 => :integer,
-    }
-
-    TYPE_OID = {
-      16 => :bool,
-      17 => :bytea,
-      18 => :char,
-      19 => :name,
-      20 => :int8,
-      21 => :int2,
-      22 => :int2vector,
-      23 => :int4,
-      24 => :regproc,
-      25 => :text,
-      26 => :oid,
-      27 => :tid,
-      28 => :xid,
-      29 => :cid,
-      30 => :oidvector,
-      114 => :json,
-      142 => :xml,
-      194 => :pgnodetree,
-      600 => :point,
-      601 => :lseg,
-      602 => :path,
-      603 => :box,
-      604 => :polygon,
-      628 => :line,
-      700 => :float4,
-      701 => :float8,
-      702 => :abstime,
-      703 => :reltime,
-      704 => :tinterval,
-      705 => :unknown,
-      718 => :circle,
-      790 => :cash,
-      829 => :macaddr,
-      869 => :inet,
-      650 => :cidr,
-      1007 => :int4array,
-      1009 => :textarray,
-      1021 => :float4array,
-      1033 => :aclitem,
-      1263 => :cstringarray,
-      1042 => :bpchar,
-      1043 => :varchar,
-      1082 => :date,
-      1083 => :time,
-      1114 => :timestamp,
-      1184 => :timestamptz,
-      1186 => :interval,
-      1266 => :timetz,
-      1560 => :bit,
-      1562 => :varbit,
-      1700 => :numeric,
-      1790 => :refcursor,
-      2202 => :regprocedure,
-      2203 => :regoper,
-      2204 => :regoperator,
-      2205 => :regclass,
-      2206 => :regtype,
-      2211 => :regtypearray,
-      3614 => :tsvector,
-      3642 => :gtsvector,
-      3615 => :tsquery,
-      3734 => :regconfig,
-      3769 => :regdictionary,
-      3904 => :int4range,
-      2249 => :record,
-      2287 => :recordarray,
-      2275 => :cstring,
-      2276 => :any,
-      2277 => :anyarray,
-      2278 => :void,
-      2279 => :trigger,
-      3838 => :evttrigger,
-      2280 => :language_handler,
-      2281 => :internal,
-      2282 => :opaque,
-      2283 => :anyelement,
-      2776 => :anynonarray,
-      3500 => :anyenum,
-      3115 => :fdw_handler,
-      3831 => :anyrange
-    }
+    include MonitorMixin
 
     def initialize(exp_id, graph_table, config_opts)
+      super()
       @exp_id = exp_id
       @graph_table = graph_table
       @config_opts = config_opts
-      
       @graph_descriptions = []
       @connected = false
-      @lock = Monitor.new
-      #@session_id = Thread.current["sessionID"]
-      
-      _connect(exp_id)
+      @periodic_timers = {}
+
+      EM.synchrony do
+        _connect(exp_id)
+      end
     end
-    
-    def add_graph(graph_descr)
-      debug "Received graph description '#{graph_descr}'"
-      h = {:graph_descr => graph_descr, :processed => false}
-      @graph_descriptions << h
-      _init_graph(h) if connected? 
-    end
-    
-    def connected?
-      unless @connected
-        @lock.synchronize do
-          @connected = !@connection.nil?
+
+    def disconnect
+      debug "Disconnecting #{@exp_id}...#{@connection}"
+      if connected?
+        @connection.disconnect
+        info "#{@exp_id} DB DISCONNECED ...#{@connection}"
+
+        synchronize do
+          @connected = false
         end
       end
+      # Cancel timers
+      synchronize do
+        @periodic_timers.each do |k, v|
+          v.cancel
+        end
+        @periodic_timers.clear
+      end
+    end
+
+    def connected?
       @connected
     end
-    
+
+    def add_graph(graph_descr)
+      debug "Received graph description '#{graph_descr}'"
+      h = { :graph_descr => graph_descr, :processed => false }
+      @graph_descriptions << h
+      _init_graph(h) if connected?
+    end
+
     def _init_graph(gd)
-      @lock.synchronize do
+      synchronize do
         return if gd[:processed]
         gd[:processed] = true
       end
-            
+
       gd[:graph_descr].mstreams.each do |name, sql|
         _init_mstream(name, sql, gd)
       end
@@ -148,121 +68,119 @@ module LabWiki::Plugin::Experiment
 
     def _init_mstream(name, sql, gd)
       debug "Initializing mstream '#{name}' (#{sql})"
-      
-      f = Fiber.new do
-        limit = 20
-        offset = 0
 
-        a = nil
-        loop do
-          begin 
-            a = @connection.query("#{sql} LIMIT #{limit} OFFSET #{offset}")
-            break # Everything setup
-          rescue Exception => ex
-            msg = ex.message.split("\t")
-            if msg[1] == "C42P01"
-              debug msg[2]
-            else 
-              warn "Querying OML backend failed (#{msg[1]}) - #{ex}"
+      if sql =~ /SELECT (.+) FROM \"(.+)\"/
+        select_str = $1.dup
+        db_table_name = $2.dup.to_sym
+
+        db_fields = {}.tap do |f_hash|
+          select_str.split(", ").each do |f|
+            if f =~ /\"(.+)\" AS \"(.+)\"/
+              f_hash[$1.to_sym] = $2.to_sym
+            elsif f =~ /\"(.+)\"/
+              f_hash[$1.to_sym] = nil
             end
-            Fiber.yield # try again later
           end
         end
-        schema = a.fields.map do |f|
-          unless type = TOID2TYPE[f.type_oid]
-            error "Found unknown type_oid '#{TYPE_OID[f.type_oid]} in OML query '#{sql}'"
-            return
+      end
+
+      table = nil
+
+      t_describe_table = EM::Synchrony.add_periodic_timer(5) do
+        schema = @connection.schema(db_table_name).map do |col, meta|
+          if db_fields.keys.include?(col)
+            if db_fields[col].nil?
+              [col, meta[:type]]
+            else
+              [db_fields[col], meta[:type]]
+            end
           end
-          [f.name, type]
-        end
+        end.compact
+        debug "Schema >> #{schema}"
         tname = "#{gd[:graph_descr].name}_#{name}_#{@exp_id}"
         table = OMF::OML::OmlTable.new tname, schema
         debug "Created table '#{table.inspect}'"
         OMF::Web::DataSourceProxy.register_datasource table
-        
+
         gopts = gd[:graph_descr].render_option()
         # TODO: Locks us into graphs with single data sources
         gopts[:data_sources] = [{
-          :name => tname, 
+          :name => tname,
           :stream => tname, # not sure what we need this for?
           :schema => table.schema,
           :update_interval => 1
         }]
         @graph_table.add_row [table.object_id, gopts.to_json]
-        
-        # @lock.synchronize do
-          # Thread.current["sessionID"] = @session_id # so the ds_proxy end up in the right session store
-          # (gd[:ds_proxies] ||= []) << OMF::Web::DataSourceProxy.for_source(:name => tname)[0]
-          # (gd[:table_names] ||= []) << tname
-        # end 
-                
-        loop do
-          if a
-            unless (rows = a.rows).empty?
-              puts ">> #{rows.inspect}"
+        t_describe_table.cancel
+      end
+
+      synchronize do
+        @periodic_timers[:describe] = t_describe_table
+      end
+
+      limit = 20
+      offset = 0
+      dataset = nil
+      t_query = EM::Synchrony.add_periodic_timer(5) do
+        if table
+          if dataset
+            unless (rows = dataset.all).empty?
+              debug "Found rows >> #{rows.inspect}"
+              rows = rows.map { |v| v.values }
               table.add_rows rows, true
               offset += rows.length
             end
           end
-          Fiber.yield
           begin
-            a = @connection.query("#{sql} LIMIT #{limit} OFFSET #{offset}")
-          rescue Exception => ex
-            warn "Exception while running query '#{sql}' - #{ex}"
-            a = nil
+            dataset = @connection.fetch("#{sql} LIMIT #{limit} OFFSET #{offset}")
+          rescue => e
+            warn "Exception while running query '#{sql}' - #{e}"
+            dataset = nil
           end
         end
       end
-      @lock.synchronize do
-        (gd[:fibers] ||= []) << f
+      synchronize do
+        @periodic_timers[:query] = t_query
       end
-    end 
-    
-    
+    end
+
     def _connect(exp_id)
-      EM::defer do
-        Fiber.new do
-          while @connection.nil?
-            begin
-              sleep 2
-              
-              db_uri = "tcp://#{@config_opts[:host]}"
-              debug "Attempting to connect to OML backend on '#{db_uri}' - #{object_id}-#{Thread.current}"
-              conn = PostgresPR::Connection.new(exp_id, @config_opts[:user], @config_opts[:pwd], db_uri)              
-              _on_connected(conn)
-            rescue Exception => ex
-              msg = ex.message.split("\t")
-              if msg[1] == "C3D000"
-                debug "Database '#{exp_id}' doesn't exist yet"
-              else 
-                warn "Connection to OML backend failed - #{ex}"
-                debug ex.backtrace.join("\n\t")
-              end
-              sleep 3
-            end 
+      db_uri = "postgres://#{@config_opts[:user]}:#{@config_opts[:pwd]}@#{@config_opts[:host]}:5433/#{exp_id}"
+      info "Attempting to connect to OML backend (DB) on '#{db_uri}' - #{object_id}-#{Thread.current}"
+
+      t_connect = EM::Synchrony.add_periodic_timer(10) do
+        begin
+          connection = Sequel.connect(db_uri, pool_class: EM::PG::ConnectionPool, max_connections: 2, port: 5433)
+          _on_connected(connection)
+
+          t_connect.cancel # Connected
+        rescue => e
+          if e.message =~ /PG::Error: FATAL:  database .+ does not exist/
+            debug "Database '#{exp_id}' doesn't exist yet"
+          else
+            error "Connection to OML backend (DB) failed - #{e}"
+            debug e.backtrace.join("\n\t")
+            t_connect.cancel # DB server says no
           end
-        end.resume
+        end
       end
-    end    
+
+      synchronize do
+        @periodic_timers[:connect] = t_connect
+      end
+    end
 
     def _on_connected(connection)
-      @lock.synchronize do
+      synchronize do
         @connection = connection
+        @connected = true
       end
-      debug "Connected to OML backend '#{@exp_id}' - #{@graph_descriptions.inspect}" 
+      debug "Connected to OML backend '#{@exp_id}' - #{@graph_descriptions.inspect}"
       @graph_descriptions.each do |gd|
         _init_graph(gd)
-      end 
-      
-      debug "Periodically updating data tables"
-      while (true)
-        @graph_descriptions.each do |gd|
-          gd[:fibers].each {|f| f.resume}
-        end
-        sleep 3
       end
     end
   end # class
 end # module
-          
+
 

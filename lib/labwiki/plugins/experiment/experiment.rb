@@ -79,6 +79,7 @@ module LabWiki::Plugin::Experiment
     def stop_experiment()
       @state = :finished
       @ec.stop
+      @oml_connector.disconnect
     end
 
 
@@ -136,6 +137,7 @@ module LabWiki::Plugin::Experiment
 
       if etype == 'DONE.OK'
         @state = :finished
+        @oml_connector.disconnect
       end
     end
 
