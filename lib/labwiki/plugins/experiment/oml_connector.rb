@@ -145,12 +145,12 @@ module LabWiki::Plugin::Experiment
     end
 
     def _connect(exp_id)
-      db_uri = "postgres://#{@config_opts[:user]}:#{@config_opts[:pwd]}@#{@config_opts[:host]}:5433/#{exp_id}"
+      db_uri = "postgres://#{@config_opts[:user]}:#{@config_opts[:pwd]}@#{@config_opts[:host]}/#{exp_id}"
       info "Attempting to connect to OML backend (DB) on '#{db_uri}' - #{object_id}-#{Thread.current}"
 
       t_connect = EM::Synchrony.add_periodic_timer(10) do
         begin
-          connection = Sequel.connect(db_uri, pool_class: EM::PG::ConnectionPool, max_connections: 2, port: 5433)
+          connection = Sequel.connect(db_uri, pool_class: EM::PG::ConnectionPool, max_connections: 2)
           _on_connected(connection)
 
           t_connect.cancel # Connected
