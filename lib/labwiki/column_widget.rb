@@ -6,7 +6,7 @@ require 'labwiki/theme/col_content_renderer'
 module LabWiki
 
   # Responsible for the content to be shown in a particular column
-  class ColumnWidget < OMF::Common::LObject
+  class ColumnWidget < OMF::Base::LObject
 
     def initialize(col, opts)
       @column = col

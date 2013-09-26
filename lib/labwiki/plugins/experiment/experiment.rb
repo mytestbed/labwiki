@@ -11,7 +11,7 @@ module LabWiki::Plugin::Experiment
 
   # Maintains the context for a particular experiment.
   #
-  class Experiment < OMF::Common::LObject
+  class Experiment < OMF::Base::LObject
 
     attr_reader :name, :state, :url, :slice, :properties
 

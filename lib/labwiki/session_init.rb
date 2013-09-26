@@ -4,7 +4,7 @@ require 'omf-web/content/git_repository'
 require 'omf-web/session_store'
 require 'labwiki/plugin_manager'
 
-class SessionInit < OMF::Common::LObject
+class SessionInit < OMF::Base::LObject
   def initialize(app, opts = {})
     @app = app
   end

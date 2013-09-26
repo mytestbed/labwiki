@@ -4,7 +4,7 @@ module LabWiki
 
   # Implements functionality common across all rack handler
   #
-  class AbstractHandler < OMF::Common::LObject
+  class AbstractHandler < OMF::Base::LObject
 
     def initialize(opts = {})
       @opts = opts

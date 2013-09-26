@@ -4,7 +4,7 @@ module LabWiki::Plugin::Experiment
   # This class kicks off and monitors a single experiment
   # on behalf of an ExperimentWidget
   #
-  class ExperimentMonitor < OMF::Common::LObject
+  class ExperimentMonitor < OMF::Base::LObject
     
     def initialize()
       script = '~/src/omf_labwiki/test/repo/oidl/tutorial/using-properties.rb'

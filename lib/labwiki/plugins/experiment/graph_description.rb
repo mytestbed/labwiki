@@ -5,7 +5,7 @@ module LabWiki::Plugin::Experiment
         
   # Hold the description for a graph defined for an experiment
   #
-  class GraphDescription < OMF::Common::LObject
+  class GraphDescription < OMF::Base::LObject
     
     attr_reader :name, :type, :mstreams
     

@@ -12,7 +12,7 @@ module Labwiki
     end
   end
 
-  class Authenticator < OMF::Common::LObject
+  class Authenticator < OMF::Base::LObject
     def self.signon(req)
       params = req.params
 

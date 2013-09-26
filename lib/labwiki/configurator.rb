@@ -4,7 +4,7 @@ module LabWiki
 
   # Holds the local configuration information.
   #
-  class Configurator < OMF::Common::LObject
+  class Configurator < OMF::Base::LObject
     @@configuration = nil
 
     # Load a YAML config file from 'fname' and make it available

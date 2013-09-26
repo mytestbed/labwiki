@@ -8,7 +8,7 @@ module LabWiki::Plugin::Experiment
   # Establishes a connection to the database associated with a
   # single experiment.
   #
-  class OmlConnector < OMF::Common::LObject
+  class OmlConnector < OMF::Base::LObject
     include MonitorMixin
 
     def initialize(exp_id, graph_table, config_opts)

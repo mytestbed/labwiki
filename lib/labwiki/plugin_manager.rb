@@ -4,7 +4,7 @@ require 'omf_base/lobject'
 module LabWiki
   module Plugin; end # Put all plugins under this module
 
-  class PluginManager < OMF::Common::LObject
+  class PluginManager < OMF::Base::LObject
     @@plugins = {}
     @@plugins_for_col = { plan: [], prepare: [], execute: []}
 

@@ -4,7 +4,7 @@ require 'omf-web/widget'
 require 'labwiki/column_widget'
 
 module LabWiki
-  class LWWidget < OMF::Common::LObject
+  class LWWidget < OMF::Base::LObject
 
     attr_reader :plan_widget, :prepare_widget, :execute_widget
 

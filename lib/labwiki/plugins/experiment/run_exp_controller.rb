@@ -16,7 +16,7 @@ module LabWiki::Plugin::Experiment
   #
   # Borrows from Open3
   #
-  class RunExpController < OMF::Common::LObject
+  class RunExpController < OMF::Base::LObject
     
     #RUN_CMD = '~/src/omf_labwiki/test/omf_exec/omf_exec-norbit.sh'
   
