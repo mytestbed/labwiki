@@ -3,8 +3,8 @@
 module LabWiki::Plugin::Experiment
 
   class ExperimentCommonRenderer < Erector::Widget
-    include OMF::Common::Loggable
-    extend OMF::Common::Loggable
+    include OMF::Base::Loggable
+    extend OMF::Base::Loggable
 
     def initialize(widget, experiment)
       @widget = widget

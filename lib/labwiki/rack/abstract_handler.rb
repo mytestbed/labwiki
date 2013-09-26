@@ -1,4 +1,4 @@
-require 'omf_common/lobject'
+require 'omf_base/lobject'
 
 module LabWiki
 

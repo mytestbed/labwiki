@@ -3,8 +3,8 @@
 
 module OMF::Web::Theme
   class ColumnContentRenderer < Erector::Widget
-    include OMF::Common::Loggable
-    extend OMF::Common::Loggable
+    include OMF::Base::Loggable
+    extend OMF::Base::Loggable
 
     MIMETYPE2ICON = {
       'text' => "/resource/vendor/mono_icons/linedpaperpencil32.png",

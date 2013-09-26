@@ -1,6 +1,6 @@
 
-require 'omf_common/lobject'
-OMF::Common::Loggable.init_log 'labwiki', :searchPath => File.join(File.dirname(__FILE__), 'labwiki')
+require 'omf_base/lobject'
+OMF::Base::Loggable.init_log 'labwiki', :searchPath => File.join(File.dirname(__FILE__), 'labwiki')
 
 module OmfLabWiki; end
 
@@ -43,7 +43,7 @@ opts = {
     # post_parse should return true if everything is ok
     :post_parse => lambda do
       unless LabWiki::Configurator.configured?
-        OMF::Common::Loggable.logger(:opts).fatal "Missing --lw_config option"
+        OMF::Base::Loggable.logger(:opts).fatal "Missing --lw_config option"
         false
       else
         true

@@ -1,4 +1,4 @@
-require 'omf_common/lobject'
+require 'omf_base/lobject'
 require 'warden-openid'
 
 use ::Rack::ShowExceptions
@@ -162,7 +162,7 @@ map '/_ws' do
     require 'omf-web/rack/websocket_handler'
     run OMF::Web::Rack::WebsocketHandler.new # :backend => { :debug => true }
   rescue Exception => ex
-    OMF::Common::Loggable.logger('web').error "#{ex}"
+    OMF::Base::Loggable.logger('web').error "#{ex}"
   end
 end
 
@@ -199,7 +199,7 @@ map "/" do
     when '/image/favicon.ico'
       [307, {'Location' => '/resource/image/favicon.ico', "Content-Type" => ""}, ['Next window!']]
     else
-      OMF::Common::Loggable.logger('rack').warn "Can't handle request '#{req.path_info}'"
+      OMF::Base::Loggable.logger('rack').warn "Can't handle request '#{req.path_info}'"
       [401, {"Content-Type" => ""}, "Sorry!"]
     end
   end

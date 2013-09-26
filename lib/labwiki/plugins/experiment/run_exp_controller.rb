@@ -1,6 +1,6 @@
 
 require 'fcntl'
-require 'omf_common/lobject'
+require 'omf_base/lobject'
 
 module LabWiki
   module Plugin
@@ -193,7 +193,7 @@ module LabWiki::Plugin::Experiment
 end # module LabWiki::Plugin::Experiment
 
 if $0 == __FILE__
-  OMF::Common::Loggable.init_log 'run_exec_test'
+  OMF::Base::Loggable.init_log 'run_exec_test'
   require 'labwiki/plugins/experiment/graph_description'
   LabWiki::Plugin::Experiment::GraphDescription.new
     

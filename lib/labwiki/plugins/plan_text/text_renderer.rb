@@ -5,7 +5,7 @@ module OMF::Web::Theme
   
   # Override some of the functionality of the text renderer defined in OMF::Web
   class TextRenderer < Erector::Widget
-    include OMF::Common::Loggable
+    include OMF::Base::Loggable
     
     def initialize(text_widget, content, opts)
       super opts

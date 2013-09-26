@@ -1,5 +1,5 @@
 
-require 'omf_common/lobject'
+require 'omf_base/lobject'
 require 'omf-web/widget'
 require 'labwiki/theme/col_content_renderer'
 

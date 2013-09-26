@@ -6,8 +6,8 @@ require 'omf_oml/table'
 
 APPNAME = File.basename($0).split('.')[0]
 
-require 'omf_common/lobject'
-OMF::Common::Loggable.init_log APPNAME
+require 'omf_base/lobject'
+OMF::Base::Loggable.init_log APPNAME
 
 PORT=3000
 
@@ -22,6 +22,6 @@ ep.on_new_stream() do |name, stream|
 end
 
 
-include OMF::Common::Loggable
+include OMF::Base::Loggable
 info "Listening on port '#{PORT}'"
 ep.run(false)
