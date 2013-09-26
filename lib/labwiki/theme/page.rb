@@ -41,9 +41,9 @@ module OMF::Web::Theme
 
         LW.session_id = OML.session_id = '#{OMF::Web::SessionStore.session_id}';
 
-        L.provide('jquery', ['/resource/vendor/jquery/jquery.js']);
-        L.provide('jquery.periodicalupdater', ['/resource/vendor/jquery/jquery.periodicalupdater.js']);
-        L.provide('jquery.ui', ['/resource/vendor/jquery-ui/js/jquery-ui.min.js']);
+        //L.provide('jquery', ['/resource/vendor/jquery/jquery.js']);
+        //L.provide('jquery.periodicalupdater', ['/resource/vendor/jquery/jquery.periodicalupdater.js']);
+        //L.provide('jquery.ui', ['/resource/vendor/jquery-ui/js/jquery-ui.min.js']);
         X = null;
         /*
         $(document).ready(function() {

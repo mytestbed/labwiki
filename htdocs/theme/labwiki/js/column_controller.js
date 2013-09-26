@@ -1,8 +1,6 @@
-
 if (typeof(LW) == "undefined") LW = {};
 
-L.provide('LW.column_controller', ['#LW.content_selector_widget', '#jquery.ui'], function () {
-
+define('LW.column_controller', ['LW.content_selector_widget', '/resource/vendor/jquery-ui/js/jquery-ui.min.js'], function () {
   /*
    * The UI is divided into multiple columns whose content may dynamically
    * change during a session. This object coordinates the behavior the columns

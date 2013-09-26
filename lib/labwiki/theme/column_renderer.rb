@@ -40,7 +40,7 @@ module OMF::Web::Theme
         # end
       end
       javascript %{
-        L.require('#LW.init', function() {
+        require(['LW.init'], function() {
           LW.#{@col_name}_controller.init('lw#{object_id}', #{opts.to_json});
 
           $('#new-button_#{@col_name}').click(function() {
