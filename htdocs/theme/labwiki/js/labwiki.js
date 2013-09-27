@@ -1,4 +1,6 @@
-define('LW.init', ['LW.column_controller'], function() {
+
+L.provide('LW.init', ['#LW.column_controller'], function() {
+
   LW.controllers = [
     LW.plan_controller = new LW.column_controller({name: 'plan', col_index: 0}),
     LW.prepare_controller = new LW.column_controller({name: 'prepare', col_index: 1}),
