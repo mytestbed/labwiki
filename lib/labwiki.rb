@@ -1,6 +1,8 @@
 
 require 'omf_base/lobject'
+require 'omf_common/lobject'
 OMF::Base::Loggable.init_log 'labwiki', :searchPath => File.join(File.dirname(__FILE__), 'labwiki')
+OMF::Common::Loggable.init_log 'labwiki', :searchPath => File.join(File.dirname(__FILE__), 'labwiki')
 
 module OmfLabWiki; end
 
