@@ -54,7 +54,12 @@ module OMF::Web::Theme
       div :id => "container", :style => "position: relative; height: 100%;" do
         div :id => "k-window" do
           div :id => "k-topbar" do
-            span 'LabWiki', :class => 'brand'
+            span :class => 'brand' do
+              text "LabWiki"
+            end
+            span :class => 'brand', :style=> "font-size: 110%; line-height: 29px;" do
+              text "by NICTA"
+            end
             ul :class => 'secondary-nav' do
               #if OMF::Web::SessionStore[:exps, :gimi].nil?
               #  li :style => "padding-top: 6px; margin-right: 10px;" do
