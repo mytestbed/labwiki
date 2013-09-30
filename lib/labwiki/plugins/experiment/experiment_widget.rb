@@ -49,7 +49,7 @@ module LabWiki::Plugin::Experiment
         info iticket
       end
       slice ||= params[:slice]
-      iticket ||= { "token" => "W4WxkspO1Bn3Qxy", "path" => "/tempZone/home/rods/user1" }
+      iticket ||= { "path" => "/tempZone/home/rods/user1" }
       @experiment.start_experiment((params[:properties] || {}).values, slice, params[:name], iticket)
     end
 

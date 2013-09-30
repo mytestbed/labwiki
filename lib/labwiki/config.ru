@@ -86,10 +86,9 @@ map "/dump" do
     end
 
     if exp
-      i_token = exp[:irods_token]
       i_path = "#{exp[:irods_path]}/#{LabWiki::Configurator[:gimi][:irods][:measurement_folder]}_#{exp[:exp_name]}" rescue "#{exp[:irods_path]}"
 
-      dump_cmd << " --domain #{omf_exp_id} --token #{i_token} --path #{i_path}"
+      dump_cmd << " --domain #{omf_exp_id} --path #{i_path}"
       EM.popen(dump_cmd)
       [200, {}, "Dump script triggered. <br /> Using command: #{dump_cmd} <br /> Unfortunately we cannot show you the progress."]
     else

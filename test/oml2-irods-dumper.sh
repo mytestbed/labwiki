@@ -51,10 +51,6 @@ while [ $CONT = 0 ] ; do
 			shift
 			DOMAIN=$1
 			;;
-		--token)
-			shift
-			ITICKET=$1
-			;;
 		--path)
 			shift
 			IPATH=$1
@@ -69,8 +65,8 @@ while [ $CONT = 0 ] ; do
 	CONT=$?
 done
 
-if [ -z "${DOMAIN}" -o -z "${ITICKET}" -o -z "${IPATH}" ]; then
-	log "ERROR	All three parameters (--domain DOMAIN --token ITICKET --path IPATH)"
+if [ -z "${DOMAIN}" -o -z "${IPATH}" ]; then
+	log "ERROR	All two parameters (--domain DOMAIN --path IPATH)"
 	exit 1
 fi
 

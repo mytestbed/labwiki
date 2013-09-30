@@ -55,7 +55,6 @@ module LabWiki::Plugin::Experiment
       OMF::Web::SessionStore[:exps, :omf] ||= []
       exp = { id: @name, instance: self }
       if iticket
-        exp[:irods_token] = iticket['token']
         exp[:irods_path] = iticket['path']
         exp[:exp_name] = iticket['exp_name']
       end
