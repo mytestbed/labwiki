@@ -106,11 +106,10 @@ module LabWiki::Plugin::Experiment
         debug "output:#{etype}: #{msg.inspect}"
 
         if etype == 'STDOUT'
-          if m = msg.match(/^\s*([A-Z]+)\s*([^:]*):\s*(.*)/)
-            # ' INFO NodeHandler: OMF Experiment..' => ['...'. 'INFO', 'NodeHandler', 'OMF ...']
+          if (m = msg.match /^.*(INFO|WARN|ERROR|DEBUG|FATAL)\s+((\w+:{2})*)(\w+):\s+(.*)$/)
             severity = m[1].to_sym
-            path = m[2]
-            message = m[3]
+            path = m[-2]
+            message = m[-1]
             return if message.start_with? '------'
 
             if path == 'GraphDescription' && (m = message.match(/^\s*REPORT:([A-Za-z:]*)\s*(.*)/))
