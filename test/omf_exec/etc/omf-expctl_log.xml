@@ -10,7 +10,9 @@
     <trunc>false</trunc>
     <formatter type="PatternFormatter" pattern="%d %l %C: %m" />
   </outputter>
-  <outputter type="StdoutOutputter" name="console" level="INFO"/>
+  <outputter type="StdoutOutputter" name="console" level="INFO">
+    <formatter type="PatternFormatter" pattern="%d %l %m" />
+  </outputter>
   
 
   <!-- loggers -->
