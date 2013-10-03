@@ -120,11 +120,11 @@ module LabWiki::Plugin::Experiment
 
       limit = 20
       offset = 0
-      dataset = nil
+      rows = nil
       t_query = EM::Synchrony.add_periodic_timer(5) do
         if table
-          if dataset
-            unless (rows = dataset.all).empty?
+          if rows
+            unless rows.empty?
               debug "Found rows >> #{rows.inspect}"
               rows = rows.map { |v| v.values }
               table.add_rows rows, true
@@ -132,13 +132,15 @@ module LabWiki::Plugin::Experiment
             end
           end
           begin
-            dataset = @connection.fetch("#{sql} LIMIT #{limit} OFFSET #{offset}")
+            rows = @connection.fetch("#{sql} LIMIT #{limit} OFFSET #{offset}").all
           rescue => e
             warn "Exception while running query '#{sql}' - #{e}"
-            dataset = nil
+            rows = nil
           end
         end
       end
+
+
       synchronize do
         @periodic_timers[:query] = t_query
       end
