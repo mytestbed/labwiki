@@ -38,7 +38,7 @@ module LabWiki::Plugin::Experiment
 
       @slice = slice
       ts = Time.now.iso8601.split('+')[0].gsub(':', '-')
-      @name = (OMF::Web::SessionStore[:name, :user] || 'unknown') + '-'
+      @name = (OMF::Web::SessionStore[:id, :user] || 'unknown') + '-'
       if (!name.nil? && name.to_s.strip.length > 0)
         @name += "#{name}-"
       end
@@ -106,7 +106,7 @@ module LabWiki::Plugin::Experiment
         debug "output:#{etype}: #{msg.inspect}"
 
         if etype == 'STDOUT'
-          if (m = msg.match /^.*(INFO|WARN|ERROR|DEBUG|FATAL)\s+((\w+:{2})*)(\w+):\s+(.*)$/)
+          if (m = msg.match /^.*(INFO|WARN|ERROR|DEBUG|FATAL)\s+(.*)$/)
             severity = m[1].to_sym
             path = m[-2]
             message = m[-1]

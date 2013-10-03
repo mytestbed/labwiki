@@ -9,4 +9,4 @@ OML_PATH=bob
 rvm use ruby-1.9.3@omf
 
 exec ruby -I $OMF_HOME/omf_common/lib -I $OMF_HOME/omf_ec/lib $OMF_HOME/omf_ec/bin/omf_ec \
-  --uri xmpp://srv.mytestbed.net --log_config $CWD/etc/ec_6_log.rb exec --oml_uri $OML_PATH $*
+  --uri xmpp://srv.mytestbed.net --log_config $CWD/etc/ec_6_log.yml exec --oml_uri $OML_PATH $*
