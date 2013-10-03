@@ -108,11 +108,11 @@ module LabWiki::Plugin::Experiment
         if etype == 'STDOUT'
           if (m = msg.match /^.*(INFO|WARN|ERROR|DEBUG|FATAL)\s+(.*)$/)
             severity = m[1].to_sym
-            path = m[-2]
+            path = ''
             message = m[-1]
             return if message.start_with? '------'
 
-            if path == 'GraphDescription' && (m = message.match(/^\s*REPORT:([A-Za-z:]*)\s*(.*)/))
+            if (m = message.match(/^\s*REPORT:([A-Za-z:]*)\s*(.*)/))
               if m[1] == 'START:'
                 @gd = LabWiki::Plugin::Experiment::GraphDescription.new
               end
