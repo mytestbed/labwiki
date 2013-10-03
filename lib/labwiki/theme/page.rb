@@ -75,9 +75,11 @@ module OMF::Web::Theme
                   end
 
                   ul style: 'display: hidden' do
-                    OMF::Web::SessionStore[:projects, :geni_portal].each do |project|
-                      li do
-                        text "#{project[:name]}: #{project[:slice][:name]}"
+                    if OMF::Web::SessionStore[:projects, :geni_portal]
+                      OMF::Web::SessionStore[:projects, :geni_portal].each do |project|
+                        li do
+                          text "#{project[:name]}: #{project[:slice][:name]}"
+                        end
                       end
                     end
                   end
