@@ -17,18 +17,18 @@ module LabWiki::Plugin::Experiment
   # Borrows from Open3
   #
   class RunExpController < OMF::Base::LObject
-    
+
     #RUN_CMD = '~/src/omf_labwiki/test/omf_exec/omf_exec-norbit.sh'
-  
+
     # Holds the pids for all active apps
     @@apps = Hash.new
-  
+
     # True if this active app is being killed by a proper
     # call to ExecApp.killAll() or kill()
     # (i.e. when the caller of ExecApp decided to stop the application,
     # as far as we are concerned, this is a 'clean' exit)
     @cleanExit = false
-  
+
     def self.[](id)
       app = @@apps[id]
       if (app == nil)
@@ -36,28 +36,28 @@ module LabWiki::Plugin::Experiment
       end
       return app
     end
-  
+
     def self.kill_all(signal = 'KILL')
       @@apps.each_value { |app|
         app.kill(signal)
       }
     end
-  
+
     def stdin(line)
       debug "writing '#{line}' to experiment '#{@id}'"
       @stdin.write("#{line}\n")
       @stdin.flush
     end
-  
+
     def kill(signal = 'KILL')
       @cleanExit = true
       Process.kill(signal, @pid)
     end
-    
+
     def stop()
       kill("-INT")
     end
-  
+
     #
     # Run an experiment controller 'cmd' in a separate thread and monitor
     # its stdout. Also send status reports to the provided block which should
@@ -70,12 +70,12 @@ module LabWiki::Plugin::Experiment
     # @param config_opts - Configuration option, need to contain 'ec_runner'
     #
     def initialize(id, slice, exp_script, properties, config_opts, &block)
-  
+
       @id = id
       @observer = block
       @@apps[id] = self
       @running = true
-      
+
       script_props = []
       if exp_id = properties.delete('experiment-id')
         script_props << "--experiment-id #{exp_id}"
@@ -89,14 +89,14 @@ module LabWiki::Plugin::Experiment
       unless ec_runner = config_opts[:ec_runner]
         raise "Missing 'ec_runner' declaration in experiment configuration"
       end
-      #cmd = "#{RUN_CMD} #{exp_script} #{script_props.join(' ')} -- #{props.join(' ')}" 
-      cmd = "#{ec_runner} #{exp_script} #{script_props.join(' ')} -- #{props.join(' ')}" 
+      #cmd = "#{RUN_CMD} #{exp_script} #{script_props.join(' ')} -- #{props.join(' ')}"
+      cmd = "#{ec_runner} #{exp_script} #{script_props.join(' ')} -- #{props.join(' ')}"
       debug "CMD: #{cmd}"
-      
+
       pw = IO::pipe   # pipe[0] for read, pipe[1] for write
       pr = IO::pipe
       pe = IO::pipe
-  
+
       debug "Starting application '#{id}' - cmd: '#{cmd}'"
       @observer.call('STARTED', nil)
       @pid = fork do
@@ -105,15 +105,15 @@ module LabWiki::Plugin::Experiment
         pw[1].close
         STDIN.reopen(pw[0])
         pw[0].close
-  
+
         pr[0].close
         STDOUT.reopen(pr[1])
         pr[1].close
-  
+
         pe[0].close
         STDERR.reopen(pe[1])
         pe[1].close
-  
+
         begin
           exec(cmd)
         rescue => ex
@@ -125,7 +125,7 @@ module LabWiki::Plugin::Experiment
         # Should never get here
         exit!
       end
-  
+
       pw[0].close
       pr[1].close
       pe[1].close
@@ -137,7 +137,7 @@ module LabWiki::Plugin::Experiment
       @threads << monitor_pipe('STDERR', pe[0])
       monitor_exit()
     end
-    
+
     #
     # Create a thread to monitor the process and its output
     # and report that back to the server
@@ -163,7 +163,7 @@ module LabWiki::Plugin::Experiment
         debug "Thread #{name} finished"
       end
     end
-    
+
     def monitor_exit
       # Create thread which waits for application to exit
       Thread.new(@id, @pid) do |id, pid|
@@ -183,12 +183,12 @@ module LabWiki::Plugin::Experiment
           # @threads.each {|t| Thread.kill(t) }
         # rescue Exception => err
           # error "monitor_exit(#{id}): #{err}"
-        # end        
+        # end
         @observer.call("DONE.#{s}", "status: #{status}")
       end
     end
-    
-  
+
+
   end # class
 end # module LabWiki::Plugin::Experiment
 
@@ -196,7 +196,7 @@ if $0 == __FILE__
   OMF::Base::Loggable.init_log 'run_exec_test'
   require 'labwiki/plugins/experiment/graph_description'
   LabWiki::Plugin::Experiment::GraphDescription.new
-    
+
 
   #cmd = '~/src/omf_labwiki/test/omf_exec/omf_exec-norbit.sh ~/src/omf_labwiki/test/repo/oidl/tutorial/using-properties.rb -- --res1 omf.nicta.node11 --res2 omf.nicta.node12'
   script = '~/src/omf_labwiki/test/repo/oidl/tutorial/using-properties.rb'
@@ -204,7 +204,7 @@ if $0 == __FILE__
   ec = LabWiki::Plugin::Experiment::RunExpController.new(:test, script, properties) do |etype, message|
     begin
       puts "<<#{etype}>> <#{message.inspect}>"
-      
+
       if etype == 'STDOUT'
         if m = message.match(/^\s*([A-Z]+)\s*([^:]*):\s*(.*)/)
           # ' INFO NodeHandler: OMF Experiment..' => ['...'. 'INFO', 'NodeHandler', 'OMF ...']
@@ -219,14 +219,14 @@ if $0 == __FILE__
             if m[1] == 'STOP'
               puts "GG>>> #{gd.inspect}"
             end
-            
+
           end
         end
       end
     rescue Exception => ex
       puts "EXCEPTION: #{ex}"
     end
-    
+
     if etype == 'DONE.OK'
       Thread.list.each {|t| p t}
       sleep 5

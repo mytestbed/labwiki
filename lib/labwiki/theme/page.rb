@@ -73,12 +73,20 @@ module OMF::Web::Theme
                   a :class => 'dropdown-toggle', :'data-toggle' => 'dropdown', :href => '#' do
                     text 'Experiment Context'
                   end
+
+                  ul style: 'display: hidden' do
+                    OMF::Web::SessionStore[:projects, :geni_portal].each do |project|
+                      li do
+                        text "#{project[:name]}: #{project[:slice][:name]}"
+                      end
+                    end
+                  end
                 end
               end
               li do
                 a :href => '#', :class => 'user' do
                   i :class => "icon-user icon-white"
-                  text OMF::Web::SessionStore[:id, :user] || 'Unknown'
+                  text OMF::Web::SessionStore[:name, :user] || 'Unknown'
                 end
               end
               li do

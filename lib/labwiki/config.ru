@@ -7,7 +7,13 @@ use ::Rack::OpenID
 
 $users = {}
 
+OPENID_FIELDS = {
+  google: ["http://axschema.org/contact/email", "http://axschema.org/namePerson/last"],
+  geni: ['http://geni.net/projects', 'http://geni.net/slices', 'http://geni.net/user/urn', 'http://geni.net/user/prettyname']
+}
+
 Warden::OpenID.configure do |config|
+  config.required_fields = OPENID_FIELDS[:geni]
   config.user_finder do |response|
     $users[response.identity_url]
   end
@@ -19,8 +25,9 @@ module AuthFailureApp
     if openid = env['warden.options'][:openid]
       # OpenID authenticate success, but user is missing (Warden::OpenID.user_finder returns nil)
       identity_url = openid[:response].identity_url
-      $users[identity_url] = identity_url
-      env['warden'].set_user identity_url
+      user_data = OpenID::AX::FetchResponse.from_success_response(openid[:response]).data
+      $users[identity_url] = user_data
+      env['warden'].set_user user_data
       [307, {'Location' => '/labwiki', "Content-Type" => ""}, ['Next window!']]
     else
       # When OpenID authenticate failure
@@ -102,8 +109,9 @@ map "/labwiki" do
   handler = proc do |env|
     if options[:no_login_required]
       identity_url = "https://localhost?id=user1"
-      $users[identity_url] = identity_url
-      env['warden'].set_user identity_url
+      u_data = 'user1'
+      $users[identity_url] = u_data
+      env['warden'].set_user u_data
 
       require 'labwiki/rack/top_handler'
       LabWiki::TopHandler.new(options).call(env)

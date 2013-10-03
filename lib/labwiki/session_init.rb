@@ -15,25 +15,39 @@ class SessionInit < OMF::Base::LObject
     Thread.current["sessionID"] = req.session['sid'] # needed for Session Store
     if env['warden'].authenticated?
       user = env['warden'].user
-      id = user.split('=').last
-      OMF::Web::SessionStore[:email, :user] = id
-      OMF::Web::SessionStore[:name, :user] = id
-      OMF::Web::SessionStore[:id, :user] = id
 
-      unless OMF::Web::SessionStore[:ininitialized, :session]
+      update_user(user)
+      # We need to fresh this every time user logged in
+      update_geni_projects_slices(user)
+
+      unless OMF::Web::SessionStore[:initialised, :session]
         if LabWiki::Configurator[:gimi]
           init_git_repository(id) if LabWiki::Configurator[:gimi][:git]
           init_gimi_experiments(id) if LabWiki::Configurator[:gimi][:ges]
           init_irods_repository(id) if LabWiki::Configurator[:gimi][:irods]
         end
         LabWiki::PluginManager.init_session()
-        OMF::Web::SessionStore[:ininitialized, :session] = true
+        OMF::Web::SessionStore[:initialised, :session] = true
       end
     end
     @app.call(env)
   end
 
   private
+
+  def update_user(user)
+    if user.kind_of? Hash
+      pretty_name = user['http://geni.net/user/prettyname'].first
+      urn = user['http://geni.net/user/urn'].first
+      OMF::Web::SessionStore[:urn, :user] = urn
+      OMF::Web::SessionStore[:name, :user] = pretty_name
+      OMF::Web::SessionStore[:id, :user] = urn && urn.split('|').last
+    elsif user.kind_of? String
+      OMF::Web::SessionStore[:urn, :user] = user
+      OMF::Web::SessionStore[:name, :user] = user
+      OMF::Web::SessionStore[:id, :user] = user
+    end
+  end
 
   def init_gimi_experiments(id)
     ges_url = LabWiki::Configurator[:gimi][:ges]
@@ -56,6 +70,27 @@ class SessionInit < OMF::Base::LObject
     end.flatten.compact
 
     OMF::Web::SessionStore[:exps, :gimi] = gimi_experiments
+  end
+
+  def update_geni_projects_slices(user)
+    if user.kind_of?(Hash) &&
+      (geni_projects = user['http://geni.net/projects']) &&
+      (geni_slices = user['http://geni.net/slices'])
+
+      projects = geni_projects.map do |p|
+        uuid, name = *(p.split('|'))
+        { uuid: uuid, name: name, slice: {}}
+      end
+
+      geni_slices.each do |s|
+        uuid, project_uuid, name = *s.split('|')
+        if (p = projects.find { |v| v[:uuid] == project_uuid })
+          p[:slice] = { uuid: uuid, name: name }
+        end
+      end
+
+      OMF::Web::SessionStore[:projects, :geni_portal] = projects
+    end
   end
 
   def init_irods_repository(id)
