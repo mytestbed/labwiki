@@ -1,0 +1,14 @@
+logging_config:
+  loggers:
+    - name: root
+    level: :debug
+    appenders:
+      - my_stdout
+
+    appenders:
+      - name: my_stdout
+      type: Stdout
+      level: :info
+      layout:
+        type: Pattern
+        pattern: "%d %l %m\n"
