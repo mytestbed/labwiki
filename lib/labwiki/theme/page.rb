@@ -69,6 +69,13 @@ module OMF::Web::Theme
               #  end
               #end
               li do
+                div class: 'dropdown' do
+                  a :class => 'dropdown-toggle', :'data-toggle' => 'dropdown', :href => '#' do
+                    text 'Experiment Context'
+                  end
+                end
+              end
+              li do
                 a :href => '#', :class => 'user' do
                   i :class => "icon-user icon-white"
                   text OMF::Web::SessionStore[:id, :user] || 'Unknown'
