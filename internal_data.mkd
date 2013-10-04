@@ -1,0 +1,36 @@
+# Internal data stored
+
+It currently utilise omf_web session store, and the API is the following:
+
+    OMF::Web::SessionStore[<secondary_id>, <primary_id>]
+
+## User
+
+    OMF::Web::SessionStore[:urn, :user] #String
+    OMF::Web::SessionStore[:name, :user] #String
+    OMF::Web::SessionStore[:id, :user] #String
+
+## GIMI experiments (experiment contexts)
+
+    OMF::Web::SessionStore[:exps, :gimi]
+
+## Repositories
+
+For each column in LW main interface.
+
+    OMF::Web::SessionStore[:plan, :repos] # Array of OMF::Web::Repository, for :plan column(first one).
+    OMF::Web::SessionStore[:prepare, :repos]
+    OMF::Web::SessionStore[:execute, :repos]
+
+
+## GENI portal projects + slices
+
+    OMF::Web::SessionStore[:projects, :geni_portal] # Array of Hash
+
+    # Sample project hash
+
+    {
+      uuid: <uuid>,
+      name: project_bob,
+      slices: [{ uuid: <uuid>, name: slice_bob }, { uuid: <uuid>, name: slice_alice }]
+    }

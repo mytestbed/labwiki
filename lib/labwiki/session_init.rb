@@ -79,17 +79,27 @@ class SessionInit < OMF::Base::LObject
 
       projects = geni_projects.map do |p|
         uuid, name = *(p.split('|'))
-        { uuid: uuid, name: name, slice: {}}
+        { uuid: uuid, name: name, slices: []}
       end
 
       geni_slices.each do |s|
         uuid, project_uuid, name = *s.split('|')
         if (p = projects.find { |v| v[:uuid] == project_uuid })
-          p[:slice] = { uuid: uuid, name: name }
+          p[:slices] << { uuid: uuid, name: name }
         end
       end
 
       OMF::Web::SessionStore[:projects, :geni_portal] = projects
+    elsif LabWiki::Configurator[:gimi][:mocking]
+      OMF::Web::SessionStore[:projects, :geni_portal] = [
+        { uuid: '1111-111111',
+          name: 'bob',
+          slices: [
+            { uuid: '2222-2222222', name: 'bob_slice' },
+            { uuid: '3333-3333333', name: 'alice_slice' }
+          ]
+        }
+      ]
     end
   end
 

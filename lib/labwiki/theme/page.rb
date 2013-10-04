@@ -21,7 +21,7 @@ module OMF::Web::Theme
     #depends_on :js, "/resource/theme/labwiki/js/execute_col_controller.js"
     depends_on :js, "/resource/theme/labwiki/js/labwiki.js"
 
-
+    depends_on :js, "/resource/vendor/bootstrap/js/bootstrap.js"
 
     def initialize(widget, opts)
       super
@@ -71,14 +71,17 @@ module OMF::Web::Theme
               li do
                 div class: 'dropdown' do
                   a :class => 'dropdown-toggle', :'data-toggle' => 'dropdown', :href => '#' do
-                    text 'Experiment Context'
+                    text "Experiment Context: bob "
+                    b class: 'caret', style: 'border-top-color: #fff;'
                   end
 
-                  ul style: 'display: hidden' do
-                    if OMF::Web::SessionStore[:projects, :geni_portal]
+                  if OMF::Web::SessionStore[:projects, :geni_portal]
+                    ul :class => 'dropdown-menu', :role => 'menu', :'aria-labelledby' => 'dLabel', :style => 'display: true' do
                       OMF::Web::SessionStore[:projects, :geni_portal].each do |project|
-                        li do
-                          text "#{project[:name]}: #{project[:slice][:name]}"
+                        li :style => 'display: block;' do
+                          a :href => '#', :style => 'color: black;' do
+                            text "#{project[:name]}: #{project[:slices].map {|v| v[:name]}.join(',')}"
+                          end
                         end
                       end
                     end
@@ -86,9 +89,15 @@ module OMF::Web::Theme
                 end
               end
               li do
+                a :href => '#' do
+                  i :class => "icon-plus icon-white"
+                  text 'Add context'
+                end
+              end
+              li do
                 a :href => '#', :class => 'user' do
                   i :class => "icon-user icon-white"
-                  text OMF::Web::SessionStore[:name, :user] || 'Unknown'
+                  text (OMF::Web::SessionStore[:name, :user] || 'Unknown').capitalize
                 end
               end
               li do
@@ -99,7 +108,7 @@ module OMF::Web::Theme
               end
             end
           end
-          div :id => "k-slider", :style => "height: 500px;" do
+          div :id => "k-slider" do
             @col_renderers.each do |renderer|
               rawtext renderer.to_html
             end
