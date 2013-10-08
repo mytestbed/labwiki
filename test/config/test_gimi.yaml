@@ -14,9 +14,9 @@ labwiki:
     #  sample_repo: ~/tmp/foo
     # Use irdos
     irods:
-      home: /tempZone/home/rods
-      script_folder: experimentTemplates
-      measurement_folder: GIMI_meas_data
+      home: /geniRenci
+      script_folder: ExperimentScripts
+      measurement_folder: measurementData
     # URL where Gimi experiment service hosted
     ges: http://localhost:8023
     # If use mocked data
