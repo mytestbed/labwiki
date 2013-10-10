@@ -66,7 +66,14 @@ map "/create_script" do
     repo ||= (OMF::Web::SessionStore[:prepare, :repos] || []).first
 
     begin
-      repo.write("repo/#{sub_folder}/#{file_name}", "", "Adding new script #{file_name}")
+      if repo.class == OMF::Web::IRodsContentRepository
+        # iRods needs full path...
+        path = "#{LabWiki::Configurator[:gimi][:irods][:home]}/#{sub_folder}/#{file_name}"
+      else
+        path = "repo/#{sub_folder}/#{file_name}"
+      end
+
+      repo.write(path, "", "Adding new script #{file_name}")
     rescue => e
       if e.class == RuntimeError && e.message =~ /Cannot write to file/
         repo.write("#{sub_folder}/#{file_name}", "", "Adding new script #{file_name}")
