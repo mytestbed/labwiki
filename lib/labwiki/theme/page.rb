@@ -61,35 +61,8 @@ module OMF::Web::Theme
               text "by NICTA"
             end
             ul :class => 'secondary-nav' do
-              #if OMF::Web::SessionStore[:exps, :gimi].nil?
-              #  li :style => "padding-top: 6px; margin-right: 10px;" do
-              #    span :class => 'label label-warning' do
-              #      text "You don't have any projects or experiments associated, certain features might not function properly."
-              #    end
-              #  end
-              #end
               li do
-                div class: 'dropdown' do
-                  a :class => 'dropdown-toggle', :'data-toggle' => 'dropdown', :href => '#' do
-                    text "Experiment Context: bob "
-                    b class: 'caret', style: 'border-top-color: #fff;'
-                  end
-
-                  if OMF::Web::SessionStore[:projects, :geni_portal]
-                    ul :class => 'dropdown-menu', :role => 'menu', :'aria-labelledby' => 'dLabel', :style => 'display: true' do
-                      OMF::Web::SessionStore[:projects, :geni_portal].each do |project|
-                        li :style => 'display: block;' do
-                          a :href => '#', :style => 'color: black;' do
-                            text "#{project[:name]}: #{project[:slices].map {|v| v[:name]}.join(',')}"
-                          end
-                        end
-                      end
-                    end
-                  end
-                end
-              end
-              li do
-                a :href => '#' do
+                a :href => '#new-exp-modal', :role => 'button', :"data-toggle" => "modal" do
                   i :class => "icon-plus icon-white"
                   text 'Add context'
                 end
@@ -108,10 +81,55 @@ module OMF::Web::Theme
               end
             end
           end
+
           div :id => "k-slider" do
             @col_renderers.each do |renderer|
               rawtext renderer.to_html
             end
+          end
+        end
+      end
+
+      div id: "new-exp-modal", class: "modal hide fade" do
+        div class: "modal-header" do
+          button :type => "button", :class => "close", :"data-dismiss" => "modal", :"aria-hidden" => "true" do
+            rawtext '&times;'
+          end
+          h3 "New experiment context", style: "font-size: 20px;"
+        end
+
+        div class: "modal-body" do
+          form class: "form-horizontal" do
+            div class: "control-group" do
+              label class: "control-label" do
+                text "Project"
+              end
+              div class: "controls" do
+                select id: "project" do
+                  OMF::Web::SessionStore[:projects, :geni_portal].each do |p|
+                    option p[:name], value: p[:uuid]
+                  end
+                end
+              end
+            end
+
+            div class: "control-group" do
+              label class: "control-label" do
+                text "Name"
+              end
+              div class: "controls" do
+                input id: "exp-name", type: "text"
+              end
+            end
+          end
+        end
+
+        div class: "modal-footer" do
+          a :href => "#", :class => "btn", :"data-dismiss" => "modal" do
+            text "Close"
+          end
+          a :href => "#", :id => "new-exp", :class => "btn btn-inverse", :"data-dismiss" => "modal" do
+            text "Save"
           end
         end
       end
