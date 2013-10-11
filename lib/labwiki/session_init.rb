@@ -23,7 +23,6 @@ class SessionInit < OMF::Base::LObject
       unless OMF::Web::SessionStore[:initialised, :session]
         if LabWiki::Configurator[:gimi]
           init_git_repository(OMF::Web::SessionStore[:id, :user]) if LabWiki::Configurator[:gimi][:git]
-          init_gimi_experiments(OMF::Web::SessionStore[:id, :user]) if LabWiki::Configurator[:gimi][:ges]
           init_irods_repository(OMF::Web::SessionStore[:id, :user]) if LabWiki::Configurator[:gimi][:irods]
         end
         LabWiki::PluginManager.init_session()
@@ -93,13 +92,27 @@ class SessionInit < OMF::Base::LObject
     elsif LabWiki::Configurator[:gimi][:mocking]
       OMF::Web::SessionStore[:projects, :geni_portal] = [
         { uuid: '1111-111111',
-          name: 'bob',
+          name: 'p1',
           slices: [
             { uuid: '2222-2222222', name: 'bob_slice' },
             { uuid: '3333-3333333', name: 'alice_slice' }
           ]
+        },
+        { uuid: '1111-111112',
+          name: 'p2',
+          slices: [
+            { uuid: '2222-2222223', name: 'p2_bob_slice' },
+            { uuid: '3333-3333334', name: 'p2_alice_slice' }
+          ]
         }
       ]
+    end
+    OMF::Web::SessionStore[:exps, :gimi] ||= []
+
+
+    # We can create a default experiment for each project
+    OMF::Web::SessionStore[:projects, :geni_portal].each do |p|
+      proj = find_or_create("projects", p[:name])
     end
   end
 
@@ -139,6 +152,20 @@ class SessionInit < OMF::Base::LObject
     rescue => e
       error e.message
     end
+  end
+
+  def find_or_create(res_path, res_id, additional_data = {})
+    ges_url = LabWiki::Configurator[:gimi][:ges]
+    obj = HTTParty.get("#{ges_url}/#{res_path}/#{res_id}")
+
+    if obj['uuid'].nil?
+      debug "Create a new #{res_path}"
+      obj = HTTParty.post("#{ges_url}/#{res_path}", body: { name: res_id }.merge(additional_data))
+    else
+      debug "Found existing #{res_path} #{obj['name']}"
+    end
+
+    obj
   end
 end
 

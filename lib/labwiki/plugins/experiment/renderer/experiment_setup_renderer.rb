@@ -18,7 +18,8 @@ module LabWiki::Plugin::Experiment
           table :class => 'experiment-setup', :style => 'width: auto' do
             render_field -1, :name => 'Name', :size => 24, :default => @experiment.name
 
-            if OMF::Web::SessionStore[:exps, :gimi]
+            if (geni_projs = OMF::Web::SessionStore[:projects, :geni_portal])
+              render_field(-1, name: 'Project', type: :select, options: geni_projs.map {|v| v[:name]})
               render_field(-1, name: 'Experiment', type: :select)
               render_field(-1, name: 'Slice', type: :select)
             else
@@ -53,22 +54,11 @@ module LabWiki::Plugin::Experiment
         :script => @experiment.url
       }
       javascript %{
-        var gimi_exps = #{OMF::Web::SessionStore[:exps, :gimi].to_json};
-        console.log(gimi_exps);
-        var select_experiment = $('select[name="propExperiment"]');
-        var select_slice = $('select[name="propSlice"]');
-        _.each(gimi_exps, function(exp) {
-          select_experiment.append('<option value="' + exp.name +'">' + exp.name + '</option>');
-        });
-        select_experiment.change(function() {
-          select_slice.empty();
-          var selected_exp = $(this).val();
-          var filtered_slices = _.find(gimi_exps, function(exp) { return selected_exp == exp.name; }).slices;
-          _.each(filtered_slices, function(slice) {
-            select_slice.append('<option value="' + slice.urn +'">' + slice.urn + '</option>');
-          });
-        })
-        .change();
+        var geni_projects = #{OMF::Web::SessionStore[:projects, :geni_portal].to_json};
+
+        var exp_list = new ExpListView();
+
+        exp_list.setElement($('select[name="propExperiment"]'));
 
         $("\##{fid}").submit(function(event) {
           event.preventDefault();

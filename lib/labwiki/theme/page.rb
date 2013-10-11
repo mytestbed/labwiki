@@ -20,6 +20,7 @@ module OMF::Web::Theme
     depends_on :js, "/resource/theme/labwiki/js/content_selector_widget.js"
     #depends_on :js, "/resource/theme/labwiki/js/execute_col_controller.js"
     depends_on :js, "/resource/theme/labwiki/js/labwiki.js"
+    depends_on :js, "/resource/theme/labwiki/js/exp_context.js"
 
     depends_on :js, "/resource/vendor/bootstrap/js/bootstrap.js"
 
@@ -44,27 +45,18 @@ module OMF::Web::Theme
         L.provide('jquery', ['/resource/vendor/jquery/jquery.js']);
         L.provide('jquery.periodicalupdater', ['/resource/vendor/jquery/jquery.periodicalupdater.js']);
         L.provide('jquery.ui', ['/resource/vendor/jquery-ui/js/jquery-ui.min.js']);
-        X = null;
-        /*
-        $(document).ready(function() {
-          X = $;
-        });
-        */
+
       }
       div :id => "container", :style => "position: relative; height: 100%;" do
         div :id => "k-window" do
           div :id => "k-topbar" do
-            span :class => 'brand' do
-              text "LabWiki"
-            end
-            span :class => 'brand', :style=> "font-size: 110%; line-height: 29px;" do
-              text "by NICTA"
-            end
+            span "LabWiki", :class => 'brand'
+            span "by NICTA", :class => 'brand', :style=> "font-size: 110%; line-height: 29px;"
             ul :class => 'secondary-nav' do
               li do
                 a :href => '#new-exp-modal', :role => 'button', :"data-toggle" => "modal" do
                   i :class => "icon-plus icon-white"
-                  text 'Add context'
+                  text "Add context"
                 end
               end
               li do
@@ -76,7 +68,7 @@ module OMF::Web::Theme
               li do
                 a :href => '/logout', :class => 'logout' do
                   i :class => "icon-off icon-white"
-                  text 'Log out'
+                  text "Log out"
                 end
               end
             end
@@ -101,13 +93,13 @@ module OMF::Web::Theme
         div class: "modal-body" do
           form class: "form-horizontal" do
             div class: "control-group" do
-              label class: "control-label" do
-                text "Project"
-              end
+              label "Project", class: "control-label"
               div class: "controls" do
                 select id: "project" do
-                  OMF::Web::SessionStore[:projects, :geni_portal].each do |p|
-                    option p[:name], value: p[:uuid]
+                  if OMF::Web::SessionStore[:projects, :geni_portal]
+                    OMF::Web::SessionStore[:projects, :geni_portal].each do |p|
+                      option p[:name], value: p[:name]
+                    end
                   end
                 end
               end
@@ -125,12 +117,8 @@ module OMF::Web::Theme
         end
 
         div class: "modal-footer" do
-          a :href => "#", :class => "btn", :"data-dismiss" => "modal" do
-            text "Close"
-          end
-          a :href => "#", :id => "new-exp", :class => "btn btn-inverse", :"data-dismiss" => "modal" do
-            text "Save"
-          end
+          a "Close", :href => "#", :class => "btn", :"data-dismiss" => "modal"
+          a "Save", :href => "#", :id => "save-exp", :class => "btn btn-inverse", :"data-dismiss" => "modal"
         end
       end
     end
