@@ -18,7 +18,7 @@ class SessionInit < OMF::Base::LObject
 
       update_user(user)
       # We need to fresh this every time user logged in
-      update_geni_projects_slices(user)
+      update_geni_projects_slices(user) if LabWiki::Configurator[:gimi]
 
       unless OMF::Web::SessionStore[:initialised, :session]
         if LabWiki::Configurator[:gimi]
