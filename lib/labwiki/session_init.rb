@@ -41,6 +41,7 @@ class SessionInit < OMF::Base::LObject
       OMF::Web::SessionStore[:urn, :user] = urn
       OMF::Web::SessionStore[:name, :user] = pretty_name
       OMF::Web::SessionStore[:id, :user] = urn && urn.split('|').last
+      OMF::Web::SessionStore[:id, :user] = "geni-#{OMF::Web::SessionStore[:id, :user]}"
     elsif user.kind_of? String
       OMF::Web::SessionStore[:urn, :user] = user
       OMF::Web::SessionStore[:name, :user] = user
