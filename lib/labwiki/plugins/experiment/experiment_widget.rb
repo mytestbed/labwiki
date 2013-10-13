@@ -38,19 +38,13 @@ module LabWiki::Plugin::Experiment
     end
 
     def on_start_experiment(params, req)
-      #puts "START EXPERIMENT>>> #{params.inspect}"
-      if (gimi_exp = OMF::Web::SessionStore[:exps, :gimi] && OMF::Web::SessionStore[:exps, :gimi].find { |v| v['name'] == params[:gimi_exp] })
-        unless LabWiki::Configurator[:gimi][:mocking]
-          slice = gimi_exp['slice'] && gimi_exp['slice']['sliceID']
-        end
-        iticket = gimi_exp['iticket']
-        iticket ||= {}
-        iticket['exp_name'] = gimi_exp['name']
-        info iticket
-      end
-      slice ||= params[:slice]
-      iticket ||= { "path" => "/tempZone/home/rods/user1" }
-      @experiment.start_experiment((params[:properties] || {}).values, slice, params[:name], iticket)
+      debug "START EXPERIMENT>>> #{params.inspect}"
+      irods = {}
+      irods[:path] = params[:irods_path]
+      irods[:exp_name] = params[:gimi_exp]
+      irods[:path] ||= "/tempZone/home/rods/user1"
+      slice = params[:slice]
+      @experiment.start_experiment((params[:properties] || {}).values, slice, params[:name], irods)
     end
 
     def on_stop_experiment(params, req)

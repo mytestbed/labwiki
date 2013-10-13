@@ -49,29 +49,6 @@ class SessionInit < OMF::Base::LObject
     end
   end
 
-  def init_gimi_experiments(id)
-    ges_url = LabWiki::Configurator[:gimi][:ges]
-    # FIXME use real uid when integrated
-    id = 'user1' if LabWiki::Configurator[:gimi][:mocking]
-    begin
-      response = HTTParty.get("#{ges_url}/users/#{id}")
-    rescue
-      error "Gimi experiment service not available"
-      return
-    end
-
-    if response['projects'].nil?
-      warn "User, logged in as #{id}, does not have any projects associated "
-      return
-    end
-
-    gimi_experiments = response['projects'].map do |p|
-      HTTParty.get("#{ges_url}/projects/#{p['name']}")['experiments']
-    end.flatten.compact
-
-    OMF::Web::SessionStore[:exps, :gimi] = gimi_experiments
-  end
-
   def update_geni_projects_slices(user)
     if user.kind_of?(Hash) &&
       (geni_projects = user['http://geni.net/projects']) &&
@@ -108,8 +85,6 @@ class SessionInit < OMF::Base::LObject
         }
       ]
     end
-    OMF::Web::SessionStore[:exps, :gimi] ||= []
-
 
     # We can create a default experiment for each project
     OMF::Web::SessionStore[:projects, :geni_portal].each do |p|
