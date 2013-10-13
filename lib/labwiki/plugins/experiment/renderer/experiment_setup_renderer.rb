@@ -56,9 +56,13 @@ module LabWiki::Plugin::Experiment
       javascript %{
         var geni_projects = #{OMF::Web::SessionStore[:projects, :geni_portal].to_json};
 
-        var exp_list = new ExpListView();
+        console.log(typeof(window.exp_list));
+        if (typeof(window.exp_list) === "undefined") {
+          window.exp_list = new ExpListView();
+        }
 
-        exp_list.setElement($('select[name="propExperiment"]'));
+        window.exp_list.setElement($('select[name="propExperiment"]'));
+        window.exp_list.setupExpSelect();
 
         $("\##{fid}").submit(function(event) {
           event.preventDefault();

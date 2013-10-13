@@ -24,14 +24,9 @@ var ExpListView = Backbone.View.extend({
   initialize: function() {
     this.listenTo(exps, 'add', this.addOne);
     this.listenTo(exps, 'reset', this.addAll);
+  },
 
-    $('#save-exp').on('click', function() {
-      new_exp = new Exp({ name: $('input#exp-name').val() });
-      new_exp.url = 'http://localhost:8002/projects/' + $('select#project').val() +'/experiments';
-      new_exp.save();
-      exps.add(new_exp);
-    });
-
+  setupExpSelect: function() {
     var select_project = $('select[name="propProject"]');
     var select_experiment = $('select[name="propExperiment"]');
     var select_slice = $('select[name="propSlice"]');
@@ -53,6 +48,15 @@ var ExpListView = Backbone.View.extend({
     }).change();
   },
 
+  setupNewForm: function() {
+    $('#save-exp').on('click', function() {
+      new_exp = new Exp({ name: $('input#exp-name').val() });
+      new_exp.url = 'http://localhost:8002/projects/' + $('select#project').val() +'/experiments';
+      new_exp.save();
+      exps.add(new_exp);
+    });
+  },
+
   addOne: function( exp ) {
     var view = new ExpView({ model: exp });
     this.$el.append( view.render().el );
@@ -62,4 +66,11 @@ var ExpListView = Backbone.View.extend({
     this.$el.html('');
     exps.each(this.addOne, this);
   }
+});
+
+$(function() {
+  if (typeof(window.exp_list) === "undefined") {
+    window.exp_list = new ExpListView();
+  }
+  window.exp_list.setupNewForm();
 });
