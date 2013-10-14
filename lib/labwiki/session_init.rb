@@ -67,7 +67,7 @@ class SessionInit < OMF::Base::LObject
       end
 
       OMF::Web::SessionStore[:projects, :geni_portal] = projects
-    elsif LabWiki::Configurator[:gimi][:mocking]
+    elsif LabWiki::Configurator[:gimi] && LabWiki::Configurator[:gimi][:mocking]
       OMF::Web::SessionStore[:projects, :geni_portal] = [
         { uuid: '1111-111111',
           name: 'p1',
@@ -89,7 +89,7 @@ class SessionInit < OMF::Base::LObject
     end
 
     # We can create a default experiment for each project
-    if LabWiki::Configurator[:gimi][:ges] do
+    if LabWiki::Configurator[:gimi] && LabWiki::Configurator[:gimi][:ges]
       OMF::Web::SessionStore[:projects, :geni_portal].each do |p|
         proj = find_or_create("projects", p[:name], { irods_user: OMF::Web::SessionStore[:id, :user] })
       end

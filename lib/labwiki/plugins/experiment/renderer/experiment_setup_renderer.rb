@@ -19,7 +19,7 @@ module LabWiki::Plugin::Experiment
             render_field -1, :name => 'Name', :size => 24, :default => @experiment.name
 
             geni_projs = OMF::Web::SessionStore[:projects, :geni_portal]
-            if geni_projs && !geni_projs.empty?
+            if geni_projs && !geni_projs.empty? && LabWiki::Configurator[:gimi] && LabWiki::Configurator[:gimi][:ges]
               render_field(-1, name: 'Project', type: :select, options: geni_projs.map {|v| v[:name]})
               render_field(-1, name: 'Experiment', type: :select)
               render_field(-1, name: 'Slice', type: :select)
@@ -54,17 +54,21 @@ module LabWiki::Plugin::Experiment
         :url => "lw:execute/experiment?url=#{@experiment.url}",
         :script => @experiment.url
       }
-      javascript %{
-        var geni_projects = #{OMF::Web::SessionStore[:projects, :geni_portal].to_json};
 
-        console.log(typeof(window.exp_list));
-        if (typeof(window.exp_list) === "undefined") {
-          window.exp_list = new ExpListView();
+      if LabWiki::Configurator[:gimi] && LabWiki::Configurator[:gimi][:ges]
+        javascript %{
+          var geni_projects = #{OMF::Web::SessionStore[:projects, :geni_portal].to_json};
+
+          if (typeof(window.exp_list) === "undefined") {
+            window.exp_list = new ExpListView();
+          }
+
+          window.exp_list.setElement($('select[name="propExperiment"]'));
+          window.exp_list.setupExpSelect();
         }
+      end
 
-        window.exp_list.setElement($('select[name="propExperiment"]'));
-        window.exp_list.setupExpSelect();
-
+      javascript %{
         $("\##{fid}").submit(function(event) {
           event.preventDefault();
 
