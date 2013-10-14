@@ -29,7 +29,7 @@ module LabWiki::Plugin::Experiment
       debug "Disconnecting #{@exp_id}...#{@connection}"
       if connected?
         @connection.disconnect
-        info "#{@exp_id} DB DISCONNECED ...#{@connection}"
+        info "#{@exp_id} DB DISCONNECTED ...#{@connection}"
 
         synchronize do
           @connected = false
@@ -87,15 +87,16 @@ module LabWiki::Plugin::Experiment
       table = nil
 
       t_describe_table = EM::Synchrony.add_periodic_timer(5) do
-        schema = @connection.schema(db_table_name).map do |col, meta|
-          if db_fields.keys.include?(col)
-            if db_fields[col].nil?
-              [col, meta[:type]]
+        schema = db_fields.keys.map do |key|
+          if (db_ts = @connection.schema(db_table_name).find { |col, meta| col == key } )
+            if (db_field_alias = db_fields[key])
+              [db_field_alias, dt_ts[1][:type]]
             else
-              [db_fields[col], meta[:type]]
+              [db_ts[0], dt_ts[1][:type]]
             end
           end
         end.compact
+
         debug "Schema >> #{schema}"
         tname = "#{gd[:graph_descr].name}_#{name}_#{@exp_id}"
         table = OMF::OML::OmlTable.new tname, schema
