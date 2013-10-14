@@ -84,11 +84,15 @@ class SessionInit < OMF::Base::LObject
           ]
         }
       ]
+    else
+      OMF::Web::SessionStore[:projects, :geni_portal] = []
     end
 
     # We can create a default experiment for each project
-    OMF::Web::SessionStore[:projects, :geni_portal].each do |p|
-      proj = find_or_create("projects", p[:name], { irods_user: OMF::Web::SessionStore[:id, :user] })
+    if LabWiki::Configurator[:gimi][:ges] do
+      OMF::Web::SessionStore[:projects, :geni_portal].each do |p|
+        proj = find_or_create("projects", p[:name], { irods_user: OMF::Web::SessionStore[:id, :user] })
+      end
     end
   end
 

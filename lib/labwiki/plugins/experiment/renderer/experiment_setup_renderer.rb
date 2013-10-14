@@ -18,7 +18,8 @@ module LabWiki::Plugin::Experiment
           table :class => 'experiment-setup', :style => 'width: auto' do
             render_field -1, :name => 'Name', :size => 24, :default => @experiment.name
 
-            if (geni_projs = OMF::Web::SessionStore[:projects, :geni_portal])
+            geni_projs = OMF::Web::SessionStore[:projects, :geni_portal]
+            if geni_projs && !geni_projs.empty?
               render_field(-1, name: 'Project', type: :select, options: geni_projs.map {|v| v[:name]})
               render_field(-1, name: 'Experiment', type: :select)
               render_field(-1, name: 'Slice', type: :select)
