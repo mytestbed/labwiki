@@ -111,6 +111,7 @@ module OMF::Web::Theme
               end
               div class: "controls" do
                 input id: "exp-name", type: "text"
+                input id: "irods-user-name", type: "hidden", value: OMF::Web::SessionStore[:urn, :user]
               end
             end
           end
