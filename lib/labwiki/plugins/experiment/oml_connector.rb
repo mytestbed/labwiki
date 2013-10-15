@@ -90,9 +90,9 @@ module LabWiki::Plugin::Experiment
         schema = db_fields.keys.map do |key|
           if (db_ts = @connection.schema(db_table_name).find { |col, meta| col == key } )
             if (db_field_alias = db_fields[key])
-              [db_field_alias, dt_ts[1][:type]]
+              [db_field_alias, db_ts[1][:type]]
             else
-              [db_ts[0], dt_ts[1][:type]]
+              [db_ts[0], db_ts[1][:type]]
             end
           end
         end.compact
