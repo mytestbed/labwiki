@@ -77,6 +77,8 @@ map "/create_script" do
     rescue => e
       if e.class == RuntimeError && e.message =~ /Cannot write to file/
         repo.write("#{sub_folder}/#{file_name}", "", "Adding new script #{file_name}")
+      else
+        puts ">>> Write new files error: #{e.message}"
       end
     end
     [200, {}, "#{file_name} created"]
@@ -100,7 +102,7 @@ map "/dump" do
     end
 
     if exp
-      i_path = "#{exp[:irods_path]}/#{LabWiki::Configurator[:gimi][:irods][:measurement_folder]}_#{exp[:exp_name]}" rescue "#{exp[:irods_path]}"
+      i_path = "#{exp[:irods_path]}/#{LabWiki::Configurator[:gimi][:irods][:measurement_folder]}" rescue "#{exp[:irods_path]}"
 
       dump_cmd << " --domain #{omf_exp_id} --path #{i_path}"
       EM.popen(dump_cmd)
