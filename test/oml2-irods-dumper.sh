@@ -21,10 +21,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 #
-irodsHost=221.199.209.240
-irodsPort=1247
-export irodsHost irodsPort
-
 #BACKEND=sqlite
 SQLITEDATAPATH=/var/lib/oml2
 BACKEND=postgresql
