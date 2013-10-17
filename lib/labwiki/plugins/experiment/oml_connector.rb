@@ -124,12 +124,21 @@ module LabWiki::Plugin::Experiment
       rows = nil
       t_query = EM::Synchrony.add_periodic_timer(5) do
         if table
-          if rows
+          if rows && connected?
             unless rows.empty?
-              debug "Found rows >> #{rows.inspect}"
-              rows = rows.map { |v| v.values }
-              table.add_rows rows, true
-              offset += rows.length
+              debug ">>> Found #{rows.size} rows "
+
+              row_values = rows.map do |v|
+                if v.is_a? Hash
+                  v.values
+                else
+                  error "Rows not returned as hash, this should NOT happen. DB connected? #{connected?}"
+                  nil
+                end
+              end.compact
+
+              table.add_rows row_values, true
+              offset += row_values.length
             end
           end
           begin
