@@ -52,7 +52,7 @@ module LabWiki
         break nil unless config.is_a?(Hash)
         config[key.to_sym];
       end
-      debug "Configuration for '#{key_path}' is '#{v}'"
+      #debug "Configuration for '#{key_path}' is '#{v}'"
       v
     end
   end

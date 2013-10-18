@@ -11,22 +11,25 @@ class SessionInit < OMF::Base::LObject
 
   def call(env)
     req = ::Rack::Request.new(env)
-    req.session['sid'] ||= "s#{(rand * 10000000).to_i}_#{(rand * 10000000).to_i}"
-    Thread.current["sessionID"] = req.session['sid'] # needed for Session Store
-    if env['warden'].authenticated?
-      user = env['warden'].user
 
-      update_user(user)
-      # We need to fresh this every time user logged in
-      update_geni_projects_slices(user) if LabWiki::Configurator[:gimi]
+    unless req.path =~ /^\/resource/ # Do not care about resource files
+      req.session['sid'] ||= "s#{(rand * 10000000).to_i}_#{(rand * 10000000).to_i}"
+      Thread.current["sessionID"] = req.session['sid'] # needed for Session Store
+      if env['warden'].authenticated?
+        user = env['warden'].user
 
-      unless OMF::Web::SessionStore[:initialised, :session]
-        if LabWiki::Configurator[:gimi]
-          init_git_repository(OMF::Web::SessionStore[:id, :user]) if LabWiki::Configurator[:gimi][:git]
-          init_irods_repository(OMF::Web::SessionStore[:id, :user]) if LabWiki::Configurator[:gimi][:irods]
+        update_user(user)
+        # We need to fresh this every time user logged in
+        update_geni_projects_slices(user) if LabWiki::Configurator[:gimi]
+
+        unless OMF::Web::SessionStore[:initialised, :session]
+          if LabWiki::Configurator[:gimi]
+            init_git_repository(OMF::Web::SessionStore[:id, :user]) if LabWiki::Configurator[:gimi][:git]
+            init_irods_repository(OMF::Web::SessionStore[:id, :user]) if LabWiki::Configurator[:gimi][:irods]
+          end
+          LabWiki::PluginManager.init_session()
+          OMF::Web::SessionStore[:initialised, :session] = true
         end
-        LabWiki::PluginManager.init_session()
-        OMF::Web::SessionStore[:initialised, :session] = true
       end
     end
     @app.call(env)
@@ -143,6 +146,18 @@ class SessionInit < OMF::Base::LObject
       obj = HTTParty.post("#{ges_url}/#{res_path}", body: { name: res_id }.merge(additional_data))
     else
       debug "Found existing #{res_path} #{obj['name']}"
+      # FIXME this hack appends irods user to projects
+      if res_path =~ /projects/
+        users = obj['irods_user'].split('|')
+        current_user = OMF::Web::SessionStore[:id, :user]
+        if users.include? current_user
+          info "User already added to the project"
+        else
+          new_irods_user = "#{obj['irods_user']}|#{current_user}"
+          info "Need to write this #{new_irods_user}"
+          HTTParty.post("#{ges_url}/#{res_path}/#{res_id}", body: { irods_user: new_irods_user })
+        end
+      end
     end
 
     obj
