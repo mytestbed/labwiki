@@ -87,32 +87,42 @@ module LabWiki::Plugin::Experiment
       table = nil
 
       t_describe_table = EM::Synchrony.add_periodic_timer(5) do
-        schema = db_fields.keys.map do |key|
-          if (db_ts = @connection.schema(db_table_name).find { |col, meta| col == key } )
-            if (db_field_alias = db_fields[key])
-              [db_field_alias, db_ts[1][:type]]
-            else
-              [db_ts[0], db_ts[1][:type]]
-            end
+        if @connection.table_exists?(db_table_name)
+          begin
+            schema = db_fields.keys.map do |key|
+              if (db_ts = @connection.schema(db_table_name).find { |col, meta| col == key } )
+                if (db_field_alias = db_fields[key])
+                  [db_field_alias, db_ts[1][:type]]
+                else
+                  [db_ts[0], db_ts[1][:type]]
+                end
+              end
+            end.compact
+
+            debug "Schema >> #{schema}"
+            tname = "#{gd[:graph_descr].name}_#{name}_#{@exp_id}"
+            table = OMF::OML::OmlTable.new tname, schema
+            debug "Created table '#{table.inspect}'"
+            OMF::Web::DataSourceProxy.register_datasource table
+
+            gopts = gd[:graph_descr].render_option()
+            # TODO: Locks us into graphs with single data sources
+            gopts[:data_sources] = [{
+              :name => tname,
+              :stream => tname, # not sure what we need this for?
+              :schema => table.schema,
+              :update_interval => 1
+            }]
+            @graph_table.add_row [table.object_id, gopts.to_json]
+
+            t_describe_table.cancel
+          rescue => e
+            error e.message
+            debug e.backtrace.join("\n\t")
           end
-        end.compact
-
-        debug "Schema >> #{schema}"
-        tname = "#{gd[:graph_descr].name}_#{name}_#{@exp_id}"
-        table = OMF::OML::OmlTable.new tname, schema
-        debug "Created table '#{table.inspect}'"
-        OMF::Web::DataSourceProxy.register_datasource table
-
-        gopts = gd[:graph_descr].render_option()
-        # TODO: Locks us into graphs with single data sources
-        gopts[:data_sources] = [{
-          :name => tname,
-          :stream => tname, # not sure what we need this for?
-          :schema => table.schema,
-          :update_interval => 1
-        }]
-        @graph_table.add_row [table.object_id, gopts.to_json]
-        t_describe_table.cancel
+        else
+          debug "Table '#{db_table_name}' does not exist yet."
+        end
       end
 
       synchronize do
