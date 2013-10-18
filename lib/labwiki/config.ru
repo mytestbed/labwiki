@@ -30,10 +30,10 @@ module AuthFailureApp
       user_data = OpenID::AX::FetchResponse.from_success_response(openid[:response]).data
       $users[identity_url] = user_data
       env['warden'].set_user user_data
-      [307, {'Location' => '/labwiki', "Content-Type" => ""}, ['Next window!']]
+      [307, {'Location' => '/labwiki', "Content-Type" => ""}, ['Authenticated.']]
     else
       # When OpenID authenticate failure
-      [401, {'Location' => '/labwiki', "Content-Type" => ""}, ['Next window!']]
+      [401, {'Location' => '/labwiki', "Content-Type" => ""}, ['Authentication failed.']]
     end
   end
 end
@@ -130,7 +130,7 @@ map "/labwiki" do
       require 'labwiki/rack/top_handler'
       LabWiki::TopHandler.new(options).call(env)
     else
-      [307, {'Location' => '/resource/login/openid.html', "Content-Type" => ""}, ['Authenticate!']]
+      [307, {'Location' => '/resource/login/openid.html', "Content-Type" => ""}, ['Authenticated!']]
     end
   end
   run handler
@@ -141,7 +141,7 @@ map '/login' do
     req = ::Rack::Request.new(env)
     if req.post?
       env['warden'].authenticate!
-      [307, {'Location' => '/', "Content-Type" => ""}, ['Next window!']]
+      [307, {'Location' => '/', "Content-Type" => ""}, ['Login process failed']]
     end
   end
   run handler
