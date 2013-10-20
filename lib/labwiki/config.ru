@@ -29,7 +29,8 @@ module AuthFailureApp
       identity_url = openid[:response].identity_url
       user_data = OpenID::AX::FetchResponse.from_success_response(openid[:response]).data
       $users[identity_url] = user_data
-      env['warden'].set_user user_data
+      env['warden'].set_user identity_url
+
       [307, {'Location' => '/labwiki', "Content-Type" => ""}, ['Authenticated.']]
     else
       # When OpenID authenticate failure
@@ -152,6 +153,7 @@ map '/logout' do
     req = ::Rack::Request.new(env)
     env['warden'].logout(:default)
     req.session['sid'] = nil
+    req.session.clear
     [307, {'Location' => '/', "Content-Type" => ""}, ['Next window!']]
   end
   run handler

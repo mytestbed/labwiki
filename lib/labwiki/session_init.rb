@@ -16,7 +16,7 @@ class SessionInit < OMF::Base::LObject
       req.session['sid'] ||= "s#{(rand * 10000000).to_i}_#{(rand * 10000000).to_i}"
       Thread.current["sessionID"] = req.session['sid'] # needed for Session Store
       if env['warden'].authenticated?
-        user = env['warden'].user
+        user = $users[env['warden'].user]
 
         update_user(user)
         # We need to fresh this every time user logged in
