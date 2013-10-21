@@ -17,7 +17,7 @@ OPENID_FIELDS = {
 Warden::OpenID.configure do |config|
   config.required_fields = OPENID_FIELDS[:geni]
   config.user_finder do |response|
-    $users[response.identity_url]
+    $users[response.identity_url].nil? ? nil : response.identity_url
   end
 end
 
@@ -34,7 +34,7 @@ module AuthFailureApp
       [307, {'Location' => '/labwiki', "Content-Type" => ""}, ['Authenticated.']]
     else
       # When OpenID authenticate failure
-      [401, {'Location' => '/labwiki', "Content-Type" => ""}, ['Authentication failed.']]
+      [401, {'Location' => '/labwiki', "Content-Type" => ""}, ["Authentication failed. #{env['warden'].message}"]]
     end
   end
 end
