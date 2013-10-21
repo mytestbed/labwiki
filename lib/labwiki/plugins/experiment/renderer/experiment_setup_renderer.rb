@@ -24,7 +24,11 @@ module LabWiki::Plugin::Experiment
               render_field(-1, name: 'Experiment', type: :select)
               render_field(-1, name: 'Slice', type: :select)
             else
-              render_field(-1, name: 'Slice', type: :text, default: "default_slice")
+              if LabWiki::Configurator[:plugins][:experiment][:ignore_slice]
+                render_field(-1, name: 'Slice', type: :hidden, default: "default_slice")
+              else
+                render_field(-1, name: 'Slice', type: :text, default: "default_slice")
+              end
             end
 
             render_field_static :name => 'Script', :value => @experiment.url
