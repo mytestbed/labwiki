@@ -4,7 +4,7 @@ require 'omf-web/content/irods_repository'
 
 
 use ::Rack::ShowExceptions
-use ::Rack::Session::Cookie, secret: Process.pid, key: "labwiki.session.#{Process.pid}"
+use ::Rack::Session::Cookie, secret: "#{Process.pid}", key: "labwiki.session.#{Process.pid}"
 use ::Rack::OpenID
 
 $users = {}
