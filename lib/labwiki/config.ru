@@ -4,7 +4,7 @@ require 'omf-web/content/irods_repository'
 
 
 use ::Rack::ShowExceptions
-use ::Rack::Session::Cookie, secret: "#{Process.pid}", key: "labwiki.session.#{Process.pid}"
+use ::Rack::Session::Cookie, secret: "#{LabWiki::Configurator[:port] || 4000}", key: "labwiki.session.#{LabWiki::Configurator[:port] || 4000}"
 use ::Rack::OpenID
 
 $users = {}
@@ -31,7 +31,7 @@ module AuthFailureApp
       $users[identity_url] = user_data
       env['warden'].set_user identity_url
 
-      [307, {'Location' => '/labwiki', "Content-Type" => ""}, ['Authenticated.']]
+      [302, {'Location' => '/labwiki', "Content-Type" => ""}, ['Authenticated.']]
     else
       # When OpenID authenticate failure
       [401, {'Location' => '/labwiki', "Content-Type" => ""}, ["Authentication failed. #{env['warden'].message}"]]
@@ -131,7 +131,7 @@ map "/labwiki" do
       require 'labwiki/rack/top_handler'
       LabWiki::TopHandler.new(options).call(env)
     else
-      [307, {'Location' => '/resource/login/openid.html', "Content-Type" => ""}, ['Authenticated!']]
+      [302, {'Location' => '/resource/login/openid.html', "Content-Type" => ""}, ['Authenticated!']]
     end
   end
   run handler
@@ -142,7 +142,7 @@ map '/login' do
     req = ::Rack::Request.new(env)
     if req.post?
       env['warden'].authenticate!
-      [307, {'Location' => '/', "Content-Type" => ""}, ['Login process failed']]
+      [302, {'Location' => '/', "Content-Type" => ""}, ['Login process failed']]
     end
   end
   run handler
@@ -154,7 +154,7 @@ map '/logout' do
     env['warden'].logout(:default)
     req.session['sid'] = nil
     req.session.clear
-    [307, {'Location' => '/', "Content-Type" => ""}, ['Next window!']]
+    [302, {'Location' => '/', "Content-Type" => ""}, ['Next window!']]
   end
   run handler
 end
@@ -213,11 +213,11 @@ map "/" do
     req = ::Rack::Request.new(env)
     case req.path_info
     when '/'
-      [307, {'Location' => '/labwiki', "Content-Type" => ""}, ['Next window!']]
+      [302, {'Location' => '/labwiki', "Content-Type" => ""}, ['Next window!']]
     when '/favicon.ico'
-      [307, {'Location' => '/resource/image/favicon.ico', "Content-Type" => ""}, ['Next window!']]
+      [302, {'Location' => '/resource/image/favicon.ico', "Content-Type" => ""}, ['Next window!']]
     when '/image/favicon.ico'
-      [307, {'Location' => '/resource/image/favicon.ico', "Content-Type" => ""}, ['Next window!']]
+      [302, {'Location' => '/resource/image/favicon.ico', "Content-Type" => ""}, ['Next window!']]
     else
       OMF::Base::Loggable.logger('rack').warn "Can't handle request '#{req.path_info}'"
       [401, {"Content-Type" => ""}, "Sorry!"]
