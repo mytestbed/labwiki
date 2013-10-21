@@ -18,6 +18,11 @@ class SessionInit < OMF::Base::LObject
       if env['warden'].authenticated?
         user = $users[env['warden'].user]
 
+        if user.nil?
+          req.session.clear
+          return [302, {'Location' => '/', "Content-Type" => ""}, ['Session lost, re-authenticate.']]
+        end
+
         update_user(user)
         # We need to fresh this every time user logged in
         update_geni_projects_slices(user) if LabWiki::Configurator[:gimi]
