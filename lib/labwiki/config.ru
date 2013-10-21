@@ -1,11 +1,13 @@
 require 'omf_base/lobject'
 require 'warden-openid'
+require 'openid/store/filesystem'
 require 'omf-web/content/irods_repository'
 
+LW_PORT = "#{LabWiki::Configurator[:port] || 4000}"
 
 use ::Rack::ShowExceptions
-use ::Rack::Session::Cookie, secret: "#{LabWiki::Configurator[:port] || 4000}", key: "labwiki.session.#{LabWiki::Configurator[:port] || 4000}"
-use ::Rack::OpenID
+use ::Rack::Session::Cookie, secret: LW_PORT, key: "labwiki.session.#{LW_PORT}"
+use ::Rack::OpenID, OpenID::Store::Filesystem.new("/tmp/openid_#{LW_PORT}")
 
 $users = {}
 
@@ -34,7 +36,11 @@ module AuthFailureApp
       [302, {'Location' => '/labwiki', "Content-Type" => ""}, ['Authenticated.']]
     else
       # When OpenID authenticate failure
-      [401, {'Location' => '/labwiki', "Content-Type" => ""}, ["Authentication failed. #{env['warden'].message}"]]
+      [401, {'Location' => '/labwiki', "Content-Type" => ""}, [
+        "<p>Authentication failed. #{env['warden'].message}<p>
+         <a href='/labwiki/logout'>Try again</a>
+        "
+      ]]
     end
   end
 end
@@ -71,7 +77,7 @@ map "/create_script" do
     begin
       if repo.class == OMF::Web::IRodsContentRepository
         # iRods needs full path...
-        path = "#{LabWiki::Configurator[:gimi][:irods][:home]}/#{sub_folder}/#{file_name}"
+        path = "#{LabWiki::Configurator[:gimi][:irods][:home]}/#{OMF::Web::SessionStore[:id, :user]}/#{LabWiki::Configurator[:gimi][:irods][:script_folder]}/#{sub_folder}/#{file_name}"
       else
         path = "repo/#{sub_folder}/#{file_name}"
       end
@@ -131,7 +137,7 @@ map "/labwiki" do
       require 'labwiki/rack/top_handler'
       LabWiki::TopHandler.new(options).call(env)
     else
-      [302, {'Location' => '/resource/login/openid.html', "Content-Type" => ""}, ['Authenticated!']]
+      [302, {'Location' => '/resource/login/openid.html', "Content-Type" => ""}, ['Redirect to login']]
     end
   end
   run handler
