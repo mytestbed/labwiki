@@ -19,29 +19,20 @@ OPENID_FIELDS = {
 Warden::OpenID.configure do |config|
   config.required_fields = OPENID_FIELDS[:geni]
   config.user_finder do |response|
-    $users[response.identity_url].nil? ? nil : response.identity_url
+    identity_url = response.identity_url
+    user_data = OpenID::AX::FetchResponse.from_success_response(response).data
+    $users[identity_url] = user_data
+    identity_url
   end
 end
 
 module AuthFailureApp
   def self.call(env)
-    req = ::Rack::Request.new(env)
-    if openid = env['warden.options'][:openid]
-      # OpenID authenticate success, but user is missing (Warden::OpenID.user_finder returns nil)
-      identity_url = openid[:response].identity_url
-      user_data = OpenID::AX::FetchResponse.from_success_response(openid[:response]).data
-      $users[identity_url] = user_data
-      env['warden'].set_user identity_url
-
-      [302, {'Location' => '/labwiki', "Content-Type" => ""}, ['Authenticated.']]
-    else
-      # When OpenID authenticate failure
-      [401, {'Location' => '/labwiki', "Content-Type" => ""}, [
-        "<p>Authentication failed. #{env['warden'].message}<p>
+    [401, {'Location' => '/labwiki', "Content-Type" => ""}, [
+      "<p>Authentication failed. #{env['warden'].message}<p>
          <a href='/labwiki/logout'>Try again</a>
-        "
-      ]]
-    end
+      "
+    ]]
   end
 end
 
