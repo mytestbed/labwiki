@@ -107,9 +107,19 @@ class SessionInit < OMF::Base::LObject
   def init_irods_repository(id)
     irods_home = LabWiki::Configurator[:gimi][:irods][:home]
     id = 'user1' if LabWiki::Configurator[:gimi][:mocking]
-    opts = { type: :irods, top_dir: "#{irods_home}/#{id}/#{LabWiki::Configurator[:gimi][:irods][:script_folder]}" }
+    script_folder = "#{irods_home}/#{id}/#{LabWiki::Configurator[:gimi][:irods][:script_folder]}"
+    opts = { type: :irods, top_dir: script_folder }
     repo = OMF::Web::ContentRepository.register_repo(id, opts)
     repo ||= OMF::Web::ContentRepository.find_repo_for("irods:#{id}")
+
+    if (sample_repo_path = LabWiki::Configurator[:gimi][:irods][:sample_repo])
+      begin
+        `iput -r #{sample_repo_path}/ #{script_folder}`
+      rescue => e
+        error "iRods command failed: 'iput -r #{sample_repo_path}/ #{script_folder}'"
+        error e.message
+      end
+    end
 
     OMF::Web::SessionStore[:plan, :repos] = [repo]
     OMF::Web::SessionStore[:prepare, :repos] = [repo]
