@@ -40,7 +40,7 @@ module LabWiki::Plugin::Experiment
       ts = Time.now.iso8601.split('+')[0].gsub(':', '-')
       @name = (OMF::Web::SessionStore[:id, :user] || 'unknown') + '-'
       if (!name.nil? && name.to_s.strip.length > 0)
-        @name += "#{name}-"
+        @name += "#{name.gsub(/\W+/, '_')}-"
       end
       @name +=  ts
       @name.delete(' ')
