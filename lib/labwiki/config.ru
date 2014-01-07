@@ -1,6 +1,7 @@
 require 'omf_base/lobject'
 require 'warden-openid'
 require 'openid/store/filesystem'
+require 'labwiki/ruby_openid_patch'
 require 'omf-web/content/irods_repository'
 
 LW_PORT = "#{LabWiki::Configurator[:port] || 4000}"
