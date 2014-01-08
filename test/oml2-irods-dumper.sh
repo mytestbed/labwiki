@@ -107,7 +107,7 @@ case "${DB}" in
 		;;
 esac
 log "INFO	Creating experiment directory first irods://irodsHost:irodsPort${IPATH}"
-imkdir ${IPATH}
+imkdir "${IPATH}"
 log "INFO	Pushing ${DBFILE} to irods://irodsHost:irodsPort${IPATH}"
-${IPUT} ${DBFILE} ${IPATH}/
+${IPUT} ${DBFILE} "${IPATH}/"
 rm ${DBFILE}

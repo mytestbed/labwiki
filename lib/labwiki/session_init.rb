@@ -114,9 +114,9 @@ class SessionInit < OMF::Base::LObject
 
     if (sample_repo_path = LabWiki::Configurator[:gimi][:irods][:sample_repo])
       begin
-        `iput -r #{sample_repo_path}/* #{script_folder}`
+        `iput -r "#{sample_repo_path}/*" "#{script_folder}"`
       rescue => e
-        error "iRods command failed: 'iput -r #{sample_repo_path}/* #{script_folder}'"
+        error "iRods command failed: 'iput -r \"#{sample_repo_path}/*\" \"#{script_folder}\"'"
         error e.message
       end
     end
