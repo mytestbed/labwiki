@@ -121,8 +121,7 @@ map "/labwiki" do
       identity_url = "https://localhost?id=user1"
       u_data = 'user1'
       $users[identity_url] = u_data
-      env['warden'].set_user u_data
-
+      env['warden'].set_user identity_url
       require 'labwiki/rack/top_handler'
       LabWiki::TopHandler.new(options).call(env)
     elsif env['warden'].authenticated?
