@@ -9,3 +9,4 @@ doc/teaser/teaser2-high.mov
 Gemfile.lock
 *.gem
 .yardoc
+.bundle

@@ -6,12 +6,15 @@ require 'omf_oml/table'
 require 'labwiki/plugins/experiment/run_exp_controller'
 require 'labwiki/plugins/experiment/oml_connector'
 require 'labwiki/plugins/experiment/graph_description'
+require 'labwiki/plugins/experiment/redis_helper'
 
 module LabWiki::Plugin::Experiment
 
   # Maintains the context for a particular experiment.
   #
   class Experiment < OMF::Base::LObject
+
+    include LabWiki::Plugin::Experiment::RedisHelper
 
     attr_reader :name, :state, :url, :slice, :properties
 
@@ -126,7 +129,9 @@ module LabWiki::Plugin::Experiment
               return
             end
 
-            @log_table.add_row [Time.now - @start_time, severity, path, message]
+            log_msg_row = [Time.now - @start_time, severity, path, message]
+            @log_table.add_row(log_msg_row)
+            redis.lpush(ns(:logs, @name), log_msg_row.to_json)
           end
         end
       rescue Exception => ex
@@ -155,7 +160,7 @@ module LabWiki::Plugin::Experiment
       # Looking for 'defProperty'
       properties = sexp.collect do |sx|
         #puts "SX: >>> #{sx}"
-        next if (sx.is_a? Symbol)
+        next if sx.nil? || (sx.is_a? Symbol)
         next unless sx[0] == :call
         next unless sx[2] == :defProperty
 
