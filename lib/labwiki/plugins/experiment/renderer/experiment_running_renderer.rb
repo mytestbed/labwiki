@@ -22,7 +22,7 @@ module LabWiki::Plugin::Experiment
 
     def render_toolbar
       div :class => 'widget-toolbar' do
-        if @experiment.state == :running
+        if @experiment.state.to_s == 'running'
           button "Stop Experiment", :id => 'btn-stop-experiment', :class => 'btn-stop-experiment btn btn-danger'
         end
         button "Dump", :id => 'btn-dump', :exp_id => @experiment.name, :class => 'btn-dump btn btn-inverse'

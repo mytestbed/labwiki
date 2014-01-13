@@ -18,6 +18,8 @@ module LabWiki::Plugin::Experiment
   #
   class RunExpController < OMF::Base::LObject
 
+    attr_reader :pid
+
     #RUN_CMD = '~/src/omf_labwiki/test/omf_exec/omf_exec-norbit.sh'
 
     # Holds the pids for all active apps
@@ -70,35 +72,37 @@ module LabWiki::Plugin::Experiment
     # @param config_opts - Configuration option, need to contain 'ec_runner'
     #
     def initialize(id, slice, exp_script, properties, config_opts, &block)
-
       @id = id
       @observer = block
       @@apps[id] = self
       @running = true
 
-      script_props = []
+      @exp_script = exp_script
+      @config_opts = config_opts
+
+      @script_props = []
       if exp_id = properties.delete('experiment-id')
-        script_props << "--experiment-id #{exp_id}"
+        @script_props << "--experiment-id #{exp_id}"
       end
       if slice && !slice.empty?
-        script_props << "--slice #{slice}"
+        @script_props << "--slice #{slice}"
       end
 
-      props = properties.map { |k, v| "--#{k} '#{v}'" }
+      @props = properties.map { |k, v| "--#{k} '#{v}'" }
+    end
 
-      unless ec_runner = config_opts[:ec_runner]
+    def start
+      unless (ec_runner = @config_opts[:ec_runner])
         raise "Missing 'ec_runner' declaration in experiment configuration"
       end
-      #cmd = "#{RUN_CMD} #{exp_script} #{script_props.join(' ')} -- #{props.join(' ')}"
-      cmd = "#{ec_runner} #{exp_script} #{script_props.join(' ')} -- #{props.join(' ')}"
+      cmd = "#{ec_runner} #{@exp_script} #{@script_props.join(' ')} -- #{@props.join(' ')}"
       debug "CMD: #{cmd}"
 
       pw = IO::pipe   # pipe[0] for read, pipe[1] for write
       pr = IO::pipe
       pe = IO::pipe
 
-      debug "Starting application '#{id}' - cmd: '#{cmd}'"
-      @observer.call('STARTED', nil)
+      debug "Starting application '#{@id}' - cmd: '#{cmd}'"
       @pid = fork do
         Process.setpgid(0,Process.pid)
         # child will remap pipes to std and exec cmd
@@ -125,6 +129,7 @@ module LabWiki::Plugin::Experiment
         # Should never get here
         exit!
       end
+      @observer.call('STARTED', nil)
 
       pw[0].close
       pr[1].close

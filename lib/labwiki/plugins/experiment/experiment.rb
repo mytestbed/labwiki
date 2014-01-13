@@ -84,13 +84,15 @@ module LabWiki::Plugin::Experiment
       properties.each { |p| props[p[:name]] = p[:value] }
       @properties.each { |p| p[:value] = props[p[:name]] ||= p[:default] }
 
+      @ec = LabWiki::Plugin::Experiment::RunExpController.new(@name, slice, script, props, @config_opts) do |etype, msg|
+        handle_exp_output @ec, etype, msg
+      end
+
       unless @state == :finished
-        @state = :running
         @start_time = Time.now
         self.persist [:name, :status, :props, :url, :start_time]
-        @ec = LabWiki::Plugin::Experiment::RunExpController.new(@name, slice, script, props, @config_opts) do |etype, msg|
-          handle_exp_output @ec, etype, msg
-        end
+
+        @ec.start
       end
     end
 
@@ -102,22 +104,16 @@ module LabWiki::Plugin::Experiment
     end
 
     def create_oml_tables
-      if @status_table.nil?
-        @status_table = OMF::OML::OmlTable.new "status_#{@name}", [[:time, :int], :phase, [:completion, :float], :message]
-        OMF::Web::DataSourceProxy.register_datasource @status_table
-      end
+      @status_table = OMF::OML::OmlTable.new "status_#{@name}", [[:time, :int], :phase, [:completion, :float], :message]
+      OMF::Web::DataSourceProxy.register_datasource @status_table rescue warn $!
 
-      if @log_table.nil?
-        @log_table = OMF::OML::OmlTable.new "log_#{@name}", [[:time, :int], :severity, :path, :message]
-        OMF::Web::DataSourceProxy.register_datasource @log_table
-      end
+      @log_table = OMF::OML::OmlTable.new "log_#{@name}", [[:time, :int], :severity, :path, :message]
+      OMF::Web::DataSourceProxy.register_datasource @log_table rescue warn $!
 
-      if @graph_table.nil?
-        @graph_table = OMF::OML::OmlTable.new "graph_#{@name}", [:id, :description]
-        OMF::Web::DataSourceProxy.register_datasource @graph_table
-      end
+      @graph_table = OMF::OML::OmlTable.new "graph_#{@name}", [:id, :description]
+      OMF::Web::DataSourceProxy.register_datasource @graph_table rescue warn $!
 
-      @oml_connector ||= OmlConnector.new(@name, @graph_table, @config_opts[:oml])
+      @oml_connector = OmlConnector.new(@name, @graph_table, @config_opts[:oml])
     end
 
     def to_json
@@ -147,6 +143,8 @@ module LabWiki::Plugin::Experiment
           redis.set ns(:url, @name), @url
         when :start_time
           redis.set ns(:start_time, @name), @start_time
+        when :pid
+          redis.set ns(:pid, @name), @ec.pid
         #when :graph_descriptions
         #  @graph_descriptions.each { |gd| redis.sadd ns(:graph_descriptions, @name), gd.to_json }
         end
@@ -158,6 +156,10 @@ module LabWiki::Plugin::Experiment
         debug "output:#{etype}: #{msg.inspect}"
 
         case etype
+        when 'STARTED'
+          info "Experiment #{@name} started. PID: #{ec.pid}"
+          @state = :running
+          self.persist [:status, :pid]
         when 'STDOUT'
           process_exp_stdout_msg(msg)
         when 'DONE.OK'
