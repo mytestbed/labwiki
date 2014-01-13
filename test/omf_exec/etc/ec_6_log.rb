@@ -3,18 +3,25 @@
 Logging.configure do
   # Default logging level should be debug, write to stdout & log file
   logger(:root) do
-    level :debug
-    appenders %w(my_stdout)
+    level :info
+    appenders %w(my_stdout my_file)
   end
 
   # But we don't want to see :debug messages in stdout
   appender('my_stdout') do
     type 'Stdout'
-    level :info
     layout do
       type 'Pattern'
-      pattern "%d %-5l %c: %m\n"
-      #date_pattern "%F %T %z"
+      pattern "%d %l %m\n"
+    end
+  end
+
+  appender('my_file') do
+    type 'File'
+    filename "/tmp/#{OmfEc.experiment.id}.log"
+    layout do
+      type 'Pattern'
+      pattern "%d %l %m\n"
     end
   end
 end

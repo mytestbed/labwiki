@@ -1,14 +1,20 @@
 logging_config:
   loggers:
   - name: root
-    level: :debug
+    level: :info
     appenders:
     - my_stdout
+    - my_file
 
   appenders:
   - name: my_stdout
     type: Stdout
-    level: :info
+    layout:
+      type: Pattern
+      pattern: "%d %l %m\n"
+  - name: my_file
+    type: File
+    filename: "/tmp/#{OmfEc.experiment.id}.log"
     layout:
       type: Pattern
       pattern: "%d %l %m\n"
