@@ -22,7 +22,14 @@ LabWiki::PluginManager.register :experiment, {
       :name => 'experiment',
       :context => :execute,
       :priority => lambda do |opts|
-        (opts[:mime_type].start_with? 'text/ruby') ? 500 : nil
+        case opts[:mime_type]
+        when /^text\/ruby/
+          500
+        when /^exp\/task/
+          400
+        else
+          nil
+        end
       end,
       :widget_class => LabWiki::Plugin::Experiment::ExperimentWidget
     }

@@ -1,12 +1,15 @@
 require 'labwiki/column_widget'
 require 'labwiki/plugins/experiment/run_exp_controller'
 require 'labwiki/plugins/experiment/experiment'
+require 'labwiki/plugins/experiment/redis_helper'
+require 'active_support/core_ext'
 
 module LabWiki::Plugin::Experiment
 
   # Maintains the context for a particular experiment in this user context.
   #
   class ExperimentWidget < LabWiki::ColumnWidget
+    include LabWiki::Plugin::Experiment::RedisHelper
 
     attr_reader :name
 
@@ -25,8 +28,15 @@ module LabWiki::Plugin::Experiment
       debug "on_get_content: '#{params.inspect}'"
 
       if (omf_exp_id = params[:omf_exp_id])
-        exp_hash =OMF::Web::SessionStore[:exps, :omf].find { |v| v[:id] == omf_exp_id }
-        @experiment = exp_hash[:instance]
+        #if (exp_hash = OMF::Web::SessionStore[:exps, :omf] && OMF::Web::SessionStore[:exps, :omf].find { |v| v[:id] == omf_exp_id })
+          # LW instance still has such instance
+        #  @experiment = exp_hash[:instance]
+        #else
+        @experiment = LabWiki::Plugin::Experiment::Experiment.new(nil, @config_opts)
+        @experiment.name = omf_exp_id
+        @experiment.url = redis.get ns(:url, omf_exp_id)
+        @experiment.state = redis.get ns(:status, omf_exp_id)
+        @experiment.properties = redis.smembers(ns(:props, omf_exp_id)).map { |p| JSON.parse(p).symbolize_keys }
       else
         @experiment = LabWiki::Plugin::Experiment::Experiment.new(nil, @config_opts)
       end
@@ -64,7 +74,6 @@ module LabWiki::Plugin::Experiment
         OMF::Web::Theme.require 'experiment_running_renderer'
         ExperimentRunningRenderer.new(self, @experiment)
       end
-
     end
 
     def mime_type

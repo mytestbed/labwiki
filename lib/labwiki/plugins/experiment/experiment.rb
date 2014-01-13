@@ -13,10 +13,9 @@ module LabWiki::Plugin::Experiment
   # Maintains the context for a particular experiment.
   #
   class Experiment < OMF::Base::LObject
-
     include LabWiki::Plugin::Experiment::RedisHelper
 
-    attr_reader :name, :state, :url, :slice, :properties
+    attr_accessor :name, :state, :url, :slice, :properties
 
     def initialize(description_url = nil, config_opts)
       unless description_url
@@ -41,7 +40,7 @@ module LabWiki::Plugin::Experiment
 
       @slice = slice
       ts = Time.now.iso8601.split('+')[0].gsub(':', '-')
-      @name = (OMF::Web::SessionStore[:id, :user] || 'unknown') + '-'
+      @name = "#{self.user}-"
       if (!name.nil? && name.to_s.strip.length > 0)
         @name += "#{name.gsub(/\W+/, '_')}-"
       end
@@ -72,6 +71,7 @@ module LabWiki::Plugin::Experiment
       unless @state == :finished
         @state = :running
         @start_time = Time.now
+        self.persist [:name, :status, :props, :url]
         @ec = LabWiki::Plugin::Experiment::RunExpController.new(@name, slice, script, props, @config_opts) do |etype, msg|
           handle_exp_output @ec, etype, msg
         end
@@ -81,9 +81,9 @@ module LabWiki::Plugin::Experiment
     def stop_experiment()
       @state = :finished
       @ec.stop
+      self.persist [:status]
       @oml_connector.disconnect
     end
-
 
     def create_oml_tables
       @status_ds_name = "status_#{@name}"
@@ -101,14 +101,40 @@ module LabWiki::Plugin::Experiment
     end
 
     def to_json
+    end
 
+    def user
+      OMF::Web::SessionStore[:id, :user] || 'unknown'
+    end
+
+    # Write internal data to persistent data store, provide an array of keys indicating what to store
+    #
+    # @param [Array] data_to_store indicate what data to store
+    #
+    # @example
+    #     persist [:name, :status, :props, :url]
+    #
+    def persist(data_to_store = [:status])
+      data_to_store.each do |key|
+        case key
+        when :status
+          redis.set ns(:status, @name), @state
+        when :name
+          redis.sadd ns(:experiments, user), @name
+        when :props
+          @properties.each { |p| redis.sadd ns(:props, @name), p.to_json }
+        when :url
+          redis.set ns(:url, @name), @url
+        end
+      end
     end
 
     def handle_exp_output(ec, etype, msg)
       begin
         debug "output:#{etype}: #{msg.inspect}"
 
-        if etype == 'STDOUT'
+        case etype
+        when 'STDOUT'
           if (m = msg.match /^.*(INFO|WARN|ERROR|DEBUG|FATAL)\s+(.*)$/)
             severity = m[1].to_sym
             path = ''
@@ -131,17 +157,17 @@ module LabWiki::Plugin::Experiment
 
             log_msg_row = [Time.now - @start_time, severity, path, message]
             @log_table.add_row(log_msg_row)
-            redis.lpush(ns(:logs, @name), log_msg_row.to_json)
           end
+        when 'DONE.OK'
+          @state = :finished
+          self.persist [:status]
+          @oml_connector.disconnect
         end
       rescue Exception => ex
         warn "EXCEPTION: #{ex}"
+        debug ex.backtrace.join("\n")
       end
 
-      if etype == 'DONE.OK'
-        @state = :finished
-        @oml_connector.disconnect
-      end
     end
 
     # As widgets are dynamically added, we need register datasources from within the

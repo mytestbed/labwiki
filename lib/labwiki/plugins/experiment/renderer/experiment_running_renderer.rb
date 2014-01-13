@@ -8,8 +8,8 @@ module LabWiki::Plugin::Experiment
     def render_content
       render_toolbar
       render_properties
-      render_logging
       render_graphs
+      render_logging
 
       javascript %{
         L.require('#LW.plugin.experiment.experiment_monitor', '/plugin/experiment/js/experiment_monitor.js', function() {
