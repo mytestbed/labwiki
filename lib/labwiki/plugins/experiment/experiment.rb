@@ -15,7 +15,7 @@ module LabWiki::Plugin::Experiment
   class Experiment < OMF::Base::LObject
     include LabWiki::Plugin::Experiment::RedisHelper
 
-    attr_accessor :name, :state, :url, :slice, :properties
+    attr_reader :name, :state, :url, :slice, :properties
 
     def initialize(description_url = nil, config_opts)
       unless description_url
@@ -29,6 +29,20 @@ module LabWiki::Plugin::Experiment
       if (@url = url)
         description = OMF::Web::ContentRepository.read_content(url, {})
         @properties = parse_oidl_script(description)
+      end
+    end
+
+    def recreate_experiment(omf_exp_id)
+      @name = omf_exp_id
+      @url = redis.get ns(:url, omf_exp_id)
+      @state = redis.get ns(:status, omf_exp_id)
+      @start_time = Time.new (redis.get ns(:start_time, omf_exp_id))
+      @properties = redis.smembers(ns(:props, omf_exp_id)).map { |p| JSON.parse(p).symbolize_keys }
+      create_oml_tables
+
+      # Open existing log file
+      IO.foreach("/tmp/#{omf_exp_id}.log") do |line|
+        process_exp_stdout_msg(line)
       end
     end
 
@@ -55,7 +69,9 @@ module LabWiki::Plugin::Experiment
       info "Starting experiment name:#{@name} url: #{url} script: #{script}"
 
       OMF::Web::SessionStore[:exps, :omf] ||= []
-      exp = { id: @name, instance: self }
+      #exp = { id: @name, instance: self }
+      exp = { id: @name }
+
       if irods
         exp[:irods_path] = irods[:path]
         exp[:exp_name] = irods[:exp_name]
@@ -71,7 +87,7 @@ module LabWiki::Plugin::Experiment
       unless @state == :finished
         @state = :running
         @start_time = Time.now
-        self.persist [:name, :status, :props, :url]
+        self.persist [:name, :status, :props, :url, :start_time]
         @ec = LabWiki::Plugin::Experiment::RunExpController.new(@name, slice, script, props, @config_opts) do |etype, msg|
           handle_exp_output @ec, etype, msg
         end
@@ -86,18 +102,22 @@ module LabWiki::Plugin::Experiment
     end
 
     def create_oml_tables
-      @status_ds_name = "status_#{@name}"
-      @status_table = OMF::OML::OmlTable.new @status_ds_name, [[:time, :int], :phase, [:completion, :float], :message]
-      OMF::Web::DataSourceProxy.register_datasource @status_table
+      if @status_table.nil?
+        @status_table = OMF::OML::OmlTable.new "status_#{@name}", [[:time, :int], :phase, [:completion, :float], :message]
+        OMF::Web::DataSourceProxy.register_datasource @status_table
+      end
 
-      @log_ds_name = "log_#{@name}"
-      @log_table = OMF::OML::OmlTable.new @log_ds_name, [[:time, :int], :severity, :path, :message]
-      OMF::Web::DataSourceProxy.register_datasource @log_table
+      if @log_table.nil?
+        @log_table = OMF::OML::OmlTable.new "log_#{@name}", [[:time, :int], :severity, :path, :message]
+        OMF::Web::DataSourceProxy.register_datasource @log_table
+      end
 
-      @graph_ds_name = "graph_#{@name}"
-      @graph_table = OMF::OML::OmlTable.new @graph_ds_name, [:id, :description]
-      OMF::Web::DataSourceProxy.register_datasource @graph_table
-      @oml_connector = OmlConnector.new(@name, @graph_table, @config_opts[:oml])
+      if @graph_table.nil?
+        @graph_table = OMF::OML::OmlTable.new "graph_#{@name}", [:id, :description]
+        OMF::Web::DataSourceProxy.register_datasource @graph_table
+      end
+
+      @oml_connector ||= OmlConnector.new(@name, @graph_table, @config_opts[:oml])
     end
 
     def to_json
@@ -125,6 +145,8 @@ module LabWiki::Plugin::Experiment
           @properties.each { |p| redis.sadd ns(:props, @name), p.to_json }
         when :url
           redis.set ns(:url, @name), @url
+        when :start_time
+          redis.set ns(:start_time, @name), @start_time
         end
       end
     end
@@ -135,29 +157,7 @@ module LabWiki::Plugin::Experiment
 
         case etype
         when 'STDOUT'
-          if (m = msg.match /^.*(INFO|WARN|ERROR|DEBUG|FATAL)\s+(.*)$/)
-            severity = m[1].to_sym
-            path = ''
-            message = m[-1]
-            return if message.start_with? '------'
-
-            if (m = message.match(/^\s*REPORT:([A-Za-z:]*)\s*(.*)/))
-              if m[1] == 'START:'
-                @gd = LabWiki::Plugin::Experiment::GraphDescription.new
-              end
-              @gd.parse(m[1], m[2])
-              if m[1] == 'STOP'
-                @oml_connector.add_graph(@gd)
-                # @graph_descriptions << @gd
-                # @graph_table.add_row [@gd.object_id, @gd.render_description().to_json]
-                @gd = nil
-              end
-              return
-            end
-
-            log_msg_row = [Time.now - @start_time, severity, path, message]
-            @log_table.add_row(log_msg_row)
-          end
+          process_exp_stdout_msg(msg)
         when 'DONE.OK'
           @state = :finished
           self.persist [:status]
@@ -170,12 +170,39 @@ module LabWiki::Plugin::Experiment
 
     end
 
+    def process_exp_stdout_msg(msg)
+      if (m = msg.match /^.*(INFO|WARN|ERROR|DEBUG|FATAL)\s+(.*)$/)
+        severity = m[1].to_sym
+        path = ''
+        message = m[-1]
+        return if message.start_with? '------'
+
+        if (m = message.match(/^\s*REPORT:([A-Za-z:]*)\s*(.*)/))
+          case m[1]
+          when /START:/
+            @gd = LabWiki::Plugin::Experiment::GraphDescription.new
+          when /STOP/
+            @oml_connector.add_graph(@gd)
+            info @gd
+            @gd = nil
+          else
+            @gd.parse(m[1], m[2])
+          end
+          return
+        end
+
+        log_msg_row = [Time.now - @start_time, severity, path, message]
+        @log_table.add_row(log_msg_row)
+      end
+    end
+
     # As widgets are dynamically added, we need register datasources from within the
     # widget renderer.
     #
     def datasource_renderer
-      lp = @log_proxy ||= OMF::Web::DataSourceProxy.for_source(:name => @log_ds_name)[0]
-      gp = @graph_proxy ||= OMF::Web::DataSourceProxy.for_source(:name => @graph_ds_name)[0]
+      lp = @log_proxy ||= OMF::Web::DataSourceProxy.for_source(:name => "log_#{@name}")[0]
+
+      gp = @graph_proxy ||= OMF::Web::DataSourceProxy.for_source(:name => "graph_#{@name}")[0]
       #gp.to_javascript(1) + lp.to_javascript(1)
       gp.to_javascript() + lp.to_javascript()
     end

@@ -33,10 +33,7 @@ module LabWiki::Plugin::Experiment
         #  @experiment = exp_hash[:instance]
         #else
         @experiment = LabWiki::Plugin::Experiment::Experiment.new(nil, @config_opts)
-        @experiment.name = omf_exp_id
-        @experiment.url = redis.get ns(:url, omf_exp_id)
-        @experiment.state = redis.get ns(:status, omf_exp_id)
-        @experiment.properties = redis.smembers(ns(:props, omf_exp_id)).map { |p| JSON.parse(p).symbolize_keys }
+        @experiment.recreate_experiment(omf_exp_id)
       else
         @experiment = LabWiki::Plugin::Experiment::Experiment.new(nil, @config_opts)
       end
