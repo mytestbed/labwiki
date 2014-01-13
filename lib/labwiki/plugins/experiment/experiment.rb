@@ -147,6 +147,8 @@ module LabWiki::Plugin::Experiment
           redis.set ns(:url, @name), @url
         when :start_time
           redis.set ns(:start_time, @name), @start_time
+        #when :graph_descriptions
+        #  @graph_descriptions.each { |gd| redis.sadd ns(:graph_descriptions, @name), gd.to_json }
         end
       end
     end
@@ -183,7 +185,6 @@ module LabWiki::Plugin::Experiment
             @gd = LabWiki::Plugin::Experiment::GraphDescription.new
           when /STOP/
             @oml_connector.add_graph(@gd)
-            info @gd
             @gd = nil
           else
             @gd.parse(m[1], m[2])
