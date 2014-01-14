@@ -180,7 +180,7 @@ module LabWiki::Plugin::Experiment
           @state = :running
           self.persist [:status, :pid]
         when 'LOG'
-          process_exp_stdout_msg(msg)
+          process_exp_log_msg(msg)
         when 'DONE.OK'
           @state = :finished
           self.persist [:status]
@@ -192,7 +192,7 @@ module LabWiki::Plugin::Experiment
       end
     end
 
-    def process_exp_stdout_msg(msg)
+    def process_exp_log_msg(msg)
       if (m = msg.match /^.*(INFO|WARN|ERROR|DEBUG|FATAL)\s+(.*)$/)
         severity = m[1].to_sym
         path = ''
