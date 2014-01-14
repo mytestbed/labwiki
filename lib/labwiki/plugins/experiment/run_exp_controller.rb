@@ -1,6 +1,6 @@
-
 require 'fcntl'
 require 'omf_base/lobject'
+require 'labwiki/plugins/experiment/log_file_watcher'
 
 module LabWiki
   module Plugin
@@ -8,7 +8,6 @@ module LabWiki
     end
   end
 end
-
 
 module LabWiki::Plugin::Experiment
   #
@@ -60,7 +59,6 @@ module LabWiki::Plugin::Experiment
       kill("-INT")
     end
 
-    #
     # Run an experiment controller 'cmd' in a separate thread and monitor
     # its stdout. Also send status reports to the provided block which should
     # have two arguments, eventType and message.
@@ -71,7 +69,7 @@ module LabWiki::Plugin::Experiment
     # @param properties Hahs of properties to pass to experiment
     # @param config_opts - Configuration option, need to contain 'ec_runner'
     #
-    def initialize(id, slice, exp_script, properties, config_opts, &block)
+    def initialize(id, slice = nil, exp_script = nil, properties = [], config_opts = {}, &block)
       @id = id
       @observer = block
       @@apps[id] = self
@@ -91,6 +89,10 @@ module LabWiki::Plugin::Experiment
       @props = properties.map { |k, v| "--#{k} '#{v}'" }
     end
 
+    def log_file_path
+      "/tmp/#{@id}.log"
+    end
+
     def start
       unless (ec_runner = @config_opts[:ec_runner])
         raise "Missing 'ec_runner' declaration in experiment configuration"
@@ -98,25 +100,9 @@ module LabWiki::Plugin::Experiment
       cmd = "#{ec_runner} #{@exp_script} #{@script_props.join(' ')} -- #{@props.join(' ')}"
       debug "CMD: #{cmd}"
 
-      pw = IO::pipe   # pipe[0] for read, pipe[1] for write
-      pr = IO::pipe
-      pe = IO::pipe
-
       debug "Starting application '#{@id}' - cmd: '#{cmd}'"
       @pid = fork do
-        Process.setpgid(0,Process.pid)
-        # child will remap pipes to std and exec cmd
-        pw[1].close
-        STDIN.reopen(pw[0])
-        pw[0].close
-
-        pr[0].close
-        STDOUT.reopen(pr[1])
-        pr[1].close
-
-        pe[0].close
-        STDERR.reopen(pe[1])
-        pe[1].close
+        Process.setpgid(0, Process.pid)
 
         begin
           exec(cmd)
@@ -130,20 +116,18 @@ module LabWiki::Plugin::Experiment
         exit!
       end
       @observer.call('STARTED', nil)
-
-      pw[0].close
-      pr[1].close
-      pe[1].close
-      @pipes = [pr[0], pe[0], pw[1]]
-      @stdin = pw[1]
-
-      @threads = []
-      @threads << monitor_pipe('STDOUT', pr[0])
-      @threads << monitor_pipe('STDERR', pe[0])
-      monitor_exit()
+      monitor
     end
 
-    #
+    def monitor(pid = nil)
+      @pid = pid if pid
+
+      @logfile_watcher = LabWiki::Plugin::Experiment::LogFileWatcher.new(log_file_path) do |line_msg|
+        @observer.call('LOG', line_msg)
+      end
+      monitor_exit
+    end
+
     # Create a thread to monitor the process and its output
     # and report that back to the server
     #
@@ -192,8 +176,6 @@ module LabWiki::Plugin::Experiment
         @observer.call("DONE.#{s}", "status: #{status}")
       end
     end
-
-
   end # class
 end # module LabWiki::Plugin::Experiment
 

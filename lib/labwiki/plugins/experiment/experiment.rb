@@ -8,6 +8,13 @@ require 'labwiki/plugins/experiment/oml_connector'
 require 'labwiki/plugins/experiment/graph_description'
 require 'labwiki/plugins/experiment/redis_helper'
 
+# HACK to read data source from data source proxy, this should go to omf_web
+module OMF::Web
+  class DataSourceProxy < OMF::Common::LObject
+    attr_reader :data_source
+  end
+end
+
 module LabWiki::Plugin::Experiment
 
   # Maintains the context for a particular experiment.
@@ -40,10 +47,11 @@ module LabWiki::Plugin::Experiment
       @properties = redis.smembers(ns(:props, omf_exp_id)).map { |p| JSON.parse(p).symbolize_keys }
       create_oml_tables
 
-      # Open existing log file
-      IO.foreach("/tmp/#{omf_exp_id}.log") do |line|
-        process_exp_stdout_msg(line)
+      pid = redis.get ns(:pid, omf_exp_id)
+      @ec = LabWiki::Plugin::Experiment::RunExpController.new(@name) do |etype, msg|
+        handle_exp_output @ec, etype, msg
       end
+      @ec.monitor(pid)
     end
 
     def start_experiment(properties, slice, name, irods = {})
@@ -104,14 +112,20 @@ module LabWiki::Plugin::Experiment
     end
 
     def create_oml_tables
-      @status_table = OMF::OML::OmlTable.new "status_#{@name}", [[:time, :int], :phase, [:completion, :float], :message]
-      OMF::Web::DataSourceProxy.register_datasource @status_table rescue warn $!
+      unless (dsp = OMF::Web::DataSourceProxy["status_#{@name}"] && @status_table = dsp.data_source)
+        @status_table = OMF::OML::OmlTable.new "status_#{@name}", [[:time, :int], :phase, [:completion, :float], :message]
+        OMF::Web::DataSourceProxy.register_datasource @status_table rescue warn $!
+      end
 
-      @log_table = OMF::OML::OmlTable.new "log_#{@name}", [[:time, :int], :severity, :path, :message]
-      OMF::Web::DataSourceProxy.register_datasource @log_table rescue warn $!
+      unless (dsp = OMF::Web::DataSourceProxy["log_#{@name}"] && @log_table = dsp.data_source)
+        @log_table = OMF::OML::OmlTable.new "log_#{@name}", [[:time, :int], :severity, :path, :message]
+        OMF::Web::DataSourceProxy.register_datasource @log_table rescue warn $!
+      end
 
-      @graph_table = OMF::OML::OmlTable.new "graph_#{@name}", [:id, :description]
-      OMF::Web::DataSourceProxy.register_datasource @graph_table rescue warn $!
+      unless (dsp = OMF::Web::DataSourceProxy["graph_#{@name}"] && @graph_table = dsp.data_source)
+        @graph_table = OMF::OML::OmlTable.new "graph_#{@name}", [:id, :description]
+        OMF::Web::DataSourceProxy.register_datasource @graph_table rescue warn $!
+      end
 
       @oml_connector = OmlConnector.new(@name, @graph_table, @config_opts[:oml])
     end
@@ -145,8 +159,6 @@ module LabWiki::Plugin::Experiment
           redis.set ns(:start_time, @name), @start_time
         when :pid
           redis.set ns(:pid, @name), @ec.pid
-        #when :graph_descriptions
-        #  @graph_descriptions.each { |gd| redis.sadd ns(:graph_descriptions, @name), gd.to_json }
         end
       end
     end
@@ -160,7 +172,7 @@ module LabWiki::Plugin::Experiment
           info "Experiment #{@name} started. PID: #{ec.pid}"
           @state = :running
           self.persist [:status, :pid]
-        when 'STDOUT'
+        when 'LOG'
           process_exp_stdout_msg(msg)
         when 'DONE.OK'
           @state = :finished
@@ -171,7 +183,6 @@ module LabWiki::Plugin::Experiment
         warn "EXCEPTION: #{ex}"
         debug ex.backtrace.join("\n")
       end
-
     end
 
     def process_exp_stdout_msg(msg)
