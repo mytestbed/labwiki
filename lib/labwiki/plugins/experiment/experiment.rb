@@ -48,6 +48,7 @@ module LabWiki::Plugin::Experiment
       create_oml_tables
 
       pid = redis.get ns(:pid, omf_exp_id)
+      pid = pid.to_i if pid
       @ec = LabWiki::Plugin::Experiment::RunExpController.new(@name) do |etype, msg|
         handle_exp_output @ec, etype, msg
       end
@@ -112,17 +113,23 @@ module LabWiki::Plugin::Experiment
     end
 
     def create_oml_tables
-      unless (dsp = OMF::Web::DataSourceProxy["status_#{@name}"] && @status_table = dsp.data_source)
+      if (dsp = OMF::Web::DataSourceProxy["status_#{@name}"])
+        @status_table = dsp.data_source
+      else
         @status_table = OMF::OML::OmlTable.new "status_#{@name}", [[:time, :int], :phase, [:completion, :float], :message]
         OMF::Web::DataSourceProxy.register_datasource @status_table rescue warn $!
       end
 
-      unless (dsp = OMF::Web::DataSourceProxy["log_#{@name}"] && @log_table = dsp.data_source)
+      if (dsp = OMF::Web::DataSourceProxy["log_#{@name}"])
+        @log_table = dsp.data_source
+      else
         @log_table = OMF::OML::OmlTable.new "log_#{@name}", [[:time, :int], :severity, :path, :message]
         OMF::Web::DataSourceProxy.register_datasource @log_table rescue warn $!
       end
 
-      unless (dsp = OMF::Web::DataSourceProxy["graph_#{@name}"] && @graph_table = dsp.data_source)
+      if (dsp = OMF::Web::DataSourceProxy["graph_#{@name}"])
+        @graph_table = dsp.data_source
+      else
         @graph_table = OMF::OML::OmlTable.new "graph_#{@name}", [:id, :description]
         OMF::Web::DataSourceProxy.register_datasource @graph_table rescue warn $!
       end

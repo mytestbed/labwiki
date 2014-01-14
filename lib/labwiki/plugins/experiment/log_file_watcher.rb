@@ -11,7 +11,6 @@ module LabWiki
         end
 
         def file_found(path)
-          puts "FILE FOUND --------------------#{path}"
           # Read current file content
           IO.foreach(path) do |line|
             @block.call(line)
