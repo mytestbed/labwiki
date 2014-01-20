@@ -132,11 +132,9 @@ L.provide('LW.content_selector_widget', ['#jquery.ui'], function () {
         if (xhr.status == 401) {
           // Server lost authentication information and requires a new login
           // Should really be done through a popup informing what's going on
-          var x = document.cookie;
-          var c = document.cookie.split("; ");
           window.location.reload();
         } else {
-          alert("Server is sending error message I don't understand")
+          alert("Server is sending error message I don't understand");
         }
 
       });
