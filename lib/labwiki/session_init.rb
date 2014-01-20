@@ -19,8 +19,13 @@ class SessionInit < OMF::Base::LObject
         user = $users[env['warden'].user]
 
         if user.nil?
+          req.session['sid'] = nil # necessary?
           req.session.clear
-          return [302, {'Location' => '/', "Content-Type" => ""}, ['Session lost, re-authenticate.']]
+          if req.xhr?
+            return [401, {}, ['Session lost, re-authenticate.']]
+          else
+            return [302, {'Location' => '/', "Content-Type" => ""}, ['Session lost, re-authenticate.']]
+          end
         end
 
         update_user(user)
