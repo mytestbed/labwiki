@@ -14,7 +14,12 @@ LabWiki::PluginManager.register :source_edit, {
       :priority => lambda do |opts|
         (opts[:mime_type].start_with? 'text') ? 100 : nil
       end,
-      :widget_class => LabWiki::Plugin::SourceEdit::SourceEditWidget
+      :widget_class => LabWiki::Plugin::SourceEdit::SourceEditWidget,
+      :search => lambda do |pat, opts|
+        # TODO The next line should be commented out when upgradign to newest omf_web
+#        opts[:mime_type] ||= 'text/*'
+        OMF::Web::ContentRepository.find_files(pat, opts)
+      end
     }
   ],
   :renderers => {

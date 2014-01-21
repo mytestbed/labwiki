@@ -62,7 +62,7 @@ module LabWiki
     def self.create_widget(column, params)
       debug "Creating widget for '#{column}' from '#{params.inspect}' -- #{@@plugins_for_col[column.to_sym]}"
       if wname = params[:plugin]
-        wdescr = @@plugins_for_col[column.to_sym].find do |wd|
+        wdescr = plugins_for_column(column).find do |wd|
           puts ">>> #{wname} - #{wd[:name] == wname} - #{wd}"
           wd[:name] == wname
         end
@@ -88,6 +88,10 @@ module LabWiki
       debug "Creating widget for '#{column}' from '#{widget_class}' (#{options})"
       widget = widget_class.new(column, options, params)
       widget
+    end
+
+    def self.plugins_for_column(column)
+      @@plugins_for_col[column.to_sym]
     end
 
     def self.resource_directory_for(plugin_name)
