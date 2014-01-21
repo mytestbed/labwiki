@@ -1,5 +1,6 @@
 require 'omf_base/lobject'
-
+require 'omf_web'
+require 'omf-web/theme'
 
 module LabWiki
   module Plugin; end # Put all plugins under this module
@@ -10,9 +11,21 @@ module LabWiki
 
     def self.init
       info "INITIALIZING PLUGINS"
-      require 'labwiki/plugins/experiment/init'
-      require 'labwiki/plugins/source_edit/init'
-      require 'labwiki/plugins/plan_text/init'
+      require 'labwiki/plugin/source_edit/init'
+      require 'labwiki/plugin/plan_text/init'
+
+      LabWiki::Configurator[:plugins].each do |name, opts|
+        #puts ">>> #{name} ::: #{opts}"
+        if plugin_dir = opts.delete(:plugin_dir)
+          lib_dir = File.expand_path(File.join(plugin_dir, 'lib'))
+          unless File.readable? lib_dir
+            error "Can't find lib directory '#{lib_dir}' for plugin '#{name}'"
+            next
+          end
+          $: << lib_dir
+          require "labwiki/plugin/#{name}/init"
+        end
+      end
     end
 
     #
