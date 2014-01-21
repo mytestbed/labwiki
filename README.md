@@ -11,7 +11,7 @@ from Github.
 
     git clone https://github.com/mytestbed/labwiki.git
     cd labwiki
-    bundle update
+    bundle update --path vendor
 
 ## Try the simple example
 
@@ -29,7 +29,7 @@ Then create a temporary git repo and populate it with some test data.
     
 Finally start LabWiki.
 
-    ruby1.9 $LABWIKI_TOP/bin/labwiki --lw-config __your_config_file__.yaml start
+    $LABWIKI_TOP/bin/labwiki --lw-config __your_config_file__.yaml start
     
 The '__your_config_file__.yaml' needs to be replace with a path to a file describing the local setup. A sample 
 of such a file can be found in 'test/config/norbit.yaml'. Please create your own one as this one will very likely 
