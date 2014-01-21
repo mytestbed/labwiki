@@ -1,0 +1,7 @@
+
+labwiki:
+  repositories:
+    default:
+      type: git
+      top_dir: ~/tmp/labwiki
+      is_primary: true
