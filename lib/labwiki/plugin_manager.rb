@@ -14,7 +14,7 @@ module LabWiki
       require 'labwiki/plugin/source_edit/init'
       require 'labwiki/plugin/plan_text/init'
 
-      LabWiki::Configurator[:plugins].each do |name, opts|
+      (LabWiki::Configurator[:plugins] || []).each do |name, opts|
         #puts ">>> #{name} ::: #{opts}"
         if plugin_dir = opts.delete(:plugin_dir)
           lib_dir = File.expand_path(File.join(plugin_dir, 'lib'))
