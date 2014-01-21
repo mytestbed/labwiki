@@ -3,8 +3,8 @@ module LabWiki::Plugin
   module SourceEdit; end
 end
 
-require 'labwiki/plugins/source_edit/source_edit_widget'
-require 'labwiki/plugins/source_edit/code_renderer'
+require 'labwiki/plugin/source_edit/source_edit_widget'
+require 'labwiki/plugin/source_edit/code_renderer'
 
 LabWiki::PluginManager.register :source_edit, {
   :widgets => [

@@ -3,8 +3,8 @@ module LabWiki::Plugin
   module PlanText; end
 end
 
-require 'labwiki/plugins/plan_text/plan_text_widget'
-require 'labwiki/plugins/plan_text/text_renderer'
+require 'labwiki/plugin/plan_text/plan_text_widget'
+require 'labwiki/plugin/plan_text/text_renderer'
 
 LabWiki::PluginManager.register :plan_text, {
   :widgets => [
