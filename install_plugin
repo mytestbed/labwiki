@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+unless ARGV.size == 1
+  puts "ERROR: Missing plugin name"
+  puts "USAGE: #{$0} url_to_git_repo"
+  exit(-1)
+end
+
+plugin = ARGV[0]
+plugin_dir = File.join(File.dirname(__FILE__), 'Xplugins')
+Dir.mkdir(plugin_dir) unless Dir.exist?(plugin_dir)
+`cd #{plugin_dir}; git clone #{plugin}`
+puts "Running bundler - may be silent"
+puts `bundle update`
+puts "====> Plugin installed"

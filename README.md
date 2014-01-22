@@ -11,7 +11,11 @@ from Github.
 
     git clone https://github.com/mytestbed/labwiki.git
     cd labwiki
-    bundle update --path vendor
+    bundle install --path vendor
+    
+If that fails you may need to install some required libraries. On a 'naked' Ubuntu system, we usually install the following:
+
+    sudo apt-get install libpq-dev
 
 ## Try the simple example
 
@@ -21,19 +25,19 @@ First set LABWIKI_TOP to wherever you installed them, respectively.
     
 Then create a temporary git repo and populate it with some test data.
 
-    git init /tmp/foo
-    cp -r $LABWIKI_TOP/test/repo /tmp/foo
-    cd /tmp/foo
+    mkdir -p ~/tmp/lw_repo
+    git init ~/tmp/lw_repo
+    cp -r $LABWIKI_TOP/test/repo ~/tmp/lw_repo
+    pushd ~/tmp/lw_repo
     git add .
     git commit -m 'initial'
     
 Finally start LabWiki.
 
-    $LABWIKI_TOP/bin/labwiki --lw-config __your_config_file__.yaml start
+    $LABWIKI_TOP/bin/labwiki --lw-config $LABWIKI_TOP/etc/labwiki/local-test.yaml --lw-no-login start
     
-The '__your_config_file__.yaml' needs to be replace with a path to a file describing the local setup. A sample 
-of such a file can be found in 'test/config/norbit.yaml'. Please create your own one as this one will very likely 
-NOT work in yor environment.
+The 'local-test.yaml' will ultimately need to be replace with a path to a file describing the local setup. A sample 
+of such a file can be found in 'etc/labwiki/norbit.yaml'. 
     
 This will start a web server at port 4000. Point your browser there and you should see somthing like:
 
