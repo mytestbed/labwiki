@@ -7,7 +7,7 @@ unless ARGV.size == 1
 end
 
 plugin = ARGV[0]
-plugin_dir = File.join(File.dirname(__FILE__), 'Xplugins')
+plugin_dir = File.join(File.dirname(__FILE__), 'plugins')
 Dir.mkdir(plugin_dir) unless Dir.exist?(plugin_dir)
 `cd #{plugin_dir}; git clone #{plugin}`
 puts "Running bundler - may be silent"
