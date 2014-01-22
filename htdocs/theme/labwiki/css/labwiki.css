@@ -239,7 +239,7 @@ ol.codemirror_toolbar li a {
   text-rendering: optimizelegibility;
 }
 
-.widget_body h3 a {
+.widget_body h3 a.toggle {
   display: inline-block;
   padding: 16px 0 0 0;
   overflow: hidden;
@@ -247,11 +247,11 @@ ol.codemirror_toolbar li a {
   height: 0px !important;
   height /**/:16px;
   width: 16px;
-  background: url(/plugin/experiment/img/toggle.png) 0px -16px no-repeat;
+  background: url(/resource/theme/labwiki/images/toggle.png) 0px -16px no-repeat;
 }
 
 .widget_body h3 a.toggle-closed {
-  background: url(/plugin/experiment/img/toggle.png) 0px 3px no-repeat;
+  background: url(/resource/theme/labwiki/images/toggle.png) 0px 3px no-repeat;
 }
 
 .widget_body h3 a.toggle:hover {
@@ -259,17 +259,12 @@ ol.codemirror_toolbar li a {
 }
 
 
-
-/*.experiment-description form li.buttons input {
-  font-size: 100%;
-  margin-right: 5px;
-}*/
-
-/**** TOOLBAR *****/
+/**** TOOLBAR ***
 .codemirror_toolbar_container {
   border-bottom: 1px solid silver;
   text-align: left;
 }
+**/
 
 /** TOOL BAR **/
 

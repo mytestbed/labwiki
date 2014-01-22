@@ -1,8 +1,13 @@
 
 require 'omf_base/lobject'
-require 'omf_common/lobject'
 OMF::Base::Loggable.init_log 'labwiki', :searchPath => File.join(File.dirname(__FILE__), 'labwiki')
-OMF::Common::Loggable.init_log 'labwiki', :searchPath => File.join(File.dirname(__FILE__), 'labwiki')
+
+# begin
+  # # backward compatibility
+  # require 'omf_common/lobject'
+  # OMF::Common::Loggable.init_log 'labwiki', :searchPath => File.join(File.dirname(__FILE__), 'labwiki')
+# rescue Exception
+# end
 
 module OmfLabWiki; end
 
@@ -27,10 +32,9 @@ opts = {
   #:login_required => true,
   :handlers => {
     # Should be done in a better way
-    :pre_rackup => lambda {
-      LabWiki::PluginManager.init
+    :pre_rackup => lambda do
       LabWiki::Configurator.init_omf_web
-    },
+    end,
     :pre_parse => lambda do |p|
       p.separator ""
       p.separator "LabWiki options:"
@@ -48,9 +52,11 @@ opts = {
         OMF::Base::Loggable.logger(:opts).fatal "Missing --lw_config option"
         false
       else
+        LabWiki::PluginManager.init
         true
       end
-    end
+    end,
+
   }
 }
 require 'omf_web'

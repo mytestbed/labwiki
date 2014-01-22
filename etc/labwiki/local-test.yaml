@@ -3,5 +3,5 @@ labwiki:
   repositories:
     default:
       type: git
-      top_dir: ~/tmp/labwiki
+      top_dir: ~/tmp/lw_repo
       is_primary: true
