@@ -28,6 +28,19 @@ module LabWiki
       end
     end
 
+    def self.extend_config_ru(binding)
+      #puts "POST>>>> #{binding}"
+      @@plugins.each do |name, opts|
+        if config_ru = opts[:config_ru]
+          if File.readable? config_ru
+            eval(IO.read(config_ru), binding)
+          else
+            error "Can't read '#{config_ru}' for plugin '#{name}'"
+          end
+        end
+      end
+    end
+
     #
     # description:
     #  - widget

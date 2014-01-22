@@ -16,13 +16,16 @@ module OMF::Web::Theme
     # depends_on :js, "/resource/vendor/jquery-ui/js/jquery-ui.min.js"
     #depends_on :js, "/resource/vendor/jquery-ui/js/jquery.ui.autocomplete.js"
 
-    depends_on :js, "/resource/theme/labwiki/js/column_controller.js"
-    depends_on :js, "/resource/theme/labwiki/js/content_selector_widget.js"
+    #depends_on :js, "/resource/theme/labwiki/js/column_controller.js"
+    #depends_on :js, "/resource/theme/labwiki/js/content_selector_widget.js"
     #depends_on :js, "/resource/theme/labwiki/js/execute_col_controller.js"
-    depends_on :js, "/resource/theme/labwiki/js/labwiki.js"
-    depends_on :js, "/resource/theme/labwiki/js/exp_context.js"
+    #depends_on :js, "/resource/theme/labwiki/js/labwiki.js"
+    #depends_on :js, "/resource/theme/labwiki/js/exp_context.js"
 
     depends_on :js, "/resource/vendor/bootstrap/js/bootstrap.js"
+    depends_on :js, '/resource/vendor/jquery/jquery.js'
+    depends_on :js, '/resource/vendor/jquery/jquery.periodicalupdater.js'
+    depends_on :js, '/resource/vendor/jquery-ui/js/jquery-ui.min.js'
 
     def initialize(widget, opts)
       super
@@ -37,14 +40,17 @@ module OMF::Web::Theme
 
     def content
       javascript %{
-        if (typeof(LW) == "undefined") LW = {};
-        if (typeof(LW.plugin) == "undefined") LW.plugin = {};
+        require(['theme/labwiki/js/labwiki'], function() {
+          LW.session_id = OML.session_id = '#{OMF::Web::SessionStore.session_id}';
+        });
 
-        LW.session_id = OML.session_id = '#{OMF::Web::SessionStore.session_id}';
 
+
+        /*
         L.provide('jquery', ['/resource/vendor/jquery/jquery.js']);
         L.provide('jquery.periodicalupdater', ['/resource/vendor/jquery/jquery.periodicalupdater.js']);
         L.provide('jquery.ui', ['/resource/vendor/jquery-ui/js/jquery-ui.min.js']);
+        */
 
       }
       div :id => "container", :style => "position: relative; height: 100%;" do

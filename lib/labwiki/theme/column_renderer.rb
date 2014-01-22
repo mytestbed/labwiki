@@ -40,9 +40,10 @@ module OMF::Web::Theme
         # end
       end
       javascript %{
-        L.require('#LW.init', function() {
-          LW.#{@col_name}_controller.init('lw#{object_id}', #{opts.to_json});
+        require(['theme/labwiki/js/labwiki'], function(lw) {
+          lw.#{@col_name}_controller.init('lw#{object_id}', #{opts.to_json});
 
+          /** TODO: THIS SHOULDN'T BE HERE  */
           $('#new-button_#{@col_name}').click(function() {
             $('#new_script_#{@col_name}').toggle();
           });

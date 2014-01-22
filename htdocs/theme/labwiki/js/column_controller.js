@@ -1,14 +1,15 @@
 
-if (typeof(LW) == "undefined") LW = {};
+//if (typeof(LW) == "undefined") LW = {};
 
-L.provide('LW.column_controller', ['#LW.content_selector_widget', '#jquery.ui'], function () {
+//L.provide('LW.column_controller', ['#LW.content_selector_widget', '#jquery.ui'], function () {
+define(["theme/labwiki/js/content_selector_widget"], function (content_selector_widget) {
 
   /*
    * The UI is divided into multiple columns whose content may dynamically
    * change during a session. This object coordinates the behavior the columns
    * and maintains its state.
    */
-  LW.column_controller = Backbone.Model.extend({
+  var column_controller = Backbone.Model.extend({
     defaults: {
       left: 0,
       width: 0,
@@ -18,7 +19,7 @@ L.provide('LW.column_controller', ['#LW.content_selector_widget', '#jquery.ui'],
     initialize: function(opts) {
       this._opts = opts;
       var name = this._name = opts.name;
-      this._content_selector = new LW.content_selector_widget(this, {});
+      this._content_selector = new content_selector_widget(this, {});
       //this._content_history = [];
       this.content_descriptor = {};
       // allow content specific monitors to take a first stab at handling dropped content
@@ -76,7 +77,7 @@ L.provide('LW.column_controller', ['#LW.content_selector_widget', '#jquery.ui'],
         type: type
       }).done(function(data) {
         self.on_drop_handler = null; // remove drop handler as it may be related to old content
-        var content_div = $('#col_content_' + opts.col)
+        var content_div = $('#col_content_' + opts.col);
         try {
           content_div.replaceWith(data.html);
         } catch(err) {
@@ -101,7 +102,7 @@ L.provide('LW.column_controller', ['#LW.content_selector_widget', '#jquery.ui'],
         var o = {
           url: content_descriptor.url,
           mime_type: content_descriptor.mime_type
-        }
+        };
         this.load_content(o);
       }
     },
@@ -308,4 +309,6 @@ L.provide('LW.column_controller', ['#LW.content_selector_widget', '#jquery.ui'],
     },
 
   });
-})
+
+  return column_controller;
+});

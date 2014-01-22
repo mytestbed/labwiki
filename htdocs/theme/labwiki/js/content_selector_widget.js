@@ -1,6 +1,5 @@
-if (typeof(LW) == "undefined") LW = {};
 
-L.provide('LW.content_selector_widget', ['#jquery.ui'], function () {
+define([], function () {
 
   /*
    * Each column has a content selection widget which allows the user to select
@@ -11,7 +10,8 @@ L.provide('LW.content_selector_widget', ['#jquery.ui'], function () {
    * name of content and a suggestion list showing a list of potential content candidates
    * as well as previously selected content (history).
    */
-  LW.content_selector_widget = Backbone.Model.extend({
+  //LW.content_selector_widget = Backbone.Model.extend({
+  var content_selector_widget = Backbone.Model.extend({
 
     initialize: function(column_controller, opts) {
       this._column_controller = column_controller;
@@ -300,4 +300,6 @@ L.provide('LW.content_selector_widget', ['#jquery.ui'], function () {
     },
 
   });
+
+  return content_selector_widget;
 });

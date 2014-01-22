@@ -1,11 +1,15 @@
 
-L.provide('LW.init', ['#LW.column_controller'], function() {
+
+define(['theme/labwiki/js/column_controller'], function (column_controller) {
+  if (typeof(LW) == "undefined") LW = {};
+  if (typeof(LW.plugin) == "undefined") LW.plugin = {};
+
 
   LW.controllers = [
-    LW.plan_controller = new LW.column_controller({name: 'plan', col_index: 0}),
-    LW.prepare_controller = new LW.column_controller({name: 'prepare', col_index: 1}),
+    LW.plan_controller = new column_controller({name: 'plan', col_index: 0}),
+    LW.prepare_controller = new column_controller({name: 'prepare', col_index: 1}),
     //LW.execute_controller = new LW.execute_col_controller({name: 'execute', col_index: 2})
-    LW.execute_controller = new LW.column_controller({name: 'execute', col_index: 2})
+    LW.execute_controller = new column_controller({name: 'execute', col_index: 2})
   ];
 
   LW.layout = function(window) {
@@ -61,4 +65,6 @@ L.provide('LW.init', ['#LW.column_controller'], function() {
 
     console.log('hi');
   });
+
+  return LW;
 });

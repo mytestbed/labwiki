@@ -24,6 +24,8 @@ LabWiki::PluginManager.register :source_edit, {
   ],
   :renderers => {
     :code_renderer => OMF::Web::Theme::CodeRenderer
-  }
+  },
+  :resources => File.join(File.dirname(__FILE__), '/resource'),
+  :config_ru => File.join(File.dirname(__FILE__), 'config.ru')
 }
 
