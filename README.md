@@ -48,6 +48,14 @@ For additional options start the server with -h.
 The introductory video at http://labwiki.mytestbed.net should provide you with some hints on how to proceed. Obviously, 
 more (any) documentation would be even better.
 
+## Installing additional Plugins
+
+Labwiki's functionality is primarily defined by it's external plugins. To install a new plugin, such as the OMF Experiment plugin do the
+following:
+
+    $LABWIKI_TOP/install_plugin https://github.com/mytestbed/labwiki_experiment_plugin.git
+    
+          
 ## Configuration
 
 All the site specific configurations are captured in a YAML file which is provided at startup through
