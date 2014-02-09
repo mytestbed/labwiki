@@ -1,4 +1,32 @@
 
+var i = 0;
+require.config({
+    //By default load any module IDs from js/lib
+    baseUrl: '/resource',
+    //except, if the module ID starts with "app",
+    //load it from the js/app directory. paths
+    //config is relative to the baseUrl, and
+    //never includes a ".js" extension since
+    //the paths config could be for a directory.
+    paths: {
+        omf: 'js',
+        vendor: 'vendor',
+        graph: 'graph/js',
+        graph_css: 'graph/css'
+    },
+    shim: {
+      'vendor/jquery/jquery': {
+          //deps: ['jquery'],
+          exports: 'jQuery'
+      },
+    },
+    map: {
+      '*': {
+        'css': 'vendor/require-css/css'
+      }
+    }
+});
+require(['css!graph_css/graph'], function(css) {});
 
 define(['theme/labwiki/js/column_controller'], function (column_controller) {
   if (typeof(LW) == "undefined") LW = {};
