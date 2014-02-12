@@ -61,8 +61,28 @@ module OMF::Web::Theme
             span "by NICTA", :class => 'brand', :style=> "font-size: 110%; line-height: 29px;"
             ul :class => 'secondary-nav' do
               li do
+                a :class => "dropdown-toggle sr-only", :id => "topbar-tools-menu-toggle", 'data-toggle' => "dropdown" do
+                  i :class => "tools"
+                  text 'Tools'
+                  span class: "caret"
+                end
+                ul :id => "topbar-tools-menu", :class => "dropdown-menu", :role => "menu", 'aria-labelledby' => "topbar-tools-menu-toggle" do
+                  li :class => 'dropdown-header', :role => "presentation" do
+                    text "GIMI"
+                  end
+                  li role: "presentation" do
+                    a 'Action', role: "menuitem", tabindex: "-1", href: "#"
+                  end
+                  li :class => 'divider', :role => "presentation"
+                  li role: "presentation" do
+                    a 'Action', role: "menuitem", tabindex: "-1", href: "#"
+                  end
+                end
+              end
+
+              li do
                 a :href => '#new-exp-modal', :role => 'button', :"data-toggle" => "modal" do
-                  i :class => "icon-plus icon-white"
+                  i :class => "icon-asterisk icon-white"
                   text "Add context"
                 end
               end
