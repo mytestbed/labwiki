@@ -2,6 +2,7 @@
 
 require 'omf-web/theme/abstract_page'
 require 'labwiki/theme/column_renderer'
+require 'labwiki/plugin_manager'
 
 module OMF::Web::Theme
   class Page < OMF::Web::Theme::AbstractPage
@@ -40,19 +41,14 @@ module OMF::Web::Theme
     end
 
     def content
+      gjsa = LabWiki::PluginManager.get_global_js().map do |js|
+        "require(['#{js}'], function() {});"
+      end
       javascript %{
         require(['theme/labwiki/js/labwiki'], function() {
           LW.session_id = OML.session_id = '#{OMF::Web::SessionStore.session_id}';
+          #{gjsa.join("\n")}
         });
-
-
-
-        /*
-        L.provide('jquery', ['/resource/vendor/jquery/jquery.js']);
-        L.provide('jquery.periodicalupdater', ['/resource/vendor/jquery/jquery.periodicalupdater.js']);
-        L.provide('jquery.ui', ['/resource/vendor/jquery-ui/js/jquery-ui.min.js']);
-        */
-
       }
       div :id => "container", :style => "position: relative; height: 100%;" do
         div :id => "k-window" do
@@ -61,7 +57,7 @@ module OMF::Web::Theme
             span "by NICTA", :class => 'brand', :style=> "font-size: 110%; line-height: 29px;"
             ul :class => 'secondary-nav' do
               li do
-                a :class => "dropdown-toggle sr-only", :id => "topbar-tools-menu-toggle", 'data-toggle' => "dropdown" do
+                a :class => "dropdown-toggle", :id => "topbar-tools-menu-toggle", 'data-toggle' => "dropdown" do
                   i :class => "tools"
                   text 'Tools'
                   span class: "caret"
@@ -88,13 +84,13 @@ module OMF::Web::Theme
               end
               li do
                 a :href => '#', :class => 'user' do
-                  i :class => "icon-user icon-white"
+                  i :class => "glyphicon glyphicon-user icon-white"
                   text (OMF::Web::SessionStore[:name, :user] || 'Unknown').capitalize
                 end
               end
               li do
                 a :href => '/logout', :class => 'logout' do
-                  i :class => "icon-off icon-white"
+                  i :class => "glyphicon glyphicon-off icon-white"
                   text "Log out"
                 end
               end
