@@ -10,7 +10,7 @@ module LabWiki
     @@plugins_for_col = { plan: [], prepare: [], execute: []}
 
     def self.init
-      info "INITIALIZING PLUGINS"
+      info "Initializing Plugins"
       require 'labwiki/plugin/source_edit/init'
       require 'labwiki/plugin/plan_text/init'
 
@@ -28,6 +28,7 @@ module LabWiki
           fatal "Missing 'plugin_dir' for plugin '#{name}'"
         end
       end
+
     end
 
     def self.extend_config_ru(binding)
@@ -49,7 +50,7 @@ module LabWiki
     #  - renderer
     #
     def self.register name, description
-      info "Loading plugin '#{name}'"
+      info "Loading plugin '#{name}' - V#{description[:version] || '??'}"
       name = name.to_sym
       if @@plugins[name]
         warn "Plugin '#{name}' is already registered. Overiding previous settings"
@@ -72,6 +73,18 @@ module LabWiki
       (description[:renderers] || {}).each do |renderer_name, renderer_class|
         OMF::Web::Theme.register_renderer renderer_name, renderer_class, 'labwiki/theme'
       end
+    end
+
+    # Return an array containing all the javascript
+    # init files the plugins have registers to be loaded
+    # into the global context
+    #
+    def self.get_global_js
+      @@plugins.map do |name, opts|
+        if gjs = opts[:global_js]
+          "plugin/#{name}/#{gjs.split('.')[0]}"
+        end
+      end.compact
     end
 
     def self.create_widget(column, params)

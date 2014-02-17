@@ -19,6 +19,12 @@ define([], function () {
       this._search_pat = '';
       this._content_history = [];
       this._content_recommendations = [];
+
+      this._formatters = {
+        '_': function(row, i, type, def_formatter) {
+               return def_formatter(row.name, row.path, null, i, type);
+             }
+       };
     },
 
     /*
@@ -56,6 +62,9 @@ define([], function () {
       this._init_suggestion_lists(context_el);
     },
 
+    set_search_list_formatter: function(plugin_name, formatter_f) {
+      this._formatters[plugin_name] = formatter_f;
+    },
 
     // Reset the search pattern
     //
@@ -125,9 +134,20 @@ define([], function () {
         data: data,
         type: 'get',
         dataType: 'json'
-      }).done(function(data) {
-        self._content_recommendations = data;
-        self._refresh_suggestion_list(data);
+      }).done(function(reply) {
+        if (reply.result) {
+          var list = reply.result;
+          self._content_recommendations = list;
+          self._refresh_suggestion_list(list);
+        } else if (reply.retry) {
+          // Retry again later
+          setTimeout(function() {
+            if (self._search_pat == pat) {
+              // Still loking for the same pattern
+              self._query(pat);
+            }
+          }, 1000);
+        }
       }).fail(function(xhr) {
         if (xhr.status == 401) {
           // Server lost authentication information and requires a new login
@@ -222,25 +242,53 @@ define([], function () {
       this._init_suggestion_lists(this._context_el);
     },
 
+    def_formatter_template: "<li class='{klass}'>\
+      <a class='ui-corner-index' lw:id='{idx}' lw:type='{type}'>\
+        <div class='image'><img src='/resource/{img_url}'></img></div>\
+        <div class='t'>\
+          <div class='title'>{title}</div>\
+          <div class='sub_title'>{sub_title}</div>\
+        </div>\
+      </a></li>",
+
     _build_suggestion_list: function(slist, type) {
-      var lia = slist.map(function(row, i) {
+      var formatters = this._formatters;
+      var self = this;
+      var defFormatter = function (title, sub_title, img_url, index, type) {
         var klass = 'ui-menu-item';
-        if (i == 0) {
-          klass = klass + ' ui-menu-item-first ui-menu-item-first-' + type;
+        if (img_url == null) {
+          img_url = "theme/labwiki/images/file-16.png";
         }
-        return "<li class='"
-               + klass
-               + "'><a class='ui-corner-index' lw:id='"
-               + i
-               + "' lw:type='"
-               + type
-               + "'>"
-               + row.label
-               + "</a></li>";
+        //if (i == 0) klass = klass + ' ui-menu-item-first ui-menu-item-first-' + type;
+        var c = {klass: klass, idx: "" + index, type: type, img_url: img_url, title: title, sub_title: sub_title};
+        var h = self.def_formatter_template.replace(/{[^{}]+}/g, function(key) {
+          return c[key.replace(/[{}]+/g, "")] || "";
+        });
+        return h;
+      };
+      var lia = slist.map(function(row, i) {
+        var f = formatters[row.plugin] || formatters['_'];
+        return f(row, i, type, defFormatter);
       });
       var li = lia.join('');
       return li;
     },
+
+    // def_formatter: function (label, img_url, i, type) {
+      // var klass = 'ui-menu-item';
+      // if (img_url == null) {
+        // img_url = "theme/labwiki/images/file-16.png";
+      // }
+      // if (i == 0) klass = klass + ' ui-menu-item-first ui-menu-item-first-' + type;
+      // return "<li class='"
+             // + klass
+             // + "'><a class='ui-corner-index' lw:id='" + i
+             // + "' lw:type='" + type
+             // + "'>"
+             // + "<img style='opacity:0.4' src='/resource/" + img_url + "'></img>"
+             // + label
+             // + "</a></li>";
+    // },
 
 
     init2: function(el_prefix, opts) {
