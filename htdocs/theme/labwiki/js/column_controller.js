@@ -2,7 +2,7 @@
 //if (typeof(LW) == "undefined") LW = {};
 
 //L.provide('LW.column_controller', ['#LW.content_selector_widget', '#jquery.ui'], function () {
-define(["theme/labwiki/js/content_selector_widget"], function (content_selector_widget) {
+define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWidget) {
 
   /*
    * The UI is divided into multiple columns whose content may dynamically
@@ -16,10 +16,15 @@ define(["theme/labwiki/js/content_selector_widget"], function (content_selector_
       panel_height: 0
     },
 
+    set_search_list_formatter: function(plugin_name, formatter_f) {
+      this._content_selector.set_search_list_formatter(plugin_name, formatter_f);
+    },
+
+
     initialize: function(opts) {
       this._opts = opts;
       var name = this._name = opts.name;
-      this._content_selector = new content_selector_widget(this, {});
+      this._content_selector = new ContentSelectorWidget(this, {});
       //this._content_history = [];
       this.content_descriptor = {};
       // allow content specific monitors to take a first stab at handling dropped content
@@ -59,10 +64,11 @@ define(["theme/labwiki/js/content_selector_widget"], function (content_selector_
         //blob: selected.blob,  // use this one if we care about a specific version
         col: this._name
       };
+      if (selected.name) opts.name = selected.name;
       if (selected.content) opts.content = selected.content;
       if (selected.url) opts.url = selected.url;
       if (selected.mime_type) opts.mime_type = selected.mime_type;
-      if (selected.omf_exp_id) opts.omf_exp_id = selected.omf_exp_id;
+      if (selected.plugin) opts.plugin = selected.plugin;
 
       this.refresh_content(opts, 'GET');
     },
