@@ -48,7 +48,7 @@ module OMF::Web::Theme
             $('#new_script_#{@col_name}').toggle();
           });
           $('#new_script_form_#{@col_name}').submit(function(event) {
-            $.post("/create_script", $(this).serialize(), function(data) {
+            $.post("/plugin/source_edit/create_script", $(this).serialize(), function(data) {
               $(".alert-create-script").html(data).addClass("alert-success").removeClass("alert-error");
             }).fail(function(data) {
               $(".alert-create-script").html(data.responseText).addClass("alert-error").removeClass("alert-success");
