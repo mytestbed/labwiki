@@ -18,7 +18,7 @@ LabWiki::PluginManager.register :source_edit, {
       :search => lambda do |pat, opts, wopts|
         # TODO The next line should be commented out when upgradign to newest omf_web
 #        opts[:mime_type] ||= 'text/*'
-        OMF::Web::ContentRepository.find_files(pat, opts, wopts)
+        OMF::Web::ContentRepository.find_files(pat, opts)
       end
     }
   ],
