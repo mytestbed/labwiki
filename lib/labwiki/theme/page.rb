@@ -21,7 +21,7 @@ module OMF::Web::Theme
     #depends_on :js, "/resource/theme/labwiki/js/content_selector_widget.js"
     #depends_on :js, "/resource/theme/labwiki/js/execute_col_controller.js"
     #depends_on :js, "/resource/theme/labwiki/js/labwiki.js"
-    #depends_on :js, "/resource/theme/labwiki/js/exp_context.js"
+    depends_on :js, "/resource/theme/labwiki/js/exp_context.js"
 
     depends_on :js, "/resource/vendor/bootstrap/js/bootstrap.js"
     depends_on :js, '/resource/vendor/jquery/jquery.js'
