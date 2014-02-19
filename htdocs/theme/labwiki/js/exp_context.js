@@ -27,9 +27,9 @@ var ExpListView = Backbone.View.extend({
   },
 
   setupExpSelect: function() {
-    var select_project = $('select[name="propProject"]');
-    var select_experiment = $('select[name="propExperiment"]');
-    var select_slice = $('select[name="propSlice"]');
+    var select_project = $('select[name="propproject"]');
+    var select_experiment = $('select[name="propexperiment"]');
+    var select_slice = $('select[name="propslice"]');
 
     select_project.change(function() {
       console.log(select_project.val());
