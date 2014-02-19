@@ -55,6 +55,18 @@ module OMF::Web::Theme
           div :id => "k-topbar" do
             span "LabWiki", :class => 'brand'
             span "by NICTA", :class => 'brand', :style=> "font-size: 110%; line-height: 29px;"
+            unless LabWiki::Configurator[:stable]
+              if LabWiki::Configurator[:stable_instance_location]
+                span :class => 'label label-warning' do
+                  text "This is NOT the stable instance and could be changed or taken down at any moment. Please visit "
+                  a :href => LabWiki::Configurator[:stable_instance_location] do
+                    text LabWiki::Configurator[:stable_instance_location]
+                  end
+                  text " for the stable instance."
+                end
+              end
+            end
+
             ul :class => 'secondary-nav' do
               li do
                 a :class => "dropdown-toggle", :id => "topbar-tools-menu-toggle", 'data-toggle' => "dropdown" do
