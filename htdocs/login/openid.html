@@ -69,41 +69,46 @@
 
   </head>
   <body>
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
 
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="#aboutModal" data-toggle="modal">LabWiki</a>
-          <div class="nav-collapse collapse pull-right">
-              <ul class="nav">
-                <li><a href="#aboutModal" data-toggle="modal" >About</a></li>
-              </ul>
-          </div><!--/.nav-collapse -->
+          <a class="navbar-brand" href="#">LabWiki</a>
         </div>
+
+        <div class="collapse navbar-collapse pull-right">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#aboutModal" data-toggle="modal" >About</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
       </div>
     </div>
 
+    <div id="aboutModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3>About</h3>
+          </div>
+          <div class="modal-body">
+            <p>Labwiki is a web-based workspace for experimenters. It strives to support the entire
+              investigative life-cycle from planning to preparation to execution to analysis.</p>
 
-    <div id="aboutModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3>About</h3>
-      </div>
-      <div class="modal-body">
-        <p>Labwiki is a web-based workspace for experimenters. It strives to support the entire
-        investigative life-cycle from planning to preparation to execution to analysis.</p>
-
-        <p>It is still under active development and more details can (should) be found on
-          LabWiki's <a href="http://labwiki.mytestbed.net">web site</a>.</p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <p>It is still under active development and more details can (should) be found on
+              LabWiki's <a href="http://labwiki.mytestbed.net">web site</a>.</p>
+          </div>
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
       </div>
     </div>   <!-- /About -->
 
@@ -127,7 +132,7 @@
               <div style="text-align: center;">
                 <img src="/resource/login/img/geni.png" alt="GENI" />
                 <br />
-                <a class="btn openurlbutton" data-toggle="button" id="geni">Login with GENI ID</a>
+                <a class="btn btn-success openurlbutton" role="button" id="geni">Login with GENI ID</a>
 
                 <hr />
                 <!--

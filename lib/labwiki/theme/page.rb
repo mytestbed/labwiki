@@ -21,7 +21,7 @@ module OMF::Web::Theme
     #depends_on :js, "/resource/theme/labwiki/js/content_selector_widget.js"
     #depends_on :js, "/resource/theme/labwiki/js/execute_col_controller.js"
     #depends_on :js, "/resource/theme/labwiki/js/labwiki.js"
-    #depends_on :js, "/resource/theme/labwiki/js/exp_context.js"
+    depends_on :js, "/resource/theme/labwiki/js/exp_context.js"
 
     depends_on :js, "/resource/vendor/bootstrap/js/bootstrap.js"
     depends_on :js, '/resource/vendor/jquery/jquery.js'
@@ -105,44 +105,49 @@ module OMF::Web::Theme
         end
       end
 
-      div id: "new-exp-modal", class: "modal hide fade" do
-        div class: "modal-header" do
-          button :type => "button", :class => "close", :"data-dismiss" => "modal", :"aria-hidden" => "true" do
-            rawtext '&times;'
-          end
-          h3 "New experiment context", style: "font-size: 20px;"
-        end
+      div id: "new-exp-modal", class: "modal fade" do
+        div class: "modal-dialog" do
+          div class: "modal-content" do
 
-        div class: "modal-body" do
-          form class: "form-horizontal" do
-            div class: "control-group" do
-              label "Project", class: "control-label"
-              div class: "controls" do
-                select id: "project" do
-                  if OMF::Web::SessionStore[:projects, :geni_portal]
-                    OMF::Web::SessionStore[:projects, :geni_portal].each do |p|
-                      option p[:name], value: p[:name]
+            div class: "modal-header" do
+              button :type => "button", :class => "close", :"data-dismiss" => "modal", :"aria-hidden" => "true" do
+                rawtext '&times;'
+              end
+              h3 "New experiment context", style: "font-size: 20px;"
+            end
+
+            div class: "modal-body" do
+              form class: "form-horizontal", role: "form" do
+                div class: "form-group" do
+                  label "Project", class: "col-sm-3 control-label"
+                  div class: "col-sm-9" do
+                    select id: "project", class: "form-control" do
+                      if OMF::Web::SessionStore[:projects, :geni_portal]
+                        OMF::Web::SessionStore[:projects, :geni_portal].each do |p|
+                          option p[:name], value: p[:name]
+                        end
+                      end
                     end
+                  end
+                end
+
+                div class: "form-group" do
+                  label class: "col-sm-3 control-label" do
+                    text "Name"
+                  end
+                  div class: "col-sm-9" do
+                    input id: "exp-name", type: "text", class: "form-control"
+                    input id: "irods-user-name", type: "hidden", value: OMF::Web::SessionStore[:id, :user]
                   end
                 end
               end
             end
 
-            div class: "control-group" do
-              label class: "control-label" do
-                text "Name"
-              end
-              div class: "controls" do
-                input id: "exp-name", type: "text"
-                input id: "irods-user-name", type: "hidden", value: OMF::Web::SessionStore[:id, :user]
-              end
+            div class: "modal-footer" do
+              a "Close", :href => "#", :class => "btn btn-default", :"data-dismiss" => "modal"
+              a "Save", :href => "#", :id => "save-exp", :class => "btn btn-primary", :"data-dismiss" => "modal"
             end
           end
-        end
-
-        div class: "modal-footer" do
-          a "Close", :href => "#", :class => "btn", :"data-dismiss" => "modal"
-          a "Save", :href => "#", :id => "save-exp", :class => "btn btn-inverse", :"data-dismiss" => "modal"
         end
       end
     end

@@ -34,7 +34,7 @@ var ExpListView = Backbone.View.extend({
     select_project.change(function() {
       console.log(select_project.val());
       exps.reset();
-      exps.url = 'http://localhost:8002/projects/' + select_project.val() + '/experiments';
+      exps.url = 'http://' + document.domain + ':8002/projects/' + select_project.val() + '/experiments';
       exps.fetch();
 
       var filtered_slices = _.find(geni_projects, function(proj) {
@@ -51,7 +51,7 @@ var ExpListView = Backbone.View.extend({
   setupNewForm: function() {
     $('#save-exp').on('click', function() {
       new_exp = new Exp({ name: $('input#exp-name').val() });
-      new_exp.url = 'http://localhost:8002/projects/' + $('select#project').val() +'/experiments';
+      new_exp.url = 'http://' + document.domain + ':8002/projects/' + $('select#project').val() +'/experiments';
       new_exp.save();
       exps.add(new_exp);
     });
