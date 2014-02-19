@@ -14,7 +14,9 @@ $users = {}
 
 OPENID_FIELDS = {
   google: ["http://axschema.org/contact/email", "http://axschema.org/namePerson/last"],
-  geni: ['http://geni.net/projects', 'http://geni.net/slices', 'http://geni.net/user/urn', 'http://geni.net/user/prettyname']
+  geni: ['http://geni.net/projects', 'http://geni.net/slices',
+         'http://geni.net/user/urn', 'http://geni.net/user/prettyname',
+         'http://geni.net/irods/username', 'http://geni.net/irods/zone']
 }
 
 Warden::OpenID.configure do |config|
