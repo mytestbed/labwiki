@@ -57,12 +57,11 @@ module OMF::Web::Theme
             span "by NICTA", :class => 'brand', :style=> "font-size: 110%; line-height: 29px;"
             unless LabWiki::Configurator[:stable]
               if LabWiki::Configurator[:stable_instance_location]
-                span :class => 'label label-warning' do
-                  text "This is NOT the stable instance and could be changed or taken down at any moment. Please visit "
+                span :class => 'label label-warning', :style => "font-size: 110%; line-height: 29px; margin-left: 10px;" do
+                  text "This is NOT the stable instance. You could visit "
                   a :href => LabWiki::Configurator[:stable_instance_location] do
-                    text LabWiki::Configurator[:stable_instance_location]
+                    text "the stable instance here."
                   end
-                  text " for the stable instance."
                 end
               end
             end
