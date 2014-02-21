@@ -19,6 +19,8 @@ OPENID_FIELDS = {
          'http://geni.net/irods/username', 'http://geni.net/irods/zone']
 }
 
+GENI_OPENID_PROVIDER = "https://portal.geni.net/server/server.php"
+
 Warden::OpenID.configure do |config|
   config.required_fields = OPENID_FIELDS[:geni]
   config.user_finder do |response|
@@ -77,6 +79,18 @@ map '/login' do
       env['warden'].authenticate!
       [302, {'Location' => '/', "Content-Type" => ""}, ['Login process failed']]
     end
+  end
+  run handler
+end
+
+# Immediately kick-off redirection to GENI's OpenID facility
+map '/geni_login' do
+  handler = proc do |env|
+    puts "ENV: #{env.keys}"
+    req = ::Rack::Request.new(env)
+    req.update_param("openid_identifier", GENI_OPENID_PROVIDER)
+    env['warden'].authenticate!
+    [302, {'Location' => '/', "Content-Type" => ""}, ['Login process failed']]
   end
   run handler
 end
