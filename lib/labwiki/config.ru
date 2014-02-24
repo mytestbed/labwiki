@@ -20,6 +20,7 @@ OPENID_FIELDS = {
 }
 
 GENI_OPENID_PROVIDER = "https://portal.geni.net/server/server.php"
+TRUST_REFERRER = "portal.geni.net"
 
 Warden::OpenID.configure do |config|
   config.required_fields = OPENID_FIELDS[:geni]
@@ -123,8 +124,6 @@ map "/resource" do
   run OMF::Web::Rack::MultiFile.new(dirs)
 end
 
-
-
 map '/_ws' do
   begin
     require 'omf-web/rack/websocket_handler'
@@ -133,7 +132,6 @@ map '/_ws' do
     OMF::Base::Loggable.logger('web').error "#{ex}"
   end
 end
-
 
 map '/_update' do
   require 'omf-web/rack/update_handler'
@@ -161,7 +159,11 @@ map "/" do
     req = ::Rack::Request.new(env)
     case req.path_info
     when '/'
-      [302, {'Location' => '/labwiki', "Content-Type" => ""}, ['Next window!']]
+      if req.referrer && req.referrer =~ /#{TRUST_REFERRER}/
+        [302, {'Location' => '/geni_login', "Content-Type" => ""}, ['Next window!']]
+      else
+        [302, {'Location' => '/labwiki', "Content-Type" => ""}, ['Next window!']]
+      end
     when '/favicon.ico'
       [302, {'Location' => '/resource/image/favicon.ico', "Content-Type" => ""}, ['Next window!']]
     when '/image/favicon.ico'
