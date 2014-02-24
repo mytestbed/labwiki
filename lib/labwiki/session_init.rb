@@ -51,10 +51,13 @@ class SessionInit < OMF::Base::LObject
     if user.kind_of? Hash
       pretty_name = user['http://geni.net/user/prettyname'].first
       urn = user['http://geni.net/user/urn'].first
+      irods_user = user['http://geni.net/irods/username'].first
+      irods_zone = user['http://geni.net/irods/zone'].first
       OMF::Web::SessionStore[:urn, :user] = urn
       OMF::Web::SessionStore[:name, :user] = pretty_name
       OMF::Web::SessionStore[:id, :user] = urn && urn.split('|').last
-      OMF::Web::SessionStore[:id, :user] = "geni-#{OMF::Web::SessionStore[:id, :user]}"
+      OMF::Web::SessionStore[:id, :irods_user] = irods_user
+      OMF::Web::SessionStore[:id, :irods_zone] = irods_zone
     elsif user.kind_of? String
       OMF::Web::SessionStore[:urn, :user] = user
       OMF::Web::SessionStore[:name, :user] = user
@@ -104,7 +107,7 @@ class SessionInit < OMF::Base::LObject
     # We can create a default experiment for each project
     if LabWiki::Configurator[:gimi] && LabWiki::Configurator[:gimi][:ges]
       OMF::Web::SessionStore[:projects, :geni_portal].each do |p|
-        proj = find_or_create("projects", p[:name], { irods_user: OMF::Web::SessionStore[:id, :user] })
+        proj = find_or_create("projects", p[:name], { irods_user: OMF::Web::SessionStore[:id, :irods_user] })
       end
     end
   end
@@ -169,11 +172,11 @@ class SessionInit < OMF::Base::LObject
       # FIXME this hack appends irods user to projects
       if res_path =~ /projects/
         users = obj['irods_user'].split('|')
-        current_user = OMF::Web::SessionStore[:id, :user]
-        if users.include? current_user
+        current_irods_user = OMF::Web::SessionStore[:id, :irods_user]
+        if users.include? current_irods_user
           info "User already added to the project"
         else
-          new_irods_user = "#{obj['irods_user']}|#{current_user}"
+          new_irods_user = "#{obj['irods_user']}|#{current_irods_user}"
           info "Need to write this #{new_irods_user}"
           HTTParty.post("#{ges_url}/#{res_path}/#{res_id}", body: { irods_user: new_irods_user })
         end
