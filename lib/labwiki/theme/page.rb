@@ -90,7 +90,7 @@ module OMF::Web::Theme
               li do
                 a :href => '#new-exp-modal', :role => 'button', :"data-toggle" => "modal" do
                   i :class => "icon-asterisk icon-white"
-                  text "Add context"
+                  text "Add experiment context"
                 end
               end
               li do

@@ -14,6 +14,7 @@ var ExpView = Backbone.View.extend({
 
   render: function() {
     this.$el.html(this.model.toJSON().name);
+    this.$el.attr("value", this.model.toJSON().path);
     return this;
   },
 });
@@ -28,14 +29,11 @@ var ExpListView = Backbone.View.extend({
 
   setupExpSelect: function() {
     var select_project = $('select[name="propproject"]');
-    var select_experiment = $('select[name="propexperiment"]');
     var select_slice = $('select[name="propslice"]');
 
     select_project.change(function() {
-      console.log(select_project.val());
-      exps.reset();
       exps.url = 'http://' + document.domain + ':8002/projects/' + select_project.val() + '/experiments';
-      exps.fetch();
+      exps.fetch({reset: true});
 
       var filtered_slices = _.find(geni_projects, function(proj) {
         return select_project.val() == proj.name;
