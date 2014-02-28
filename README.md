@@ -12,6 +12,7 @@ from Github.
     git clone https://github.com/mytestbed/labwiki.git
     cd labwiki
     bundle install --path vendor
+    rake post-install
 
 If that fails you may need to install some required libraries. On a 'naked' Ubuntu system, we usually install the following:
 
@@ -34,7 +35,8 @@ Then create a temporary git repo and populate it with some test data.
 
 Finally start LabWiki.
 
-    $LABWIKI_TOP/bin/labwiki --lw-config $LABWIKI_TOP/etc/labwiki/local-test.yaml --lw-no-login start
+    cd $LABWIKI_TOP
+    bin/labwiki --lw-config etc/labwiki/local-test.yaml --lw-no-login start
 
 The 'local-test.yaml' will ultimately need to be replace with a path to a file describing the local setup. A sample
 of such a file can be found in 'etc/labwiki/norbit.yaml'.

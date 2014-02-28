@@ -22,7 +22,7 @@ end
 
 
 
-desc "Starting the Labwiki as a daemon"
+desc "Starting Labwiki as a daemon"
 task :start, :config do |t, args|
   config = args[:config]
   system("/usr/bin/env LW_CONFIG=#{config} bundle exec god -c etc/labwiki/labwiki.god")
@@ -41,7 +41,7 @@ end
 
 desc "Run  Labwiki in this shell"
 task :run do |t, args|
-  system("#{TOP_DIR}/bin/labwiki start")
+  system("#{TOP_DIR}/bin/labwiki #{args.join(' ')} start")
 end
 
 
