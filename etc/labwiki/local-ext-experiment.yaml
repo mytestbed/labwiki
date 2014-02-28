@@ -8,7 +8,7 @@ labwiki:
 
   plugins:
     experiment:
-      plugin_dir: plugins/labwiki_experiment_plugin
+      plugin_dir: labwiki_experiment_plugin
       artifact_dir: git:default:/experiments  # Where to store experiment related artifacts
       ec_runner: omf_exec/omf_exec-norbit.sh
       oml:

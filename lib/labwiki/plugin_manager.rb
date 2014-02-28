@@ -17,7 +17,10 @@ module LabWiki
       (LabWiki::Configurator[:plugins] || []).each do |name, opts|
         debug "Initialize plugin '#{name}' - #{opts}"
         if plugin_dir = opts.delete(:plugin_dir)
-          lib_dir = File.expand_path(File.join('plugins', plugin_dir, 'lib'))
+          unless plugin_dir.start_with? '/'
+            plugin_dir = File.absolute_path(File.join(File.dirname(__FILE__), '../../plugins', plugin_dir))
+          end
+          lib_dir = File.join(plugin_dir, 'lib')
           unless File.readable? lib_dir
             error "Can't find lib directory '#{lib_dir}' for plugin '#{name}'"
             next
