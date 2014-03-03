@@ -75,7 +75,7 @@ The structure of this file is as following:
           plugin_dir: labwiki_experiment_plugin
           job_service:
             host: localhost
-            port: 8003
+            port: 8002
 
 Currently, there are two sub sections defined under the top 'labwiki' node.
 
@@ -84,8 +84,7 @@ when we add full multi-user support. Currently it expects the path to a single g
 with the hard-coded label 'foo'. See the 'try the simple example' section above for instructions.
 
 The 'plugins' node holds additional configuration options for each of the plugins. The above
-example declares options for the 'experiment' plugin. Please change '__LABWIKI_TOP__' to an absolute path
-for your installation. The 'test/omf_exec/omf_exec-norbit.sh' is included, but will very likely not work
-in your environemnt, but could be a template for something which may work.
+example declares options for the 'experiment' plugin. Please change 'host' and 'port' to where
+the experiment plugin should contact a Job Service. 
 
-
+(if you want to run such as Job Service, one implementation is available at: https://github.com/mytestbed/omf_job_service)

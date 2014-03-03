@@ -100,6 +100,7 @@ map '/logout' do
   handler = Proc.new do |env|
     req = ::Rack::Request.new(env)
     env['warden'].logout(:default)
+    LabWiki::Plugin::Experiment::Util.disconnect_all_db_connections
     req.session['sid'] = nil
     req.session.clear
     [302, {'Location' => '/', "Content-Type" => ""}, ['Next window!']]
