@@ -42,6 +42,10 @@ module LabWiki::Plugin::PlanText
       @text_widget.title
     end
 
+    def sub_title
+      @content_url || ''
+    end
+
     def _get_text_widget(content_proxy)
       if @text_widget
         @text_widget.content_proxy = content_proxy

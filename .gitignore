@@ -1,4 +1,5 @@
 .project
+bin/labwiki
 .DS_Store
 doc/.DS_Store
 doc/teaser/.DS_Store

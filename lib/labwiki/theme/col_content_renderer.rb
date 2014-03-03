@@ -114,7 +114,7 @@ module OMF::Web::Theme
       {
         img_src: img_src,
         title: @widget.title,
-        sub_title: nil
+        sub_title: @widget.sub_title
       }
 
     end

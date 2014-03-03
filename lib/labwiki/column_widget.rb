@@ -18,7 +18,11 @@ module LabWiki
     end
 
     def title
-      @title || content_url
+      @title || content_url.split('/')[-1]
+    end
+
+    def sub_title
+      @sub_title || content_url
     end
 
     def content_url

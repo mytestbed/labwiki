@@ -29,6 +29,14 @@ module OMF::Web::Theme
       }
     end
 
+    def title_info
+      {
+        img_src: '/resource/vendor/mono_icons/article32.png',
+        title: @widget.title,
+        sub_title:  @content_descriptor[:url] #@widget.content_url
+      }
+    end
+
     # Return image url which can be resolved within labwiki
     def fix_image_url(url)
       cp = @opts[:content].create_proxy_for_url(url)
