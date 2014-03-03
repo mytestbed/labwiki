@@ -117,7 +117,7 @@ module OMF::Web::Theme
             form id: "new_script_form_#{@col_name}", class: "form-inline", style: "padding: 5px; font-size: 100%;" do
               input name: "file_name", type: "text", value: "", placeholder: "File name", style: "margin-right: 5px; height: 30px;"
               select name: "file_ext", style: "margin-right: 5px; width: 60px;" do
-                option(value: 'rb') { text "Ruby" }
+                option(value: 'oedl') { text "OEDL" }
                 option(value: 'md') { text "Wiki" }
               end
               button :type => "submit", :class => "btn btn-inverse" do
