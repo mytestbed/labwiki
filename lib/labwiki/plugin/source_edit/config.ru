@@ -8,8 +8,8 @@ map "/plugin/source_edit/create_script" do
     file_ext = req.params['file_ext'].downcase
     file_name = "#{req.params['file_name']}.#{file_ext}"
     sub_folder = case file_ext
-                 when 'rb'
-                   'oidl'
+                 when 'oedl'
+                   'oedl'
                  when 'md'
                    'wiki'
                  end
