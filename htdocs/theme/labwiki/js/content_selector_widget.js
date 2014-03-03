@@ -53,6 +53,7 @@ define([], function () {
         return false;
       });
 
+      // What's that'
       context_el.find('.reset').click(function(ev) {
         self.reset();
         //si.delay(100).focus(); // doesn't work'
@@ -65,6 +66,31 @@ define([], function () {
     set_search_list_formatter: function(plugin_name, formatter_f) {
       this._formatters[plugin_name] = formatter_f;
     },
+
+    add_tool: function(name, html_frag) {
+      var context_el = this._context_el;
+      var tools_list = context_el.find('.tools-list');
+      var tools_ul = tools_list.find('ul');
+      tools_ul.append('<li>' + html_frag + '</li>');
+      this._context_el.find('.action-buttons').show();
+
+      // Tools button and list
+      context_el.find('.action-buttons').show();
+      var tb = context_el.find('.tool-button');
+      tb.bind('click', function(ev) {
+        if (tools_list.is(':visible')) {
+          tools_list.delay(200).slideUp(200);
+        } else {
+          tools_list.show();
+        }
+      });
+      tb.bind('blur', function(ev) {
+        if (tools_list.has(ev.relatedTarget).length == 0) {
+          tools_list.delay(200).slideUp(200);
+        }
+      });
+    },
+
 
     // Reset the search pattern
     //
@@ -273,23 +299,6 @@ define([], function () {
       var li = lia.join('');
       return li;
     },
-
-    // def_formatter: function (label, img_url, i, type) {
-      // var klass = 'ui-menu-item';
-      // if (img_url == null) {
-        // img_url = "theme/labwiki/images/file-16.png";
-      // }
-      // if (i == 0) klass = klass + ' ui-menu-item-first ui-menu-item-first-' + type;
-      // return "<li class='"
-             // + klass
-             // + "'><a class='ui-corner-index' lw:id='" + i
-             // + "' lw:type='" + type
-             // + "'>"
-             // + "<img style='opacity:0.4' src='/resource/" + img_url + "'></img>"
-             // + label
-             // + "</a></li>";
-    // },
-
 
     init2: function(el_prefix, opts) {
       this._opts = opts;

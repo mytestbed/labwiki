@@ -16,10 +16,15 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       panel_height: 0
     },
 
+    /********* EXTENSION POINTS *********/
+
     set_search_list_formatter: function(plugin_name, formatter_f) {
       this._content_selector.set_search_list_formatter(plugin_name, formatter_f);
     },
 
+    add_tool: function(name, html_frag) {
+      this._content_selector.add_tool(name, html_frag);
+    },
 
     initialize: function(opts) {
       this._opts = opts;

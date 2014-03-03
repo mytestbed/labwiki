@@ -26,6 +26,7 @@ LabWiki::PluginManager.register :source_edit, {
     :code_renderer => OMF::Web::Theme::CodeRenderer
   },
   :resources => File.join(File.dirname(__FILE__), '/resource'),
-  :config_ru => File.join(File.dirname(__FILE__), 'config.ru')
+  :config_ru => File.join(File.dirname(__FILE__), 'config.ru'),
+  :global_js => 'js/source_edit_global.js'
 }
 

@@ -150,19 +150,37 @@ strong, b {
 
 /** SEARCH BOX **/
 
-.content-selection .action-buttons {
+/***
+.content-selection .action-buttons button {
   background: #AAAAAA;
+  background: #d1d1d1;
+  //background: #e8e8e8;
+  border-right: 3px blue;
 }
+***/
 
-.content-selection .action-buttons:hover {
-  background: black;
-}
-
-.content-selection .new-button {
-    background: url("../images/sprites-32.png") no-repeat scroll -96px 0 transparent;
-    border: 0 none;
+.content-selection .tool-button {
     height: 32px;
     width: 32px;
+    background: #d1d1d1;
+    border: 0 none;
+}
+
+.content-selection td.action-buttons {
+  border-right: 1px solid #bbb;
+}
+
+.content-selection .tool-button:hover {
+    background: #bbb;
+}
+
+.content-selection span.glyphicon {
+    font-size: 1.5em;
+    color: #7C7C7C;
+}
+
+.content-selection span.glyphicon:hover {
+    color: black;
 }
 
 /* Content search */
