@@ -55,15 +55,7 @@ use SessionInit
 
 map "/labwiki" do
   handler = proc do |env|
-    if options[:no_login_required]
-      identity_url = "https://localhost?id=user1"
-      u_data = 'user1'
-      $users[identity_url] = u_data
-      env['warden'].set_user identity_url # u_data
-
-      require 'labwiki/rack/top_handler'
-      LabWiki::TopHandler.new(options).call(env)
-    elsif env['warden'].authenticated?
+    if env['warden'].authenticated?
       require 'labwiki/rack/top_handler'
       LabWiki::TopHandler.new(options).call(env)
     else
