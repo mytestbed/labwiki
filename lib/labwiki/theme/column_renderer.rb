@@ -38,21 +38,6 @@ module OMF::Web::Theme
       javascript %{
         require(['theme/labwiki/js/labwiki'], function(lw) {
           lw.#{@col_name}_controller.init('lw#{object_id}', #{opts.to_json});
-
-          /** TODO: THIS SHOULDN'T BE HERE  */
-          $('#new-button_#{@col_name}').click(function() {
-            $('#new_script_#{@col_name}').toggle();
-          });
-          $('#new_script_form_#{@col_name}').submit(function(event) {
-            $.post("/plugin/source_edit/create_script", $(this).serialize(), function(data) {
-              $(".alert-create-script").html(data).addClass("alert-success").removeClass("alert-error");
-            }).fail(function(data) {
-              $(".alert-create-script").html(data.responseText).addClass("alert-error").removeClass("alert-success");
-            }).always(function(data) {
-              $(".alert-create-script").show();
-            });
-            return false;
-          });
         });
       }
 
