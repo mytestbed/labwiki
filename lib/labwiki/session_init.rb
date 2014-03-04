@@ -15,6 +15,15 @@ class SessionInit < OMF::Base::LObject
     unless req.path =~ /^\/resource/ # Do not care about resource files
       req.session['sid'] ||= "s#{(rand * 10000000).to_i}_#{(rand * 10000000).to_i}"
       Thread.current["sessionID"] = req.session['sid'] # needed for Session Store
+
+      # No login hack, set a default user called user1
+      if OMF::Web::Runner.instance.options[:no_login_required] && !env['warden'].authenticated?
+        identity_url = "https://localhost?id=user1"
+        u_data = 'user1'
+        $users[identity_url] = u_data
+        env['warden'].set_user identity_url
+      end
+
       if env['warden'].authenticated?
         user = $users[env['warden'].user]
 
