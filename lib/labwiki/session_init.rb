@@ -35,7 +35,7 @@ class SessionInit < OMF::Base::LObject
         unless OMF::Web::SessionStore[:initialised, :session]
           if LabWiki::Configurator[:gimi]
             init_git_repository(OMF::Web::SessionStore[:id, :user]) if LabWiki::Configurator[:gimi][:git]
-            init_irods_repository(OMF::Web::SessionStore[:id, :user]) if LabWiki::Configurator[:gimi][:irods]
+            init_irods_repository(OMF::Web::SessionStore[:id, :irods_user]) if LabWiki::Configurator[:gimi][:irods]
           end
           LabWiki::PluginManager.init_session()
           OMF::Web::SessionStore[:initialised, :session] = true
