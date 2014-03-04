@@ -26,6 +26,37 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       this._content_selector.add_tool(name, html_frag);
     },
 
+    add_toolbar_button: function(opts, callback) {
+      var b = $('<button type="button" class="toolbar toolbar-' + (opts.name || 'unknown') + '" />');
+      if (opts.awsome) {
+        b.append('<i class="fa fa-' + opts.awsome + '" />');
+      } else if (opts.glyph) {
+        b.append('<span class="glyphicon glyphicon-' + opts.glyph + '" />');
+      }
+      if (opts.label) {
+        b.append('<span class="label">' + opts.label + '</span>');
+      }
+
+      var tc = this.top_el.find('.widget-title-toolbar-container');
+      tc.show().append(b);
+      if (callback) { b.click(callback); }
+      b.tooltip({container: 'body', title: opts.tooltip, placement: 'bottom', delay: { show: 500, hide: 0 }});
+      // Return a function to enable/disable the button
+      var r = function(enable) {
+        if (enable) {
+          b.tooltip('enable');
+          b.removeClass('toolbar-button-disabled');
+        } else {
+          b.tooltip('disable');
+          b.addClass('toolbar-button-disabled');
+        }
+        var i = 0;
+      };
+      r(opts.active != false);;
+      return r;
+    },
+
+
     initialize: function(opts) {
       this._opts = opts;
       var name = this._name = opts.name;
@@ -35,7 +66,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       // allow content specific monitors to take a first stab at handling dropped content
       this.on_drop_handler = null;
 
-
+      this.top_el = $("#kp" + opts.col_index);
       this.col_span = 1;
 
       var self = this;
@@ -287,14 +318,14 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
     // the widget widget title so it remains visible when scrolling the content
     //
     fix_toolbar: function() {
-      var col = $('#col_content_' + this._opts.name);
-      var panel = col.find('.panel-body');
-      var toolbar = panel.find('.widget-toolbar').detach();
-      var c = col.find('.widget-title-toolbar-container');
-      c.empty(); // remove potential previous toolbar
-      if (toolbar.length > 0) {
-        toolbar.appendTo(c);
-      }
+      // var col = $('#col_content_' + this._opts.name);
+      // var panel = col.find('.panel-body');
+      // var toolbar = panel.find('.widget-toolbar').detach();
+      // var c = col.find('.widget-title-toolbar-container');
+      // c.empty(); // remove potential previous toolbar
+      // if (toolbar.length > 0) {
+        // toolbar.appendTo(c);
+      // }
     },
 
     content_history_for_pos: function(pos) {
@@ -312,7 +343,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
     },
 
     decrement_col_span: function() {
-      this.col_span = this.col_span > 1 ? this.col_span - 1 : 0
+      this.col_span = this.col_span > 1 ? this.col_span - 1 : 0;
     },
 
     increment_col_span: function() {

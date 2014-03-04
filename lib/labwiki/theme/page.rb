@@ -8,6 +8,7 @@ module OMF::Web::Theme
   class Page < OMF::Web::Theme::AbstractPage
 
     depends_on :css, "/resource/vendor/bootstrap/css/bootstrap.css"
+    depends_on :css, "/resource/vendor/font-awesome/css/font-awesome.min.css"
     depends_on :css, '/resource/theme/bright/css/reset-fonts-grids.css'
     depends_on :css, "/resource/theme/bright/css/bright.css"
     depends_on :css, "/resource/theme/labwiki/css/kaiten.css"

@@ -11,7 +11,6 @@ module OMF::Web::Theme
       'text/html' => "/resource/vendor/mono_icons/linedpaperpencil32.png",
       "text/something" => "/resource/vendor/mono_icons/linedpaperpencil32.png",
       "code" => "/resource/vendor/mono_icons/linedpaperpencil32.png"
-      #'experiment' => "/resource/vendor/mono_icons/experiment32.png"
     }
 
     def initialize(widget, col_name)
@@ -31,36 +30,6 @@ module OMF::Web::Theme
       end
     end
 
-    def render_title()
-      div :class => "block block-nav widget-title-block" do
-        div :class => "drop-target" do
-          ti = title_info
-          sopts = {:class => 'summary'}
-          if (p = ti[:widget_id])
-            sopts[:id] = p + "_widget_summary"
-          end
-          div sopts do
-            if ti[:img_src]
-              div :class => 'widget-title-icon' do
-                img :src => ti[:img_src]
-              end
-            else
-              debug "Couldn't find icon for mime-type '#{mime_type}'"
-            end
-            div :class => "label title" do
-              text  ti[:title] || 'Unknown'
-            end
-            div :class => "info sub_title" do
-              if st = ti[:sub_title]
-                text st
-              end
-            end
-          end
-          div :class => 'widget-title-toolbar-container'
-        end
-      end
-    end
-
     def render_title2()
       div :class => "block block-nav widget-title-block" do
         div :class => "drop-target" do
@@ -72,12 +41,18 @@ module OMF::Web::Theme
             div :class => "wrapper" do
               div :class => "cell" do
                 div :class => "summary-icon" do
-                  if ti[:img_src]
-                    div :class => 'widget-title-icon' do
-                      img :src => ti[:img_src], :id => id_prefix + "_widget_icon"
+                  unless img_src = ti[:img_src]
+                    if mt = ti[:mime_type]
+                      unless img_src = MIMETYPE2ICON[mt]
+                        debug "No icon defined for mime_type '#{mt}', using default"
+                      end
+                    else
+                      warn "Missing ':img_src' or ':mime_type' for '#{ti[:title]}'"
                     end
-                  else
-                    debug "Couldn't find icon for mime-type '#{mime_type}'"
+                    img_src ||= MIMETYPE2ICON['text']
+                  end
+                  div :class => 'widget-title-icon' do
+                    img :src => img_src, :id => id_prefix + "_widget_icon"
                   end
                 end
               end
@@ -95,7 +70,7 @@ module OMF::Web::Theme
               end
             end
           end
-          div :class => 'widget-title-toolbar-container'
+          div :class => 'widget-title-toolbar-container', :style => 'display: none;'
         end
       end
     end

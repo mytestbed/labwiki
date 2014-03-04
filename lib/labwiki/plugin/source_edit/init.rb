@@ -5,6 +5,7 @@ end
 
 require 'labwiki/plugin/source_edit/source_edit_widget'
 require 'labwiki/plugin/source_edit/code_renderer'
+require 'labwiki/plugin/source_edit/code_renderer2'
 
 LabWiki::PluginManager.register :source_edit, {
   :widgets => [
@@ -23,7 +24,7 @@ LabWiki::PluginManager.register :source_edit, {
     }
   ],
   :renderers => {
-    :code_renderer => OMF::Web::Theme::CodeRenderer
+    :code_renderer2 => OMF::Web::Theme::CodeRenderer2
   },
   :resources => File.join(File.dirname(__FILE__), '/resource'),
   :config_ru => File.join(File.dirname(__FILE__), 'config.ru'),

@@ -255,7 +255,6 @@ strong, b {
 
 .k-panel .col-summary {
     background-color: transparent;
-    border-bottom: 1px solid #CCCCCC;
     padding: 5px;
     padding-left: 15px;
     padding-top: 5px;
@@ -302,6 +301,9 @@ strong, b {
   padding: 0;
 }
 
+.widget-title-block {
+  border-bottom: 1px solid #CCCCCC;
+}
 
 /*** DRAGGING CONTENT */
 
@@ -337,6 +339,7 @@ ol.codemirror_toolbar li a {
 .codemirror_edit {
   overflow:hidden;
 }
+
 
 
 /***** H3 - collapse ****/
@@ -380,6 +383,39 @@ ol.codemirror_toolbar li a {
 **/
 
 /** TOOL BAR **/
+
+div.widget-title-toolbar-container {
+  border-top: 1px solid #CCCCCC;
+
+}
+
+div.widget-title-toolbar-container button {
+  font-size: 16px;
+  padding: 4px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: black;
+  opacity: 0.8;
+
+}
+
+div.widget-title-toolbar-container button:hover {
+  color: black;
+  border: 1px solid #777;
+  opacity: 1;
+}
+
+div.widget-title-toolbar-container button.toolbar-button-disabled:hover {
+  cursor: not-allowed;
+  border: 1px solid transparent;
+  opacity: 0.2;
+}
+
+div.widget-title-toolbar-container button.toolbar-button-disabled {
+  opacity: 0.2;
+}
+
+/****** OTHER TOOLBAR - still used? *****/
 
 div.widget_toolbar
 {

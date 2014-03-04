@@ -20,39 +20,47 @@ module LabWiki::Plugin::SourceEdit
 
       @mime_type = (params[:mime_type] || 'text')#.gsub('text', 'code')
       @content_url = params[:url]
-      content_proxy = OMF::Web::ContentRepository.create_content_proxy_for(@content_url, params)
-      _get_content_widget(content_proxy)
+      @content_proxy = OMF::Web::ContentRepository.create_content_proxy_for(@content_url, params)
     end
 
     def on_get_plugin(params, req)
       opts = params[:params]
       debug "on_get_plugin: '#{opts.inspect}'"
       @content_url = opts[:url]
-      content_proxy = OMF::Web::ContentRepository.create_content_proxy_for(@content_url, opts)
-      @mime_type = content_proxy.mime_type
-      _get_content_widget(content_proxy)
+      @content_proxy = OMF::Web::ContentRepository.create_content_proxy_for(@content_url, opts)
+      @mime_type = @content_proxy.mime_type
     end
 
 
     def content_renderer()
-      @code_widget.content()
+      OMF::Web::Theme.require 'code_renderer2'
+      mode = @mime_type.split('/')[-1]
+      OMF::Web::Theme::CodeRenderer2.new(self, @content_proxy.content, mode, @opts)
     end
 
-    def _get_content_widget(content_proxy)
-      if @code_widget
-        @code_widget.content_proxy = content_proxy
-      else
-        margin = { :left => 0, :top => 0, :right => 0, :bottom => 0 }
-        e = {:type => :code, :height => 800, :content => content_proxy, :margin => margin}
-        @code_widget = OMF::Web::Widget.create_widget(e)
-      end
-
+    def title
+      @content_proxy.name.split('/')[-1]
     end
-    # def title
-      # @title
-    # end
 
+    def sub_title
+      @content_proxy.name
+    end
 
+    def mime_type
+      @mime_type
+    end
+
+    def content_url
+      @content_url
+    end
+
+    def update_url
+      @content_proxy.content_url
+    end
+
+    def content_id
+      @content_proxy.content_id
+    end
 
   end # class
 
