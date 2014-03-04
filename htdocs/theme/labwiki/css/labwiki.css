@@ -355,6 +355,10 @@ ol.codemirror_toolbar li a {
   text-rendering: optimizelegibility;
 }
 
+.widget_body h3.first {
+  border-top: 0px;
+}
+
 .widget_body h3 a.toggle {
   display: inline-block;
   padding: 16px 0 0 0;

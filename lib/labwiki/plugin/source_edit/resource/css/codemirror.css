@@ -1,15 +1,16 @@
 .CodeMirror {
-  border: 1px solid silver;
+  /* border: 1px solid silver; */
   border-top: 0px;
-  
+  border-bottom: 1px solid silver;
+
   font-size: 1.077em;
   line-height: 18px;
   color: #333;
 }
 
 /*.CodeMirror-scroll {
-  /* height: auto; *  
-  overflow: auto; 
+  /* height: auto; *
+  overflow: auto;
 }*/
 .CodeMirror-scroll {
   height: auto;
@@ -65,15 +66,15 @@ ol.codemirror_toolbar a {
   background-repeat: no-repeat;
   height: 0px !important;
   height /**/:22px;
-      
+
   width: 22px;
   border: 1px solid transparent;  /* make room for the 'selected' border */
-  background-color: silver   
+  background-color: silver
 }
 
 ol.codemirror_toolbar a:hover {
-  border: 1px solid silver;  
-  background-color: silver; 
+  border: 1px solid silver;
+  background-color: silver;
 }
 
 ol.codemirror_toolbar li a {
