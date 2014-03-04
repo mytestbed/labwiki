@@ -28,22 +28,25 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
 
     add_toolbar_button: function(opts, callback) {
       var b = $('<button type="button" class="toolbar toolbar-' + (opts.name || 'unknown') + '" />');
-      if (opts.awsome) {
-        b.append('<i class="fa fa-' + opts.awsome + '" />');
-      } else if (opts.glyph) {
-        b.append('<span class="glyphicon glyphicon-' + opts.glyph + '" />');
-      }
-      if (opts.label) {
-        b.append('<span class="label">' + opts.label + '</span>');
-      }
-
       var tc = this.top_el.find('.widget-title-toolbar-container');
       tc.show().append(b);
-      if (callback) { b.click(callback); }
-      b.tooltip({container: 'body', title: opts.tooltip, placement: 'bottom', delay: { show: 500, hide: 0 }});
-      // Return a function to enable/disable the button
-      var r = function(enable) {
-        if (enable) {
+      // Return a function to interact with the button in the future
+      var ctxt = {
+        button: b
+      };
+      ctxt.configure = function(opts) {
+        b.empty();
+        if (opts.awsome) {
+          b.append('<i class="fa fa-' + opts.awsome + '" />');
+        } else if (opts.glyph) {
+          b.append('<span class="glyphicon glyphicon-' + opts.glyph + '" />');
+        }
+        if (opts.label) {
+          b.append('<span class="label">' + opts.label + '</span>');
+        }
+      };
+      ctxt.enable = function(enable) {
+        if (enable || enable == undefined) {
           b.tooltip('enable');
           b.removeClass('toolbar-button-disabled');
         } else {
@@ -52,8 +55,16 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
         }
         var i = 0;
       };
-      r(opts.active != false);;
-      return r;
+      ctxt.tooltip = function(text) {
+        b.tooltip({title: text});
+      };
+
+      if (callback) { b.click(function(evt) { return callback(ctxt, evt); }); };
+      b.tooltip({container: 'body', title: opts.tooltip, placement: 'bottom', delay: { show: 500, hide: 0 }});
+      ctxt.configure(opts);
+      ctxt.enable(opts.active != false);
+
+      return ctxt;
     },
 
 
