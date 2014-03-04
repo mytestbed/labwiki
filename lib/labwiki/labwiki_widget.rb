@@ -6,6 +6,18 @@ require 'labwiki/column_widget'
 module LabWiki
   class LWWidget < OMF::Base::LObject
 
+    def self.init_session()
+      if si = LabWiki::Configurator[:on_session_init]
+        top_widget = OMF::Web::SessionStore[:lw_widget, :rack] = self.new
+        si.each do |col, opts|
+          # TODO: Check if that's all there is
+          widget = top_widget.create_column_widget(col, opts)
+          action = opts[:action]
+          widget.send(action, opts, nil)
+        end
+      end
+    end
+
     attr_reader :plan_widget, :prepare_widget, :execute_widget
 
     def initialize()

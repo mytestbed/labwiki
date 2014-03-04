@@ -38,6 +38,7 @@ class SessionInit < OMF::Base::LObject
             init_irods_repository(OMF::Web::SessionStore[:id, :user]) if LabWiki::Configurator[:gimi][:irods]
           end
           LabWiki::PluginManager.init_session()
+          LabWiki::LWWidget.init_session()
           OMF::Web::SessionStore[:initialised, :session] = true
         end
       end

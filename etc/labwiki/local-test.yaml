@@ -5,3 +5,10 @@ labwiki:
       type: git
       top_dir: ~/tmp/lw_repo
       is_primary: true
+
+  on_session_init:
+    plan:
+      plugin: 'wiki'
+      action: "on_get_content"
+      url: 'git:default:repo/wiki/sample.md'
+
