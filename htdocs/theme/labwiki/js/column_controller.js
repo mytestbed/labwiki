@@ -148,6 +148,26 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
 
     },
 
+    request_action: function(opts, type, callback) {
+      //opts['id'] = selected.id;
+      var self = this;
+      opts.sid = LW.session_id;
+      opts.no_render = true;
+      $.ajax({
+        url: '_column',
+        data: opts,
+        type: (type != undefined) ? type : 'POST'
+      }).done(function(data) {
+        try {
+          if (callback) callback(data.action_reply);
+        } catch(err) {
+          // TODO: Find a better way of conveying problem
+          var s = printStackTrace({e: err});
+          console.log(s);
+        }
+      });
+    },
+
     on_drop: function(e, target) {
       var content_descriptor = e.data('content');
       var delegate = target.attr('delegate');

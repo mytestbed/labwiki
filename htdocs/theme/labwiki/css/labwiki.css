@@ -419,6 +419,11 @@ div.widget-title-toolbar-container button.toolbar-button-disabled {
   opacity: 0.2;
 }
 
+div.widget-title-toolbar-container span.label {
+  color: black;
+  opacity: 0.8;
+}
+
 /****** OTHER TOOLBAR - still used? *****/
 
 div.widget_toolbar

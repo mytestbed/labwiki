@@ -31,6 +31,7 @@ module LabWiki
     def dispatch_to_column(col, action, params, req)
       action = "on_#{action}".to_sym
       params = expand_req_params(params, req)
+      no_render = params.delete(:no_render)
 
       puts "dispatch params: #{params}"
       col_widget = @widgets[col]
@@ -60,11 +61,14 @@ module LabWiki
 
       debug "Calling '#{action} on '#{col_widget.class}' widget"
       OMF::Web::SessionStore[col_widget.widget_id, :widgets] # just to reset expiration timer
-      col_widget.send(action, params, req) || {}
+      action_reply = col_widget.send(action, params, req)
 
       res = col_widget.content_descriptor.dup
-      r = OMF::Web::Theme::ColumnContentRenderer.new(col_widget, col)
-      res[:html] = r.to_html
+      res[:action_reply] = action_reply
+      unless no_render
+        r = OMF::Web::Theme::ColumnContentRenderer.new(col_widget, col)
+        res[:html] = r.to_html
+      end
       [res.to_json, "application/json"]
     end
 
