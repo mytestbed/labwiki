@@ -24,7 +24,7 @@ module OMF::Web::Theme
       end
       javascript %{
         require(['plugin/plan_text/js/plan_text_monitor'], function(plan_text_monitor) {
-          var r_#{object_id} = plan_text_monitor(#{@content_descriptor.to_json});
+          var r_#{object_id} = plan_text_monitor(#{@content_descriptor.to_json}, '#{wid}');
         })
       }
     end

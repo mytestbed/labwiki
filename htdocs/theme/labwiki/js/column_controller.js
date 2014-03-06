@@ -26,10 +26,14 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       this._content_selector.add_tool(name, html_frag);
     },
 
+    add_toolbar_element: function(el) {
+      var tc = this.top_el.find('.widget-title-toolbar-container');
+      tc.show().append(el);
+    },
+
     add_toolbar_button: function(opts, callback) {
       var b = $('<button type="button" class="toolbar toolbar-' + (opts.name || 'unknown') + '" />');
-      var tc = this.top_el.find('.widget-title-toolbar-container');
-      tc.show().append(b);
+      this.add_toolbar_element(b);
       // Return a function to interact with the button in the future
       var ctxt = {
         button: b
@@ -43,6 +47,9 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
         }
         if (opts.label) {
           b.append('<span class="label">' + opts.label + '</span>');
+        }
+        if (opts.caret) {
+          b.append('<span class="caret"></span>');
         }
       };
       ctxt.enable = function(enable) {
