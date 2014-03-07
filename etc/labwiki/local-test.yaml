@@ -10,5 +10,4 @@ labwiki:
     plan:
       plugin: 'wiki'
       action: "on_get_content"
-      url: 'git:default:repo/wiki/sample.md'
-
+      url: 'git:default:repo/wiki/quickstart.md'
