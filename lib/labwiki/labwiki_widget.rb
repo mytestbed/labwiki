@@ -64,8 +64,9 @@ module LabWiki
       action_reply = col_widget.send(action, params, req)
 
       res = col_widget.content_descriptor.dup
-      res[:action_reply] = action_reply
-      unless no_render
+      if no_render
+        res[:action_reply] = action_reply
+      else
         r = OMF::Web::Theme::ColumnContentRenderer.new(col_widget, col)
         res[:html] = r.to_html
       end
