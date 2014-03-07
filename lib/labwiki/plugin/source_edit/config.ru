@@ -20,21 +20,12 @@ map "/plugin/source_edit/create_script" do
     repo ||= (OMF::Web::SessionStore[:prepare, :repos] || []).first
 
     begin
-      # TODO: This should NOT be necessary as it should be INSIDE the IRodsContentRepository
-      if repo.class == OMF::Web::IRodsContentRepository
-        # iRods needs full path...
-        path = "#{LabWiki::Configurator[:gimi][:irods][:home]}/#{OMF::Web::SessionStore[:id, :user]}/#{LabWiki::Configurator[:gimi][:irods][:script_folder]}/#{sub_folder}/#{file_name}"
-      else
-        path = "repo/#{sub_folder}/#{file_name}"
-      end
-
-      repo.write(path, "", "Adding new script #{file_name}")
+      path = "#{sub_folder}/#{file_name}"
+      repo.write(repo.get_url_for_path(path), "", "Adding new script #{file_name}")
     rescue => e
-      if e.class == RuntimeError && e.message =~ /Cannot write to file/
-        repo.write("#{sub_folder}/#{file_name}", "", "Adding new script #{file_name}")
-      else
-        puts ">>> Write new files error: #{e.message}"
-      end
+      e_msg = "Failed to create #{file_name}. #{e.message}"
+      OMF::Base::Loggable.logger('repository').error e_msg
+      return [500, {}, e_msg]
     end
     [200, {}, "#{file_name} created"]
   end

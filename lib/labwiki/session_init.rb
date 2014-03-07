@@ -131,11 +131,11 @@ class SessionInit < OMF::Base::LObject
     repo ||= OMF::Web::ContentRepository.find_repo_for("irods:#{id}")
 
     if (sample_repo_path = LabWiki::Configurator[:gimi][:irods][:sample_repo])
-      begin
-        `iput -r "#{sample_repo_path}/*" "#{script_folder}"`
-      rescue => e
-        error "iRods command failed: 'iput -r \"#{sample_repo_path}/*\" \"#{script_folder}\"'"
-        error e.message
+      cmd = "iput -r #{sample_repo_path}/* #{script_folder} 2>&1"
+      cmd_out = `#{cmd}`
+      unless $?.success?
+        error "iRods command failed: '#{cmd}'"
+        error cmd_out
       end
     end
 
@@ -183,9 +183,7 @@ class SessionInit < OMF::Base::LObject
       if res_path =~ /projects/
         users = obj['irods_user'].split('|')
         current_irods_user = OMF::Web::SessionStore[:id, :irods_user]
-        if users.include? current_irods_user
-          info "User already added to the project"
-        else
+        unless users.include? current_irods_user
           new_irods_user = "#{obj['irods_user']}|#{current_irods_user}"
           info "Need to write this #{new_irods_user}"
           HTTParty.post("#{ges_url}/#{res_path}/#{res_id}", body: { irods_user: new_irods_user })
