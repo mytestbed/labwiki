@@ -41,6 +41,10 @@ module OMF::Web::Theme
       end
     end
 
+    def render_additional_headers
+      "\n<meta http-equiv='content-type' content='text/html;charset=UTF8' />\n"
+    end
+
     def content
       gjsa = LabWiki::PluginManager.get_global_js().map do |js|
         "require(['#{js}'], function() {});"
