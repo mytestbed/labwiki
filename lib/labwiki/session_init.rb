@@ -131,7 +131,7 @@ class SessionInit < OMF::Base::LObject
     repo ||= OMF::Web::ContentRepository.find_repo_for("irods:#{id}")
 
     if (sample_repo_path = LabWiki::Configurator[:gimi][:irods][:sample_repo])
-      cmd = "iput -r #{sample_repo_path}/* #{script_folder} 2>&1"
+      cmd = "iput -fr #{sample_repo_path}/* #{script_folder} 2>&1"
       cmd_out = `#{cmd}`
       unless $?.success?
         error "iRods command failed: '#{cmd}'"
