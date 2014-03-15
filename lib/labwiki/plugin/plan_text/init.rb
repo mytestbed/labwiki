@@ -27,3 +27,9 @@ LabWiki::PluginManager.register :plan_text, {
   :resources => File.dirname(__FILE__) + '/resource' # should find a more portable solution
 }
 
+# Register a callback to fix potentially fix embedded widgets
+require 'omf-web/widget/text/maruku'
+OMF::Web::Widget::Text::Maruku::WidgetElement.on_pre_create do |wdescr|
+  LabWiki::Plugin::PlanText::PlanTextWidget.on_pre_create_embedded_widget(wdescr)
+end
+
