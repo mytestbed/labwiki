@@ -24,7 +24,8 @@ require.config({
       '*': {
         'css': 'vendor/require-css/css'
       }
-    }
+    },
+    waitSeconds: 30
 });
 require(['css!graph_css/graph'], function(css) {});
 
