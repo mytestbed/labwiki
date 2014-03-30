@@ -11,9 +11,14 @@ class SessionInit < OMF::Base::LObject
 
   def call(env)
     req = ::Rack::Request.new(env)
-
     unless req.path =~ /^\/resource/ # Do not care about resource files
-      req.session['sid'] ||= "s#{(rand * 10000000).to_i}_#{(rand * 10000000).to_i}"
+
+      # Session ID should be in cookie, but if cookies don't work (iBook widgets) we try
+      # to carry them in the parameters.
+      #
+      # see OMF::Web::SessionStore
+      #
+      req.session['sid'] ||= req.params['sid'] || "s#{(rand * 10000000).to_i}_#{(rand * 10000000).to_i}"
       Thread.current["sessionID"] = req.session['sid'] # needed for Session Store
 
       # No login hack, set a default user called user1
