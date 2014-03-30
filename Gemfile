@@ -14,6 +14,7 @@ gemspec
 gem "omf_web", override_with_local(path: '../omf_web', git: 'git://github.com/mytestbed/omf_web')
 gem "httparty"
 gem "god"
+gem 'rack-cors', :require => 'rack/cors'
 
 # Install gems from each plugin
 # Credit: http://madebynathan.com/2010/10/19/how-to-use-bundler-with-plugins-extensions

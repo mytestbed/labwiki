@@ -6,6 +6,14 @@ require 'omf-web/content/irods_repository'
 
 LW_PORT = "#{LabWiki::Configurator[:port] || 4000}"
 
+require 'rack/cors'
+use Rack::Cors, debug: true do
+  allow do
+    origins '*'
+    resource '*', :headers => :any, :methods => [:get, :post, :options]
+  end
+end
+
 use ::Rack::ShowExceptions
 use ::Rack::Session::Cookie, secret: LW_PORT, key: "labwiki.session.#{LW_PORT}"
 use ::Rack::OpenID, OpenID::Store::Filesystem.new("/tmp/openid_#{LW_PORT}")
