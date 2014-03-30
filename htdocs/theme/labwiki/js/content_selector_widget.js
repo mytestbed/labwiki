@@ -71,24 +71,27 @@ define([], function () {
       var context_el = this._context_el;
       var tools_list = context_el.find('.tools-list');
       var tools_ul = tools_list.find('ul');
+      tools_ul.append('<li class="tool_name">' + name + '</li>');
       tools_ul.append('<li>' + html_frag + '</li>');
-      this._context_el.find('.action-buttons').show();
 
-      // Tools button and list
-      context_el.find('.action-buttons').show();
-      var tb = context_el.find('.tool-button');
-      tb.bind('click', function(ev) {
-        if (tools_list.is(':visible')) {
-          tools_list.delay(200).slideUp(200);
-        } else {
-          tools_list.show();
-        }
-      });
-      tb.bind('blur', function(ev) {
-        if (tools_list.has(ev.relatedTarget).length == 0) {
-          tools_list.delay(200).slideUp(200);
-        }
-      });
+      // Fist time around make tool button visible and attach interaction handlers
+      var ab = context_el.find('.action-buttons');
+      if (! ab.is(':visible')){
+        ab.show();
+        var tb = ab.find('.tool-button');
+        tb.bind('click', function(ev) {
+          if (tools_list.is(':visible')) {
+            tools_list.delay(200).slideUp(200);
+          } else {
+            tools_list.show();
+          }
+        });
+        tb.bind('blur', function(ev) {
+          if (tools_list.has(ev.relatedTarget).length == 0) {
+            tools_list.delay(200).slideUp(200);
+          }
+        });
+      }
     },
 
 
