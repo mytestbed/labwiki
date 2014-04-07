@@ -16,7 +16,12 @@ module OMF::Web::Theme
     def initialize(widget, col_name)
       @widget = widget
       @col_name = col_name
-      @content_renderer = widget.content_renderer() if widget
+      if widget
+        @content_renderer = widget.content_renderer()
+        if (@content_renderer.is_a? String) || (@content_renderer.is_a? Symbol)
+          @content_renderer = OMF::Web::Theme.create_renderer(@content_renderer, widget)
+        end
+      end
     end
 
     def content

@@ -99,7 +99,7 @@ module LabWiki
         end
       else
         widget = @@plugins_for_col[column.to_sym].reduce(:priority => 0, :wdescr => {}) do |best, wdescr|
-          if priority = wdescr[:priority].call(params)
+          if wdescr[:priority] && priority = wdescr[:priority].call(params)
             if priority > best[:priority]
               best = {:priority => priority, :wdescr => wdescr}
             end
