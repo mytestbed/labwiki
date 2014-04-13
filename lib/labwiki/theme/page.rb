@@ -28,6 +28,7 @@ module OMF::Web::Theme
     depends_on :js, '/resource/vendor/jquery/jquery.js'
     depends_on :js, '/resource/vendor/jquery/jquery.periodicalupdater.js'
     depends_on :js, '/resource/vendor/jquery-ui/js/jquery-ui.min.js'
+    depends_on :js, '/resource/vendor/jquery.ui.touch-punch.min.js'
     depends_on :js, '/resource/vendor/d3/d3.js'
 
     def initialize(widget, opts)
