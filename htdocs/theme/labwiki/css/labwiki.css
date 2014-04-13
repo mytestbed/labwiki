@@ -183,6 +183,13 @@ strong, b {
     color: black;
 }
 
+.content-selection input,
+.content-selection div.container
+{
+  width: 100%;
+}
+
+
 /* Content search */
 
 .ui-menu {
