@@ -285,7 +285,7 @@ strong, b {
     line-height: 32px;
     color: inherit;
     text-rendering: optimizelegibility;
-    background-color: white;
+    background-color: transparent;
 }
 
 .k-panel .col-summary div.widget-title-icon {

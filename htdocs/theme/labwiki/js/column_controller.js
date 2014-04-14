@@ -184,6 +184,8 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
           mime_type: content_descriptor.mime_type
         };
         this.load_content(o);
+      } else {
+        this.refresh_content(content_descriptor, 'GET');
       }
     },
 
@@ -259,10 +261,10 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       };
 
       $(prefix + '_maximize_right_buttom').click(function() {
-        f($(this), self.right_column_controller())
+        f($(this), self.right_column_controller());
       });
       $(prefix + '_maximize_left_buttom').click(function() {
-        f($(this), self.left_column_controller())
+        f($(this), self.left_column_controller());
       });
     },
 
@@ -314,11 +316,11 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       }
 
       // fix links in content panel
-      $('.widget_body_' + opts.name + ' a').each(function() {
+      panel.find('.widget_body a').each(function() {
         var el = $(this);
         var href = el.attr('xhref');
         if (href != undefined) {
-          href = href.trim()
+          href = href.trim();
           if (href.slice(0, 3) == 'lw:') {
             var p = href.slice(3).split('?');
             var a = p[0].split('/');
@@ -330,14 +332,24 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
                 action: 'get_plugin',
                 col: col,
                 plugin: plugin
-              }
+              };
               if (p[1] != undefined) {
                 var params = cmd['params'] = {};
                 _.each(p[1].split('&'), function (s) {
                   var kv = s.split('=');
                   params[kv[0]] = kv[1];
-                })
-              }
+                });
+              };
+              // Making the link draggable as well
+              el.data('content', cmd);
+              el.draggable({
+                appendTo: "body",
+                helper: "clone",
+                stack: 'body',
+                zIndex: 9999
+              });
+
+              // ... nad clickable
               el.attr('href', '#');
               el.click(function() {
                 controller.refresh_content(cmd, 'GET');
