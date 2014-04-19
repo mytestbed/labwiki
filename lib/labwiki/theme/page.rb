@@ -9,6 +9,7 @@ module OMF::Web::Theme
 
     depends_on :css, "/resource/vendor/bootstrap/css/bootstrap.css"
     depends_on :css, "/resource/vendor/font-awesome/css/font-awesome.min.css"
+    depends_on :css, "/resource/vendor/smartmenus/addons/bootstrap/jquery.smartmenus.bootstrap.css"
     depends_on :css, '/resource/theme/bright/css/reset-fonts-grids.css'
     depends_on :css, "/resource/theme/bright/css/bright.css"
     depends_on :css, "/resource/theme/labwiki/css/kaiten.css"
@@ -29,6 +30,8 @@ module OMF::Web::Theme
     depends_on :js, '/resource/vendor/jquery/jquery.periodicalupdater.js'
     depends_on :js, '/resource/vendor/jquery-ui/js/jquery-ui.min.js'
     depends_on :js, '/resource/vendor/jquery.ui.touch-punch.min.js'
+    depends_on :js, '/resource/vendor/smartmenus/jquery.smartmenus.js'
+    depends_on :js, '/resource/vendor/smartmenus/addons/bootstrap/jquery.smartmenus.bootstrap.js'
     depends_on :js, '/resource/vendor/d3/d3.js'
 
     def initialize(widget, opts)
@@ -60,7 +63,24 @@ module OMF::Web::Theme
         div :id => "k-window" do
           div :id => "k-topbar" do
             span "LabWiki", :class => 'brand'
-            span "by NICTA", :class => 'brand', :style=> "font-size: 110%; line-height: 29px;"
+            ul class: 'nav navbar-nav' do
+              li do
+                a id: 'about-menu-a', class: 'nav-menu', href: "#" do
+                  text 'by NICTA'
+                end
+                ul id: 'about-menu-ul', class: "dropdown-menu" do
+                  li do
+                    div id: 'about-menu-div' do
+                      p %{
+                        Some gushing words about the good people at NICTA who
+                        brought this wonderful tool to the world.
+                      }
+                    end
+                  end
+                end
+              end
+            end
+
             unless LabWiki::Configurator[:stable]
               if LabWiki::Configurator[:stable_instance_location]
                 span :class => 'label label-warning', :style => "font-size: 110%; line-height: 29px; margin-left: 10px;" do
@@ -72,45 +92,74 @@ module OMF::Web::Theme
               end
             end
 
-            ul :class => 'secondary-nav' do
+            ul class: 'nav navbar-nav navbar-right' do
               li do
-                a :class => "dropdown-toggle", :id => "topbar-tools-menu-toggle", 'data-toggle' => "dropdown" do
-                  i :class => "tools"
+                a id: 'tools-menu-a', class: 'nav-menu', href: "#" do
+                  i :class => "glyphicon glyphicon-cog icon-white"
                   text 'Tools'
-                  span class: "caret"
                 end
-                ul :id => "topbar-tools-menu", :class => "dropdown-menu", :role => "menu", 'aria-labelledby' => "topbar-tools-menu-toggle" do
-                  li :class => 'dropdown-header', :role => "presentation" do
-                    text "GIMI"
-                  end
-                  li role: "presentation" do
-                    a 'Action', role: "menuitem", tabindex: "-1", href: "#"
-                  end
-                  li :class => 'divider', :role => "presentation"
-                  li role: "presentation" do
-                    a 'Action', role: "menuitem", tabindex: "-1", href: "#"
+                ul id: 'tools-menu-ul', class: "dropdown-menu" do
+                  li 'GIMI', class: "dropdown-header"
+                  li do
+                    a "Add experiment context", href: "#"
                   end
                 end
               end
 
-              li do
-                a :href => '#new-exp-modal', :role => 'button', :"data-toggle" => "modal" do
-                  i :class => "icon-asterisk icon-white"
-                  text "Add experiment context"
-                end
-              end
-              li do
-                a :href => '#', :class => 'user' do
+              li class: 'last-nav-link' do
+                a id: 'user-menu-a', class: 'nav-menu', href: "#" do
                   i :class => "glyphicon glyphicon-user icon-white"
                   text (OMF::Web::SessionStore[:name, :user] || 'Unknown').capitalize
                 end
-              end
-              li do
-                a :href => '/logout', :class => 'logout' do
-                  i :class => "glyphicon glyphicon-off icon-white"
-                  text "Log out"
+                ul id: 'user-menu-ul', class: 'nav-menu', class: "dropdown-menu" do
+                  li do
+                    a id: 'user-menu-logout-a', class: 'nav-menu-item', href: "#" do
+                      i :class => "glyphicon glyphicon-off icon-white"
+                      text "Logout"
+                    end
+                  end
                 end
               end
+
+              # li do
+                # a :class => "dropdown-toggle", :id => "topbar-tools-menu-toggle", 'data-toggle' => "dropdown" do
+                  # i :class => "tools"
+                  # text 'Tools'
+                  # span class: "caret"
+                # end
+                # #ul :id => "topbar-tools-menu", :class => "dropdown-menu", :role => "menu", 'aria-labelledby' => "topbar-tools-menu-toggle" do
+                # ul :id => "topbar-tools-menu", :class => "dropdown-menu" do
+                  # li :class => 'dropdown-header', :role => "presentation" do
+                    # text "GIMI"
+                  # end
+                  # li role: "presentation" do
+                    # a 'Action', role: "menuitem", tabindex: "-1", href: "#"
+                  # end
+                  # li :class => 'divider', :role => "presentation"
+                  # li role: "presentation" do
+                    # a 'Action', role: "menuitem", tabindex: "-1", href: "#"
+                  # end
+                # end
+              # end
+#
+              # li do
+                # a :href => '#new-exp-modal', :role => 'button', :"data-toggle" => "modal" do
+                  # i :class => "icon-asterisk icon-white"
+                  # text "Add experiment context"
+                # end
+              # end
+              # li do
+                # a :href => '#', :class => 'user' do
+                  # i :class => "glyphicon glyphicon-user icon-white"
+                  # text (OMF::Web::SessionStore[:name, :user] || 'Unknown').capitalize
+                # end
+              # end
+              # li do
+                # a :href => '/logout', :class => 'logout' do
+                  # i :class => "glyphicon glyphicon-off icon-white"
+                  # text "Log out"
+                # end
+              # end
             end
           end
 

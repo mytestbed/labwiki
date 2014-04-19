@@ -21,6 +21,50 @@ strong, b {
   font-weight: 200;
 }
 
+.navbar-nav li a {
+  padding-top: 6px; /* Need to overwrite bootstrap defaults */
+  padding-bottom: 6px;
+  line-height: 20px;
+  font-size: 14px;
+  color: #BFBFBF;
+  background-color: 'black';
+}
+
+#about-menu-a {
+  padding-top: 10px; /* Need to overwrite bootstrap defaults */
+  padding-bottom: 2px;
+  font-size: 12px;
+}
+
+#about-menu-div {
+  padding: 10px 20px 10px 20px;
+  width: 400px;
+  max-width: 100%;
+}
+
+/* Needed to tag links with an ID to overide bootstrap */
+#about-menu-a,
+#tools-menu-a,
+#user-menu-a  {
+  background: transparent;
+}
+
+#about-menu-a:hover,
+#tools-menu-a:hover,
+#user-menu-a:hover  {
+  color: white;
+  background: transparent;
+}
+
+li.last-nav-link {
+  margin-right: 20px;
+}
+
+a.nav-menu i,
+a.nav-menu-item i {
+  margin-right: 5px;
+}
+/***
 #k-topbar ul.secondary-nav {
   float: right;
   margin-left: 10px;
@@ -50,6 +94,7 @@ strong, b {
   font-size: 13px;
   cursor: pointer;
 }
+**/
 
 
 #k-topbar ul.secondary-nav a:hover {
