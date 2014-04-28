@@ -7,6 +7,7 @@ require 'omf-web/content/repository'
 module LabWiki
   # Thrown by widget when the UI should retry the query later
   class RetrySearchLaterException < Exception; end
+  class NoReposToSearchException < Exception; end
 
   class SearchHandler < AbstractHandler
 
@@ -21,6 +22,8 @@ module LabWiki
         res = search(pat, col)
       rescue RetrySearchLaterException
         return [{retry: true}.to_json, 'application/json']
+      rescue NoReposToSearchException
+        return [{warn: 'No repository defined'}.to_json, 'application/json']
       end
       #puts "Plugins>> #{PluginManager.plugins_for_column(col)}"
 
@@ -29,7 +32,10 @@ module LabWiki
 
     def search(pat, col)
       opts = {:max => 10}
-      opts[:repo_iterator] = OMF::Web::SessionStore[col.to_sym, :repos]
+      unless opts[:repo_iterator] = OMF::Web::SessionStore[col.to_sym, :repos]
+        warn "No search repo defined for '#{col}'"
+        raise NoReposToSearchException.new
+      end
       PluginManager.plugins_for_column(col).map do |plugin|
         next unless sproc = plugin[:search]
         name = plugin[:name]
