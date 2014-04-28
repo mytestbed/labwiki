@@ -109,7 +109,8 @@ module OMF::Web::Theme
               li class: 'last-nav-link' do
                 a id: 'user-menu-a', class: 'nav-menu', href: "#" do
                   i :class => "glyphicon glyphicon-user icon-white"
-                  text (OMF::Web::SessionStore[:name, :user] || 'Unknown').capitalize
+                  #text (OMF::Web::SessionStore[:name, :user] || 'Unknown').capitalize
+                  text OMF::Web::SessionStore[:name, :user] || 'Unknown'
                 end
                 ul id: 'user-menu-ul', class: 'nav-menu', class: "dropdown-menu" do
                   li do

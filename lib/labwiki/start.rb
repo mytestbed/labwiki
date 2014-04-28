@@ -35,9 +35,9 @@ opts = {
   #:login_required => true,
   :handlers => {
     # Should be done in a better way
-    :pre_rackup => lambda do
-      LabWiki::Configurator.init_omf_web
-    end,
+    # :pre_rackup => lambda do
+      # LabWiki::Configurator.init_omf_web
+    # end,
     :pre_parse => lambda do |p|
       p.separator ""
       p.separator "LabWiki options:"
@@ -65,7 +65,8 @@ opts = {
         OMF::Base::Loggable.logger(:opts).fatal "Missing --lw_config option"
         false
       else
-        LabWiki::PluginManager.init
+        LabWiki::Configurator.init
+        #LabWiki::PluginManager.init
         true
       end
     end,

@@ -16,9 +16,11 @@ end
 
 use ::Rack::ShowExceptions
 use ::Rack::Session::Cookie, secret: LW_PORT, key: "labwiki.session.#{LW_PORT}"
-use ::Rack::OpenID, OpenID::Store::Filesystem.new("/tmp/openid_#{LW_PORT}")
 
-$users = {}
+######## AUTHENTICATION SECTION - Should move into separate file
+
+LOGIN_PAGE = '/resource/login/geni_openid.html'
+#LOGIN_PAGE = '/resource/login/login.html'
 
 OPENID_FIELDS = {
   google: ["http://axschema.org/contact/email", "http://axschema.org/namePerson/last"],
@@ -30,11 +32,17 @@ OPENID_FIELDS = {
 GENI_OPENID_PROVIDER = "https://portal.geni.net/server/server.php"
 TRUST_REFERRER = "portal.geni.net"
 
+use ::Rack::OpenID, OpenID::Store::Filesystem.new("/tmp/openid_#{LW_PORT}")
+
+$users = {}
+
 Warden::OpenID.configure do |config|
   config.required_fields = OPENID_FIELDS[:geni]
   config.user_finder do |response|
     identity_url = response.identity_url
     user_data = OpenID::AX::FetchResponse.from_success_response(response).data
+    user_data['lw:auth_type'] = 'OpenID.GENI'
+    puts ">>> IDENTITY_URL: #{identity_url}"
     $users[identity_url] = user_data
     identity_url
   end
@@ -55,20 +63,19 @@ use Warden::Manager do |manager|
   manager.failure_app = AuthFailureApp
 end
 
+######## END AUTHENTICATION SECTION
+
+
 OMF::Web::Runner.instance.life_cycle(:pre_rackup)
 options = OMF::Web::Runner.instance.options
 
-require 'labwiki/session_init'
-use SessionInit
+require 'labwiki/rack/session_init'
+use LabWiki::SessionInit
 
 map "/labwiki" do
   handler = proc do |env|
-    if env['warden'].authenticated?
-      require 'labwiki/rack/top_handler'
-      LabWiki::TopHandler.new(options).call(env)
-    else
-      [302, {'Location' => '/resource/login/openid.html', "Content-Type" => ""}, ['Redirect to login']]
-    end
+    require 'labwiki/rack/top_handler'
+    LabWiki::TopHandler.new(options).call(env)
   end
   run handler
 end
@@ -79,6 +86,8 @@ map '/login' do
     if req.post?
       env['warden'].authenticate!
       [302, {'Location' => '/', "Content-Type" => ""}, ['Login process failed']]
+    else
+      [302, {'Location' => LOGIN_PAGE, "Content-Type" => ""}, ['Redirect to login']]
     end
   end
   run handler
@@ -87,7 +96,7 @@ end
 # Immediately kick-off redirection to GENI's OpenID facility
 map '/geni_login' do
   handler = proc do |env|
-    puts "ENV: #{env.keys}"
+    puts "---- Geni Login: ENV: #{env.keys}"
     req = ::Rack::Request.new(env)
     req.update_param("openid_identifier", GENI_OPENID_PROVIDER)
     env['warden'].authenticate!
@@ -100,7 +109,8 @@ map '/logout' do
   handler = Proc.new do |env|
     req = ::Rack::Request.new(env)
     env['warden'].logout(:default)
-    LabWiki::Plugin::Experiment::Util.disconnect_all_db_connections
+    LabWiki::PluginManager.stop_session
+    LabWiki::Configurator.stop_session
     req.session['sid'] = nil
     req.session.clear
     [302, {'Location' => '/', "Content-Type" => ""}, ['Next window!']]
