@@ -94,7 +94,7 @@ module LabWiki
       debug "Creating widget for '#{column}' from '#{params.inspect}' -- #{@@plugins_for_col[column.to_sym]}"
       if wname = params[:plugin]
         wdescr = plugins_for_column(column).find do |wd|
-          puts ">>> #{wname} - #{wd[:name] == wname} - #{wd}"
+          debug "creating widget #{wname} - #{wd[:name] == wname} - #{wd}"
           wd[:name] == wname
         end
       else
@@ -144,6 +144,15 @@ module LabWiki
         end
       end
     end
+
+    def self.close_session(user_info)
+      @@plugins.each do |name, plugin_descr|
+        if block = plugin_descr[:on_session_close]
+          block.call()
+        end
+      end
+    end
+
 
   end # class
 end # module
