@@ -34,8 +34,12 @@ This will start a web server at port 4000. Point your browser there and you shou
 
 For additional options start the server with -h.
 
-The introductory video at http://labwiki.mytestbed.net should provide you with some hints on how to proceed. Obviously,
-more (any) documentation would be even better.
+While there is little functionality in the core, you can display the raw markup text of the wiki page in the left column
+by dragging the icon in the title block into the middle column. After dropping the icon, a code editor should appear. Please
+note the 'Read-only' label in the title block. As it is read from a read-only repository, editing is blocked.
+
+The introductory video at http://labwiki.mytestbed.net should provide you with some hints on the capabilities
+of LabWiki provided through it's plugin system.
 
 ## Installing additional Plugins
 
