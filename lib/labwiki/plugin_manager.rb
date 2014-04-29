@@ -91,7 +91,7 @@ module LabWiki
     end
 
     def self.create_widget(column, params)
-      debug "Creating widget for '#{column}' from '#{params.inspect}' -- #{@@plugins_for_col[column.to_sym]}"
+      debug "Creating widget for '#{column}' from '#{params}'"
       if wname = params[:plugin]
         wdescr = plugins_for_column(column).find do |wd|
           debug "creating widget #{wname} - #{wd[:name] == wname} - #{wd}"

@@ -11,6 +11,13 @@ $: << lib_dir
 require 'omf_base/lobject'
 OMF::Base::Loggable.init_log 'labwiki', :searchPath => etc_dir
 
+# Make the logger references less verbose
+class Log4r::Logger
+  def to_s
+    "\#<#{@fullname}>"
+  end
+end
+
 require 'omf_web'
 require 'labwiki'
 require 'labwiki/version'
