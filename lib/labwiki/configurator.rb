@@ -18,8 +18,28 @@ module LabWiki
     def self.load_from(fname)
       info "Loading config from '#{fname}'"
       @@configuration = OMF::Web.deep_symbolize_keys(YAML::load(File.open(fname)))
+      OMF::Web::ContentRepository.reference_dir = cfg_dir = File.dirname(fname)
+
+      # Include other config files if required
+      if pattern = LabWiki::Configurator[:include]
+        Dir.glob(File.join(cfg_dir, pattern)).each do |f|
+          debug "Loading additional config from #{f}"
+          cfg = OMF::Web.deep_symbolize_keys(YAML::load(File.open(f)))
+
+          merger = proc do |key, v1, v2|
+            if Hash === v1 && Hash === v2
+              v1.merge(v2, &merger)
+            elsif Array === v1 && Array === v2
+              v1.concat(v2)
+            else
+              v2
+            end
+          end
+          #@@configuration = @@configuration.merge(cfg, &merger)
+          @@configuration.merge!(cfg, &merger)
+        end
+      end
       debug "Config: '#{@@configuration.inspect}'"
-      OMF::Web::ContentRepository.reference_dir = File.dirname(fname)
     end
 
     def self.configured?()
