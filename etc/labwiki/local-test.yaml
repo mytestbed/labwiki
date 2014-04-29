@@ -1,13 +1,19 @@
 
 labwiki:
-  repositories:
-    default:
-      type: git
-      top_dir: ~/tmp/lw_repo
-      is_primary: true
+  session:
 
-  on_session_init:
-    plan:
-      plugin: 'wiki'
-      action: "on_get_content"
-      url: 'git:default:repo/wiki/quickstart.md'
+  include: ../../plugins/*/etc/labwiki/local.yaml
+
+  # debug:
+    # user:
+      # "lw:auth_type": OpenID.GENI
+      # "http://geni.net/projects": ['Project A', 'Project B']
+      # "http://geni.net/slices": ['sliceA', 'sliceB']
+      # "http://geni.net/user/urn": ["urn:publicid:IDN|ch.geni.net|user|joedoe"]
+      # "http://geni.net/user/prettyname": ["Joe Doe"]
+      # "http://geni.net/irods/zone": ["geniRenci"]
+      # repository:
+        # type: git
+        # top_dir: ~/tmp/labwiki
+        # is_primary: true
+

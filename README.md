@@ -26,7 +26,7 @@ and edit code. See the section on plugins further down for more information on h
 
 But first, let's see if the core is working.
 
-    $LABWIKI_TOP/bin/labwiki --lw-config etc/labwiki/labwiki.yaml --lw-no-login start
+    $LABWIKI_TOP/bin/labwiki --lw-config etc/labwiki/first_test.yaml --lw-no-login start
 
 This will start a web server at port 4000. Point your browser there and you should see somthing like:
 

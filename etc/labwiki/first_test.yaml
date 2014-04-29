@@ -1,0 +1,24 @@
+
+labwiki:
+  session:
+    repositories:
+      - name: system
+        type: file
+        read_only: true
+        top_dir: ../../test/repo
+
+    default_plugins: # Create these plugins the first time a user logs in
+      - column: plan
+        plugin: 'wiki'
+        action: "on_get_content"
+        url: 'system:wiki/README.md'
+
+
+  plugins:
+
+  # debug:
+    # user:
+      # 'lw:auth_type': NoLogin
+      # urn: user1
+      # pretty_name: "User 1"
+
