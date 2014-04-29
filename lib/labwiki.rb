@@ -6,6 +6,6 @@
 # rescue Exception
 # end
 
-module OmfLabWiki; end
+module LabWiki; end
 
 

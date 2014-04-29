@@ -4,7 +4,7 @@ require "labwiki/version"
 
 Gem::Specification.new do |s|
   s.name        = "labwiki"
-  s.version     = OmfLabWiki::VERSION.join('.')
+  s.version     = LabWiki::VERSION.join('.')
 #  s.version     = 0.1
   s.authors     = ["Max Ott"]
   s.email       = ["max.ott@nicta.com.au"]

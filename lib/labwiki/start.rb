@@ -13,6 +13,7 @@ OMF::Base::Loggable.init_log 'labwiki', :searchPath => etc_dir
 
 require 'omf_web'
 require 'labwiki'
+require 'labwiki/version'
 require 'labwiki/plugin_manager'
 require 'labwiki/configurator'
 
@@ -52,11 +53,13 @@ opts = {
     end,
     # post_parse should return true if everything is ok
     :post_parse => lambda do |r|
+      OMF::Base::Loggable.logger(:start).info "Starting LabWiki V#{LabWiki.version}"
+
       unless config_file.start_with? '/'
         config_file = File.join(ENV['LW_REF_DIR'] || ENV['PWD'], config_file)
       end
       unless File.readable? config_file
-        OMF::Base::Loggable.logger(:opts).fatal "Missing config file '#{config_file}"
+        OMF::Base::Loggable.logger(:opts).fatal "Missing config file '#{config_file}'"
         exit(-1)
 
       end
@@ -73,6 +76,7 @@ opts = {
 
   }
 }
+
 
 OMF::Web.start(opts)
 

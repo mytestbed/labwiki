@@ -8,6 +8,7 @@ require 'labwiki/plugin/source_edit/code_renderer'
 require 'labwiki/plugin/source_edit/code_renderer2'
 
 LabWiki::PluginManager.register :source_edit, {
+  :version => LabWiki.version,
   :widgets => [
     {
       :name => 'source_edit',

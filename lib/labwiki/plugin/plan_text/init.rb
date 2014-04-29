@@ -7,6 +7,7 @@ require 'labwiki/plugin/plan_text/plan_text_widget'
 require 'labwiki/plugin/plan_text/text_renderer'
 
 LabWiki::PluginManager.register :plan_text, {
+  :version => LabWiki.version,
   :widgets => [
     {
       :name => 'wiki',
