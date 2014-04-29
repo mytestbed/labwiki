@@ -53,6 +53,9 @@ module LabWiki
           if req.xhr?
             return [401, {}, ['Session lost, re-authenticate.']]
           else
+            if OMF::Web::Runner.instance.options[:no_login_required]
+              return [302, {'Location' => req.path, "Content-Type" => ""}, ['Session lost - Retry.']]
+            end
             return [302, {'Location' => '/login', "Content-Type" => ""}, ['Session lost, re-authenticate.']]
           end
         end

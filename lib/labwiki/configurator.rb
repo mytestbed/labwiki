@@ -1,4 +1,5 @@
 
+require 'omf-web/content/repository'
 
 module LabWiki
 
@@ -18,29 +19,12 @@ module LabWiki
       info "Loading config from '#{fname}'"
       @@configuration = OMF::Web.deep_symbolize_keys(YAML::load(File.open(fname)))
       debug "Config: '#{@@configuration.inspect}'"
+      OMF::Web::ContentRepository.reference_dir = File.dirname(fname)
     end
 
     def self.configured?()
       @@configuration != nil
     end
-
-    # Process the configuration parameter for settings specific to the OMF::Web
-    # library. Current settings include: repository.
-    #
-    # def self.init_omf_web
-      # #require 'omf-web/content/git_repository'
-      # (self[:repositories] || []).each do |name, opts|
-        # info "Registering repo '#{name}' -> #{opts}"
-        # #File.expand_path(path), true
-        # OMF::Web::ContentRepository.register_repo(name, opts)
-      # end
-      # (self[:plugins] || []).each do |name, opts|
-        # if init = opts[:init]
-          # info "Initialising plugin '#{name}'"
-          # require init
-        # end
-      # end
-    # end
 
     # Called once at startup
     #
@@ -52,9 +36,23 @@ module LabWiki
     # Called for every new session
     #
     def self.start_session(user_info)
-      puts "NEW SESSION>>> #{user_info}"
+      #puts "NEW SESSION>>> #{user_info}"
+
+
       @@session_start_monitors.each do |block|
         block.call(user_info)
+      end
+
+      (self['session/repositories'] || []).each do |ropts|
+        opts = ropts.dup
+
+        unless name = opts.delete(:name)
+          raise "Missing 'name' declaration in config file's 'session/repositories' - #{opts}"
+        end
+        repo = OMF::Web::ContentRepository.create(name.to_sym, opts)
+        (OMF::Web::SessionStore[:plan, :repos] ||= []) << repo
+        (OMF::Web::SessionStore[:prepare, :repos] ||= []) << repo
+        (OMF::Web::SessionStore[:execute, :repos] ||= []) << repo
       end
     end
 

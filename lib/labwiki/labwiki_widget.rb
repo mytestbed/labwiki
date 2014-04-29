@@ -7,12 +7,20 @@ module LabWiki
   class LWWidget < OMF::Base::LObject
 
     def self.init_session()
-      if si = LabWiki::Configurator[:on_session_init]
+      if si = LabWiki::Configurator['session/default_plugins']
         top_widget = OMF::Web::SessionStore[:lw_widget, :rack] = self.new
-        si.each do |col, opts|
+        si.each do |opts|
+          opts = opts.dup
+          unless col = opts.delete(:column)
+            raise "Missing 'column' declaration in config file's 'session/default_plugins' - #{opts}"
+          end
           # TODO: Check if that's all there is
-          widget = top_widget.create_column_widget(col, opts)
-          action = opts[:action]
+          unless action = opts.delete(:action)
+            raise "Missing 'action' declaration in config file's 'session/default_plugins' - #{opts}"
+          end
+          col = col.to_sym
+          opts[:repo_iterator] = OMF::Web::SessionStore[col, :repos]
+          widget = top_widget.create_column_widget(col.to_sym, opts)
           widget.send(action, opts, nil)
         end
       end
@@ -30,11 +38,11 @@ module LabWiki
 
     def dispatch_to_column(col, action, params, req)
       action = "on_#{action}".to_sym
-      params = expand_req_params(params, req)
+      params = expand_req_params(col, params, req)
       no_render = params.delete(:no_render)
 
-      puts "dispatch params: #{params}"
       col_widget = @widgets[col]
+      puts "dispatch params: #{params} - col_wgt: #{col_widget}"
       if widget_id = params[:widget_id]
         unless col_widget && col_widget.widget_id == widget_id
           if w = OMF::Web::SessionStore[widget_id, :widgets]
@@ -78,7 +86,7 @@ module LabWiki
       @widgets[col] = PluginManager.create_widget(col, params)
     end
 
-    def expand_req_params(params, req)
+    def expand_req_params(col, params, req)
       if cd = params[:content]
         params[:mime_type], params[:url] = Base64.decode64(cd).split('::')
         unless params[:mime_type] && params[:url]
@@ -89,6 +97,7 @@ module LabWiki
         params[:url] = url
         params[:mime_type] = 'unknown'
       end
+      params[:repo_iterator] = OMF::Web::SessionStore[col, :repos]
       OMF::Web.deep_symbolize_keys(params)
     end
 
