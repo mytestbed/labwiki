@@ -65,10 +65,18 @@ module OMF::Web::Theme
                 div :class => "title-block" do
                   div :class => "title", :id => id_prefix + "_widget_title" do
                     text  ti[:title] || 'Unknown'
+                    if (badge = ti[:title_badge])
+                      text ' '
+                      span badge[:text] || 'Unknown', class: 'label label-' + badge[:severity] || 'default'
+                    end
                   end
                   div :class => "sub_title", :id => id_prefix + "_widget_sub_title" do
                     if st = ti[:sub_title]
                       text st
+                      if (badge = ti[:sub_title_badge])
+                        text ' '
+                        span badge[:text] || 'Unknown', class: "label label-#{badge[:severity] || 'default'}"
+                      end
                     end
                   end
                 end

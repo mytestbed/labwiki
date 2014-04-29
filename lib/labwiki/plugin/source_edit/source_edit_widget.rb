@@ -27,7 +27,7 @@ module LabWiki::Plugin::SourceEdit
       opts = params[:params]
       debug "on_get_plugin: '#{opts.inspect}'"
       @content_url = opts[:url]
-      @content_proxy = OMF::Web::ContentRepository.create_content_proxy_for(@content_url, opts)
+      @content_proxy = OMF::Web::ContentRepository.create_content_proxy_for(@content_url, params)
       @mime_type = @content_proxy.mime_type
     end
 
@@ -58,8 +58,8 @@ module LabWiki::Plugin::SourceEdit
       @content_proxy.content_url
     end
 
-    def content_id
-      @content_proxy.content_id
+    def read_only?
+      @content_proxy.read_only?
     end
 
   end # class

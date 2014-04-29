@@ -39,8 +39,8 @@ module OMF::Web::Theme
         :edit_el => '#' + edit_id,
         :content => @content.to_s,
         :mode => mode,
-        :content_id => @widget.content_id,
-        :save_url => @widget.update_url
+        :save_url => @widget.update_url,
+        :read_only => @widget.read_only?
       )
 
       div :id => base_id, :class => "codemirror_widget" do
@@ -53,17 +53,10 @@ module OMF::Web::Theme
           script :src => "/resource/vendor/codemirror/lib/#{f}.js"
         end
 
-        #script :src => "/resource/vendor/codemirror/mode/xml/xml.js"
-        #script :src => "/resource/vendor/codemirror/mode/#{mode}/#{mode}.js"
-
         # Div where the text should go
         div :id => edit_id, :class => "codemirror_edit" #, :style => 'height:100%'
 
         render_widget_creation(base_id, opts)
-        # javascript(%{
-          # #{js_toolbar.join("\n");}
-        # })
-
       end
     end
 
@@ -80,11 +73,16 @@ module OMF::Web::Theme
 
     def title_info
       url = @widget.content_url
-      {
+      ti = {
         mime_type: @widget.mime_type,
         title: url.split('/')[-1],
-        sub_title:  url
+        sub_title:  url,
+        read_only: @widget.read_only?
       }
+      if @widget.read_only?
+        ti[:title_badge] = {text: 'Read-only', severity: 'warning'}
+      end
+      ti
     end
 
 
