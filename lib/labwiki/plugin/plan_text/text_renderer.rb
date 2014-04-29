@@ -39,6 +39,9 @@ module OMF::Web::Theme
 
     # Return image url which can be resolved within labwiki
     def fix_image_url(url)
+      if (url.start_with? 'http')
+        return url # external reference
+      end
       cp = @opts[:content].create_proxy_for_url(url)
       debug "Resolving #{url} to #{cp.content_url}"
       cp.content_url

@@ -11,6 +11,7 @@ from Github.
 
     git clone https://github.com/mytestbed/labwiki.git
     cd labwiki
+    export LABWIKI_TOP=`pwd`
     bundle install --path vendor
     rake post-install
 
@@ -18,28 +19,14 @@ If that fails you may need to install some required libraries. On a 'naked' Ubun
 
     sudo apt-get install libpq-dev
 
-## Try the simple example
+## Getting Started
 
-First set LABWIKI_TOP to wherever you installed them, respectively.
+Most of Labwiki's functionality is provided by it's plugins. The core only includes plugins to view wiki pages
+and edit code. See the section on plugins further down for more information on how to install and configure them.
 
-    export LABWIKI_TOP=...whereever.you.installed.labwiki
+But first, let's see if the core is working.
 
-Then create a temporary git repo and populate it with some test data.
-
-    mkdir -p ~/tmp/lw_repo
-    git init ~/tmp/lw_repo
-    cp -r $LABWIKI_TOP/test/repo ~/tmp/lw_repo
-    pushd ~/tmp/lw_repo
-    git add .
-    git commit -m 'initial'
-
-Finally start LabWiki.
-
-    cd $LABWIKI_TOP
-    bin/labwiki --lw-config etc/labwiki/local-test.yaml --lw-no-login start
-
-The 'local-test.yaml' will ultimately need to be replace with a path to a file describing the local setup. A sample
-of such a file can be found in 'etc/labwiki/norbit.yaml'.
+    $LABWIKI_TOP/bin/labwiki --lw-config etc/labwiki/labwiki.yaml --lw-no-login start
 
 This will start a web server at port 4000. Point your browser there and you should see somthing like:
 
@@ -66,10 +53,18 @@ the '--lw-config' flag.
 The structure of this file is as following:
 
     labwiki:
-      repositories:
-        default:
-          type: git
-          top_dir: ~/tmp/foo
+      session:
+        repositories:
+          - name: system
+            type: file
+            read_only: true
+            top_dir: ../../system_repo
+        default_plugins: # Show these plugins the first time a user logs in
+          - column: plan
+            plugin: 'wiki'
+            action: "on_get_content"
+            url: 'system:wiki/quickstart/quickstart.md'
+
       plugins:
         experiment:
           plugin_dir: labwiki_experiment_plugin
@@ -77,14 +72,17 @@ The structure of this file is as following:
             host: localhost
             port: 8002
 
+
 Currently, there are two sub sections defined under the top 'labwiki' node.
 
-The 'repositories' is currently just a placeholder and will get flashed out or even removed
-when we add full multi-user support. Currently it expects the path to a single git repository
-with the hard-coded label 'foo'. See the 'try the simple example' section above for instructions.
+The 'session' section describes what should happen at the start of a session. In the above example, each
+session is associated with a single, read-only repository from where assets are being fetched. LabWiki, through
+'omf_web' supports multiple repository types, such as 'file', 'git', or 'irods'.
+
+The above session section also defines what is going to be shown to the first time user (currently
+it is shown on every login). In this particular case, a 'wiki' plugin is initialised for the 'plan' column showing
+this README file.
 
 The 'plugins' node holds additional configuration options for each of the plugins. The above
-example declares options for the 'experiment' plugin. Please change 'host' and 'port' to where
-the experiment plugin should contact a Job Service. 
-
-(if you want to run such as Job Service, one implementation is available at: https://github.com/mytestbed/omf_job_service)
+example defines the configuration options of the 'experiment' plugin. Check the documentation of each particular plugin
+you use for how to configure it.
