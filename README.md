@@ -38,7 +38,7 @@ While there is little functionality in the core, you can display the raw markup 
 by dragging the icon in the title block into the middle column. After dropping the icon, a code editor should appear. Please
 note the 'Read-only' label in the title block. As it is read from a read-only repository, editing is blocked.
 
-The introductory video at http://labwiki.mytestbed.net should provide you with some hints on the capabilities
+This [introductory video](http://labwiki.mytestbed.net) should provide you with some hints on the capabilities
 of LabWiki provided through it's plugin system.
 
 ## Installing additional Plugins
@@ -47,7 +47,6 @@ Labwiki's functionality is primarily defined by it's external plugins. To instal
 following:
 
     $LABWIKI_TOP/install_plugin https://github.com/mytestbed/labwiki_experiment_plugin.git
-
 
 ## Configuration
 
