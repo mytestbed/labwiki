@@ -10,17 +10,15 @@ Bundler.setup()
 require 'yaml'
 require 'god'
 require 'rake/testtask'
-require "bundler/gem_tasks"
+#require "bundler/gem_tasks"
 
 task :default => :test
 
 Rake::TestTask.new do |t|
-  t.libs << 'test'
-  t.pattern = "test/**/*_spec.rb"
+  t.libs << 'spec'
+  t.pattern = "spec/**/*_spec.rb"
   t.verbose = true
 end
-
-
 
 desc "Starting Labwiki as a daemon"
 task :start, :config do |t, args|

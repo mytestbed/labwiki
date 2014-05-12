@@ -23,3 +23,8 @@ Dir.glob(File.join(File.dirname(__FILE__), 'plugins', '*', "Gemfile")) do |gemfi
   #puts "GEMFILE: #{gemfile}"
   eval(IO.read(gemfile), binding)
 end
+
+group :test do
+  gem 'capybara'
+  gem 'capybara_minitest_spec'
+end
