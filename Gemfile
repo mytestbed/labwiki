@@ -29,4 +29,5 @@ group :test do
   gem 'capybara'
   gem 'capybara_minitest_spec'
   gem 'capybara-webkit'
+  gem 'simplecov'
 end
