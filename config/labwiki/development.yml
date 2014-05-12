@@ -1,0 +1,37 @@
+labwiki:
+  session:
+    repositories:
+    - name: plugin_ex
+      type: file
+      read_only: false
+      top_dir: /home/jack/nicta/labwiki/plugins/lw_exp/system_repo
+    - name: bob
+      type: git
+      read_only: true
+      top_dir: /home/jack/tmp/foo
+
+
+    default_plugins: # Create these plugins the first time a user logs in
+    - column: plan
+      plugin: 'wiki'
+      action: "on_get_content"
+      url: 'plugin_ex:wiki/quickstart/quickstart.md'
+
+  plugins:
+    experiment:
+      plugin_dir: lw_exp
+      job_service:
+        host: 221.199.209.244
+        port: 8002
+  debug:
+    user:
+      "lw:auth_type": OpenID.GENI
+      "http://geni.net/projects": ['Project A', 'Project B']
+      "http://geni.net/slices": ['sliceA', 'sliceB']
+      "http://geni.net/user/urn": ["urn:publicid:IDN|ch.geni.net|user|joedoe"]
+      "http://geni.net/user/prettyname": ["Joe Doe"]
+      "http://geni.net/irods/zone": ["geniRenci"]
+      #repository:
+      #  type: git
+      #  top_dir: ~/tmp/labwiki
+      #  is_primary: true

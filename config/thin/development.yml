@@ -1,0 +1,3 @@
+servers: 3
+rackup: standard_rack_config.ru
+port: 4000

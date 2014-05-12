@@ -25,6 +25,7 @@ Dir.glob(File.join(File.dirname(__FILE__), 'plugins', '*', "Gemfile")) do |gemfi
 end
 
 group :test do
+  gem 'minitest'
   gem 'capybara'
   gem 'capybara_minitest_spec'
 end
