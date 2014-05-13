@@ -83,7 +83,7 @@ module OMF::Web::Theme
                 div :class => "container rounded-corners" do
                   #button :class => "head_add" # "add_content"
                   button :class => "head search"
-                  input :id => "lw#{object_id}_si", :class => "input", :type => "text", :value => "" do
+                  input :id => "lw#{object_id}_si", name: "search", :class => "input", :type => "text", :value => "" do
                     button :class => "tail reset" #, :onclick => "$(this).prev('input:text').val('');return false;"
                   end
                   button :class => "tail reset" #, :onclick => "$(this).prev('input:text').val('');return false;"

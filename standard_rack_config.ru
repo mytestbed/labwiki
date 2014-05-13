@@ -8,12 +8,17 @@ lib_dir = File.join(top_dir, 'lib')
 $: << lib_dir
 
 require 'omf_base/lobject'
-OMF::Base::Loggable.init_log 'labwiki', :searchPath => etc_dir
+
+OMF::Base::Loggable.init_log('labwiki', searchPath: etc_dir)
 
 # Make the logger references less verbose
 class Log4r::Logger
   def to_s
     "\#<#{@fullname}>"
+  end
+
+  def write(*args)
+    info(*args)
   end
 end
 
@@ -31,7 +36,9 @@ OMF::Web::Runner.instance.options[:app_name] = 'labwiki'
 OMF::Web::Runner.instance.options[:page_title] = 'Labwiki'
 
 OMF::Web::Theme.theme = 'labwiki/theme'
+OMF::Base::Loggable.set_environment ENV['RACK_ENV']
 
+puts ENV['RACK_ENV']
 LabWiki::Configurator.load_from("#{top_dir}/config/labwiki/#{ENV['RACK_ENV'] || 'development'}.yml")
 
 LabWiki::Configurator.init
@@ -55,6 +62,7 @@ end
 
 use ::Rack::ShowExceptions
 use ::Rack::Session::Cookie, secret: LW_PORT, key: "labwiki.session.#{LW_PORT}"
+use Rack::CommonLogger, OMF::Base::Loggable.logger('labwiki')
 
 ######## AUTHENTICATION SECTION - Should move into separate file
 
