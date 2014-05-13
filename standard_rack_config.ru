@@ -38,9 +38,7 @@ OMF::Web::Runner.instance.options[:page_title] = 'Labwiki'
 OMF::Web::Theme.theme = 'labwiki/theme'
 OMF::Base::Loggable.set_environment ENV['RACK_ENV']
 
-puts ENV['RACK_ENV']
 LabWiki::Configurator.load_from("#{top_dir}/config/labwiki/#{ENV['RACK_ENV'] || 'development'}.yml")
-
 LabWiki::Configurator.init
 
 # Original config.ru
