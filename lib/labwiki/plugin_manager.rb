@@ -145,7 +145,8 @@ module LabWiki
       end
     end
 
-    def self.close_session(user_info)
+    # FIXME should have arguments? or not?
+    def self.close_session(user_info = nil)
       @@plugins.each do |name, plugin_descr|
         if block = plugin_descr[:on_session_close]
           block.call()

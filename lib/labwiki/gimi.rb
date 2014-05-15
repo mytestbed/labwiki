@@ -32,6 +32,10 @@ class LabWiki::Gimi < OMF::Base::LObject
     init_repo(user_info)
   end
 
+  def on_session_close
+    #TODO What to do?
+  end
+
   def init_user(user)
     pretty_name = (user['http://geni.net/user/prettyname'] || ['Unknown']).first
     OMF::Web::SessionStore[:name, :user] = pretty_name

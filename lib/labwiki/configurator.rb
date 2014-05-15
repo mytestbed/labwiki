@@ -76,7 +76,7 @@ module LabWiki
       end
     end
 
-    def self.close_session(user_info)
+    def self.close_session(user_info = nil)
       @@session_close_monitors.each do |block|
         block.call()
       end

@@ -13,3 +13,8 @@ Gemfile.lock
 /vendor
 .bundle
 plugins
+/coverage
+/log
+/tmp
+
+
