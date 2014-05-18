@@ -1,5 +1,6 @@
 require 'labwiki/column_widget'
 require 'omf-web/content/repository'
+require 'labwiki/plugin/plan_text/abstract_publish_proxy'
 
 module LabWiki::Plugin::PlanText
 
@@ -32,6 +33,9 @@ module LabWiki::Plugin::PlanText
 
       @mime_type = (params[:mime_type] || 'text')
       @content_url = params[:url]
+
+      #
+
       @content_proxy ||= OMF::Web::ContentRepository.create_content_proxy_for(@content_url, params)
       _get_text_widget(@content_proxy)
     end
@@ -48,18 +52,44 @@ module LabWiki::Plugin::PlanText
       else
         cp = @content_proxy
       end
-      require 'omf-web/widget/text/maruku'
-      url2local = {}
-      m = OMF::Web::Widget::Text::Maruku.format_content_proxy(cp)
-      doc = m.to_html_tree(:img_url_resolver => lambda() do |u|
-        unless iu = url2local[u]
-          ext = u.split('.')[-1]
-          iu = url2local[u] = "img#{url2local.length}.#{ext}"
-        end
-        puts "IMAGE>>> #{u} => #{iu}"
-        iu
-      end)
-      puts "RES>>> #{doc.class}\n#{doc}"
+
+      params[:title] ||= self.title
+      AbstractPublishProxy.instance.publish(cp, params)
+
+      # # TODO: The following is very dodgy and needs to be done right
+      # public_repo = cp.repository
+      # post_name = (params[:url].split('/')[-1]).split('.')[0]
+      # dir_name = "/public/#{post_name}/"
+      # #puts ">>> DIR_NAME: #{dir_name}"
+      # ####
+#
+      # require 'omf-web/widget/text/maruku'
+      # url2local = {}
+      # m = OMF::Web::Widget::Text::Maruku.format_content_proxy(cp)
+      # doc = m.to_html_tree(:img_url_resolver => lambda() do |u|
+        # unless iu = url2local[u]
+          # ext = u.split('.')[-1]
+          # iu = url2local[u] = "img#{url2local.length}.#{ext}"
+        # end
+        # #puts "IMAGE>>> #{u} => #{iu}"
+        # iu
+      # end)
+      # #puts "RES>>> #{doc.class}\n#{doc}"
+      # meta = {
+        # title: self.title,
+        # updated: Time.now.iso8601
+      # }
+      # meta_url = public_repo.get_url_for_path(dir_name + 'meta.json')
+      # debug "Posting '#{meta_url}'"
+      # public_repo.write(meta_url, meta.to_json, "Adding/updating public post '#{post_name}'")
+#
+      # page_url = public_repo.get_url_for_path(dir_name + 'page.xml')
+      # public_repo.write(page_url, doc.to_s, "Adding/updating public post '#{post_name}'")
+      # url2local.each do |url, local|
+        # img = cp.create_proxy_for_url(url)
+        # img_url = public_repo.get_url_for_path(dir_name + local)
+        # public_repo.write(img_url, img.content, "Adding/updating image '#{local}' for public post '#{post_name}'")
+      # end
       nil
     end
 

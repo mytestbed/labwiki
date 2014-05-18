@@ -16,6 +16,8 @@ module LabWiki
 
       (LabWiki::Configurator[:plugins] || []).each do |name, opts|
         debug "Initialize plugin '#{name}' - #{opts}"
+        next if @@plugins[name] # must be a built-in one
+
         if plugin_dir = opts.delete(:plugin_dir)
           unless plugin_dir.start_with? '/'
             plugin_dir = File.absolute_path(File.join(File.dirname(__FILE__), '../../plugins', plugin_dir))
