@@ -22,9 +22,8 @@ module LabWiki
           return [400, {"Content-Type" => 'text/json'}, 'Unknown content type']
         end
         params = JSON.parse(body)
-        puts "BODY>>>> #{params.inspect} --- #{body}"
       end
-      puts "REQREST PARAMS> #{params}"
+      #puts "REQUEST PARAMS> #{params}"
 
       unless col = params['col']
         raise OMF::Web::Rack::MissingArgumentException.new "Missing parameter 'col'"
