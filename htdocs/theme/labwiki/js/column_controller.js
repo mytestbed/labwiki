@@ -74,6 +74,13 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       return ctxt;
     },
 
+    add_toolbar_separator: function() {
+      var s = $('<div class="toolbar toolbar-separator">|</div>');
+      this.add_toolbar_element(s);
+
+      // var b = this.top_el.find('.widget-title-toolbar-container button:last');
+      // b.addClass('toolbar-with-separator');
+    },
 
     initialize: function(opts) {
       this._opts = opts;
@@ -133,8 +140,9 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       opts.sid = LW.session_id;
       $.ajax({
         url: '_column',
-        data: opts,
-        type: type
+        data: JSON.stringify(opts),
+        type: type,
+        contentType: "application/json"
       }).done(function(data) {
         self.on_drop_handler = null; // remove drop handler as it may be related to old content
         var content_div = $('#col_content_' + opts.col);
@@ -147,10 +155,10 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
         }
         delete data['html'];
         self.content_descriptor = data;
-        OHUB.trigger('column.content.showing', {column: self._name, content: data, selector: content_div});
         self.fix_toolbar();
-        self.init_content_panel();
         self.init_drag_n_drop();
+        self.init_content_panel();
+        OHUB.trigger('column.content.showing', {column: self._name, content: data, selector: content_div});
       });
 
     },
@@ -162,8 +170,9 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       opts.no_render = true;
       $.ajax({
         url: '_column',
-        data: opts,
-        type: (type != undefined) ? type : 'POST'
+        data: JSON.stringify(opts),
+        type: (type != undefined) ? type : 'POST',
+        contentType: "application/json"
       }).done(function(data) {
         try {
           if (callback) callback(data.action_reply);
@@ -227,6 +236,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       this._content_selector.init(el_prefix, opts);
       this.init_drag_n_drop();
       this.init_content_panel();
+      //OHUB.trigger('column.content.showing', {column: this._name, content: opts, selector: $('#col_content_' + opts.col)});
 
       var o = opts;
       if (o.mime_type) this.content_descriptor.mime_type = o.mime_type;
@@ -298,6 +308,45 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
           console.log("drop accept? : " + candidate);
           return true;
         }
+      });
+
+      var enter = 0;
+      targets.on('dragover', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+      targets.on('dragenter', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if ((enter += 1) == 1) {
+          targets.addClass("ui-state-hover ui-drop-hover");
+        }
+      });
+      targets.on('dragleave', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if ((enter -= 1) == 0) {
+          targets.removeClass("ui-state-hover ui-drop-hover");
+        }
+      });
+      targets.on('drop', function(e) {
+        if (e.originalEvent.dataTransfer){
+          if (e.originalEvent.dataTransfer.files.length) {
+            e.preventDefault();
+            e.stopPropagation();
+            /*UPLOAD FILES HERE*/
+            if (self.on_drop_handler) {
+              propagate = self.on_drop_handler(e, $(this), self);
+            }
+            if (propagate) {
+              self.on_drop(e, $(this));
+            }
+
+            //this.upload(e.originalEvent.dataTransfer.files);
+          }
+        }
+        enter = 0;
+        targets.removeClass("ui-state-hover ui-drop-hover");
       });
     },
 
