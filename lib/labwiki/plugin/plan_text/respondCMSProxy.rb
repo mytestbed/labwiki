@@ -125,48 +125,7 @@ class RespondCMSProxy < AbstractPublishProxy
 			print "EM-RESPONSE-HEADER: #{http.response_header} \n"
 			print "EM-RESPONSE-HEADER-STATUS: #{http.response_header.status} \n" 
 		end
-	end
-
-
-
-
-
-
-
-
-
-
-
-
-      def loginUser(email, password)
-            url = 'http://10.129.128.41/respond/api/user/login/'
-            options = {
-              'email' => email,
-              'password' => password
-            }
-            resp = sendRequest(url, options)
-      end
-
-
-      def addPage(pageTypeUniqId, pageTypeId, layout, stylesheet, name, friendlyId, description, categories)
-            url = 'http://10.129.128.41/respond/api/page/add/'
-            options = {
-              # 'pageTypeUniqId' => pageTypeUniqId,
-              # 'PageTypeId' => pageTypeId,
-               #'Layout' => layout,
-              # 'Stylesheet' => stylesheet,
-               'name' => name,
-               'friendlyId' => friendlyId,
-               'description' => description
-              # 'categories' => categories
-            }
-            resp = sendRequest(url, options)
-      end
-
-      def sendHelloWorld(url)
-              options = {"content" => "<html><body><h1>Hello, World!<h1></body></html>"}
-               resp = sendRequest(url, options)
-      end
+	end   
 
 end
 
