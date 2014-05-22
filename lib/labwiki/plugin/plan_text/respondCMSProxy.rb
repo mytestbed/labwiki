@@ -51,11 +51,15 @@ module LabWiki::Plugin::PlanText
 			return cookie
 	
 		end
+
 	
 		def publish(content_proxy, opts)
-			# doc = to_html(content_proxy, true, opts)
-			doc = "<HTML><HEAD><TITLE>TEST</TITLE></HEAD><BODY><H1>TEST</H1><P>Hello :)</P></BODY></HTML>"
-	                @cookie = login if @cookie == "-1"
+			doc = to_html(content_proxy, true, opts)
+
+			#doc = "<div id=\"block-1\" class=\"block row\" data-nested=\"not-nested\"><div class=\"col col-md-12\"><h1 id=\"hypothesis_wiresless_links_are_bandwidth_constraints\">Hypothesis: Wiresless Links are bandwidth Constraints</h1><p class=\"content\" delegate=\"plan\" line_no=\"3\">We want to test the hypothesis that wireless links are bandwidth constraints.</p></div></div>"
+			#doc = "<div id=\"block-1\" class=\"block row\" data-nested=\"not-nested\"><div class=\"col col-md-12\"><h1 id=\"h1-1399522248\">TEST</h1><p id=\"p-1399522248\">test test test</p><div id=\"imagecontainer1\" class=\"o-image\"><img id=\"image1\" src=\"sites/testsite/files/Sydney_565x215_tcm253-811043.jpg\"></div><pre id=\"1399523715\" class=\"prettyprint linenums pre-scrollable\">def main {\nputs \"Hello\"\n}</pre></div></div>"
+			
+			@cookie = login if @cookie == "-1"
 			EventMachine.synchrony do
 			 	@cookie = "12345"
 	
@@ -186,6 +190,19 @@ module LabWiki::Plugin::PlanText
 				rescue Exception => ex
 					raise Exception.new("TODO: handle Exception: #{ex.inspect}")
 				end
+
+				print "\n\n GET PAGE CONTENT \n\n"
+				
+
+				getPageUrl = "#{@respond}page/content/536b03a94a9ee"
+
+				head = {"Cookie" => "#{@cookie}"} 
+					http = EventMachine::HttpRequest.new(getPageUrl).get :timeout => 10, :head => head
+					print "EM-RESPONSE: #{http.response} \n"
+					print "EM-RESPONSE-HEADER: #{http.response_header} \n"
+					print "EM-RESPONSE-HEADER-STATUS: #{http.response_header.status} \n" 
+				
+				print "\n\n #{doc} \n\n"
 			end
 		end
 
@@ -201,6 +218,7 @@ module LabWiki::Plugin::PlanText
 			url2local = {}
 			m = OMF::Web::Widget::Text::Maruku.format_content_proxy(cp)
 			doc = m.to_html_tree(:img_url_resolver => lambda() do |u|
+				#print "\n #{u} \n"
 				unless iu = url2local[u]
 					ext = u.split('.')[-1]
 					iu = url2local[u] = "img#{url2local.length}.#{ext}"
@@ -208,7 +226,13 @@ module LabWiki::Plugin::PlanText
 				#puts "IMAGE>>> #{u} => #{iu}"
 				iu
 			end)
-			doc
+
+			doc.root.attributes["class"] = "col col-md-12"
+
+			outerPart1 = "<div id=\"block-1\" class=\"block row\" data-nested=\"not-nested\">"
+			outerPart2 = "</div>"
+
+			return "#{outerPart1}#{doc}#{outerPart2}"
 		end
 		
 	end
