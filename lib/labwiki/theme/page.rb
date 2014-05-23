@@ -102,9 +102,11 @@ module OMF::Web::Theme
                 end
                 ul id: 'tools-menu-ul', class: "dropdown-menu" do
                   li 'GIMI', class: "dropdown-header"
-                  li do
-                    #a "Add experiment context", href: "#"
-                    a "Authorise", href: "#{LabWiki::Configurator[:session][:authorisation_url]}?id=bob&backto=http://localhost:4000/authorised"
+                  if (authorisation_info = LabWiki::Configurator[:session][:authorisation])
+                    li do
+                      #a "Add experiment context", href: "#"
+                      a "Authorise", href: "#{authorisation_info[:url]}?id=labwiki&backto=#{authorisation_info[:callback_url]}"
+                    end
                   end
                 end
               end
