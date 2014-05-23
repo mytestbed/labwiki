@@ -23,7 +23,9 @@ module OMF::Web::Theme
     #depends_on :js, "/resource/theme/labwiki/js/content_selector_widget.js"
     #depends_on :js, "/resource/theme/labwiki/js/execute_col_controller.js"
     #depends_on :js, "/resource/theme/labwiki/js/labwiki.js"
-    depends_on :js, "/resource/theme/labwiki/js/exp_context.js"
+
+    # Pretend experiment context doesn't exist for a moment
+    #depends_on :js, "/resource/theme/labwiki/js/exp_context.js"
 
     depends_on :js, "/resource/vendor/bootstrap/js/bootstrap.js"
     depends_on :js, '/resource/vendor/jquery/jquery.js'
@@ -101,7 +103,8 @@ module OMF::Web::Theme
                 ul id: 'tools-menu-ul', class: "dropdown-menu" do
                   li 'GIMI', class: "dropdown-header"
                   li do
-                    a "Add experiment context", href: "#"
+                    #a "Add experiment context", href: "#"
+                    a "Authorise", href: "#{LabWiki::Configurator[:session][:authorisation_url]}?id=bob&backto=http://localhost:4000/authorised"
                   end
                 end
               end
