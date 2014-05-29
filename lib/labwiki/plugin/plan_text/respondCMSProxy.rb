@@ -17,6 +17,8 @@ module LabWiki::Plugin::PlanText
 			@email = opts[:email]
 			@password = opts[:password]
 			@name = "TEST" #opts[:title]
+			#@name = OMF::Web::SessionStore[:name, :user] if opts[:title] == nil 
+			@sitename = opts[:sitename]
 	                @cookie = "-1"
 		end
 	
@@ -54,24 +56,25 @@ module LabWiki::Plugin::PlanText
 
 	
 		def publish(content_proxy, opts)
-			doc = to_html(content_proxy, true, opts)
 
-			#doc = "<div id=\"block-1\" class=\"block row\" data-nested=\"not-nested\"><div class=\"col col-md-12\"><h1 id=\"hypothesis_wiresless_links_are_bandwidth_constraints\">Hypothesis: Wiresless Links are bandwidth Constraints</h1><p class=\"content\" delegate=\"plan\" line_no=\"3\">We want to test the hypothesis that wireless links are bandwidth constraints.</p></div></div>"
-			#doc = "<div id=\"block-1\" class=\"block row\" data-nested=\"not-nested\"><div class=\"col col-md-12\"><h1 id=\"h1-1399522248\">TEST</h1><p id=\"p-1399522248\">test test test</p><div id=\"imagecontainer1\" class=\"o-image\"><img id=\"image1\" src=\"sites/testsite/files/Sydney_565x215_tcm253-811043.jpg\"></div><pre id=\"1399523715\" class=\"prettyprint linenums pre-scrollable\">def main {\nputs \"Hello\"\n}</pre></div></div>"
+			print "#{OMF::Web::SessionStore[:id, :user]}"
+			print "\n#{OMF::Web::SessionStore[:name, :user]}"
+			return 
+
+			print "\n\n\n"	
 			
 			@cookie = login if @cookie == "-1"
-			EventMachine.synchrony do
-			 	@cookie = "12345"
-	
+
+			EventMachine.synchrony do	
+				
 				debug "\n\n ---- ADD PAGE ---- \n"
 	
-				#add Page 
 				addPageUrl = "#{@respond}page/add/"
 				addPageParams = {
 					:pageTypeUniqId => "-1",
 					:name => "#{@name}",
 					:friendlyId => "#{@name.downcase.tr('^A-Za-z0-9', '')}",
-					:description => ""
+					:description => "" # "Author: #{OMF::Web::SessionStore[:id, :user]}"
 				}
 				#optional parameters
 				# addPageParams[:PageTypeId] =>
@@ -111,7 +114,6 @@ module LabWiki::Plugin::PlanText
 	
 				debug "\n\n ---- UPDATE PAGE ---- \n"
 	
-				#update Page
 				updatePageUrl = "#{@respond}page/#{pageID}"
 				debug "URL: #{updatePageUrl}"
 				updatePageParams = {
@@ -157,8 +159,9 @@ module LabWiki::Plugin::PlanText
 
 
 				debug "\n\n ---- SAVE PAGE ---- \n"
+
+				doc = to_html(content_proxy, true, opts)
 	
-				#savePage
 				savePageUrl = "#{@respond}page/content/#{pageID}"
 				savePageParams = {
 					:content => doc,
@@ -191,18 +194,6 @@ module LabWiki::Plugin::PlanText
 					raise Exception.new("TODO: handle Exception: #{ex.inspect}")
 				end
 
-				print "\n\n GET PAGE CONTENT \n\n"
-				
-
-				getPageUrl = "#{@respond}page/content/536b03a94a9ee"
-
-				head = {"Cookie" => "#{@cookie}"} 
-					http = EventMachine::HttpRequest.new(getPageUrl).get :timeout => 10, :head => head
-					print "EM-RESPONSE: #{http.response} \n"
-					print "EM-RESPONSE-HEADER: #{http.response_header} \n"
-					print "EM-RESPONSE-HEADER-STATUS: #{http.response_header.status} \n" 
-				
-				print "\n\n #{doc} \n\n"
 			end
 		end
 
@@ -217,24 +208,104 @@ module LabWiki::Plugin::PlanText
 			require 'omf-web/widget/text/maruku'
 			url2local = {}
 			m = OMF::Web::Widget::Text::Maruku.format_content_proxy(cp)
-			doc = m.to_html_tree(:img_url_resolver => lambda() do |u|
+			docI = m.to_html_tree(:img_url_resolver => lambda() do |u|
 				#print "\n #{u} \n"
 				unless iu = url2local[u]
 					ext = u.split('.')[-1]
 					iu = url2local[u] = "img#{url2local.length}.#{ext}"
 				end
-				#puts "IMAGE>>> #{u} => #{iu}"
+				#puts "IMAGE>>> #{u} => #{iu}"e
 				iu
 			end)
+
+			doc = m.to_html_tree(suppress_section: true)
+			print "\n\n doc true: \n\n #{doc}"
 
 			doc.root.attributes["class"] = "col col-md-12"
 
 			outerPart1 = "<div id=\"block-1\" class=\"block row\" data-nested=\"not-nested\">"
 			outerPart2 = "</div>"
 
-			return "#{outerPart1}#{doc}#{outerPart2}"
-		end
+			newDoc ="#{outerPart1}#{doc}#{outerPart2}"
+
+			imgUrl = "sites/#{@sitename}/files/"
+
+			url2local.each do |key, value|
+				newDoc.gsub! key, "#{imgUrl}#{key}"
+			end
+
+			c = 0
+			url2local.each do |key, value|
+				print "\n #{c} \n"
+				path = "#{public_repo.top_dir}/wiki/#{post_name}/"
+				sendFile("#{path}#{key}")
+				c=c+1
+			end
 		
+
+			#print "\n\n #{newDoc} \n\n"
+			return newDoc
+
+		end
+
+
+		def sendFile(path)
+			boundary = "------------------AaB03x"
+			url = "#{@respond}file/post/"
+	
+			uri = URI.parse(url)
+			
+			post_body = []
+			post_body << "--#{boundary}\n"
+			post_body << "Content-Disposition: form-data; name=\"file\"; filename=\"#{File.basename(path)}\"\n"
+			post_body << "Content-Type: image/jpeg\n"
+			post_body << "\n"
+			post_body << File.read(path)
+			post_body << "\n--#{boundary}--\n"
+			
+			http = Net::HTTP.new(uri.host, uri.port)
+			request = Net::HTTP::Post.new(uri.request_uri)
+			request.body = post_body.join
+
+			#print "\n\n#{post_body.join}\n\n"
+
+			request["Content-Type"] = "multipart/form-data; boundary=#{boundary}"
+			request["cookie"] = "#{@cookie}"
+			response = http.request(request)
+			print "\n\n #{response.body} \n\n"
+		end
+
+		def sendFile2(path)
+
+				@cookie = login
+
+				url = "#{@respond}file/post/"
+				
+				uri = URI.parse(url)
+
+				data = File.read("#{path}")  
+
+				print "\nname: #{File.basename(path)}\n"
+
+				http = Net::HTTP.new(uri.host, uri.port)
+				request = Net::HTTP::Post.new(uri.request_uri)
+				request.body = data
+				request["content-type"] = 'image/jpeg'
+				request["cookie"] = '#{@cookie}'
+				request["content-disposition"] = 'form-data; name=\"file\"; filename=\"#{File.basename(path)}\"'
+				
+				#print "\n\nbody: #{request.inspect}\n\n"
+				#request.header.each_header {|key,value| print "\n#{key} = #{value}\n" }
+
+
+				response = http.request(request)
+				print "\n\n Response: #{response.body} \n\n"
+				print "#{response.code}"
+
+				
+
+			end
+
 	end
 	
 	
