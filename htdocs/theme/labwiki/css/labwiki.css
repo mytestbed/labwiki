@@ -12,13 +12,12 @@ strong, b {
 }
 
 #k-topbar .brand {
-  color: #BBB;
+  color: #999;
   display: block;
   float: left;
-  padding-top: 5px;
-  padding-left: 20px;
-  font-size: 20px;
-  font-weight: 200;
+  margin-left: 20px;
+  font-size: 18px;
+  line-height: 32px;
 }
 
 .navbar-nav li a {

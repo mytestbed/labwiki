@@ -121,13 +121,15 @@ button
 {
 	width:100%;
 	height:32px;
+  /*
 	background: -o-linear-gradient(top,#1a171b,#3d3c3f) repeat scroll 0 0 #3d3c3f;
 	background: -moz-linear-gradient(top,#1a171b,#3d3c3f) repeat scroll 0 0 #3d3c3f;
 	background: -ms-linear-gradient(top,#1a171b,#3d3c3f) repeat scroll 0 0 #3d3c3f;
-	/*background: -webkit-gradient(linear,left top,left bottom,from(#1a171b),to(#3d3c3f)) repeat scroll 0 0 #3d3c3f;*/
+	background: -webkit-gradient(linear,left top,left bottom,from(#1a171b),to(#3d3c3f)) repeat scroll 0 0 #3d3c3f;
 	background: -webkit-linear-gradient(#1a171b, #3d3c3f);
 	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#1a171b, endColorStr=#3d3c3f)";
-	background-color:#3d3c3f;
+  */
+	background-color:#333;
 	position:absolute;
 	top:0;
 }
@@ -377,28 +379,34 @@ button
 	width: 100%;
 	height: 29px;
 	overflow:hidden;
-	padding:0 1px;
+	padding: 0 4px;
 	text-align:center;
+
+  background: #3498DB;
+  /*
 	background: -o-linear-gradient(top,#b2b2b2,#838383) repeat scroll 0 0 #838383;
 	background: -moz-linear-gradient(top,#b2b2b2, #838383) repeat scroll 0 0 #838383;
 	background: -ms-linear-gradient(top,#b2b2b2, #838383) repeat scroll 0 0 #838383;
-	/*background: -webkit-gradient(linear,left top,left bottom,from(#b2b2b2),to(#838383)) repeat scroll 0 0 #838383;*/
+	background: -webkit-gradient(linear,left top,left bottom,from(#b2b2b2),to(#838383)) repeat scroll 0 0 #838383;
 	background: -webkit-linear-gradient(#b2b2b2, #838383);
 	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#b2b2b2, endColorStr=#838383)";
 	background-color:#838383;
 	border-bottom: 1px solid #4d4d4d;
+  */
 	cursor:pointer;
 }
 /* panel focus via keyboard */
 .k-panel.k-focus .titlebar
 {
+  background: #3498DB;
+  /*
 	background: -o-linear-gradient(top,#6BA5DD,#196BBA) repeat scroll 0 0 #196BBA;
 	background: -moz-linear-gradient(top,#6BA5DD,#196BBA) repeat scroll 0 0 #196BBA;
 	background: -ms-linear-gradient(top,#6BA5DD,#196BBA) repeat scroll 0 0 #196BBA;
-/*	background: -webkit-gradient(linear,left top,left bottom,from(#6BA5DD),to(#196BBA)) repeat scroll 0 0 #196BBA;*/
+  background: -webkit-gradient(linear,left top,left bottom,from(#6BA5DD),to(#196BBA)) repeat scroll 0 0 #196BBA;
 	background: -webkit-linear-gradient(#6BA5DD, #196BBA);
 	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#6BA5DD, endColorStr=#196BBA)";
-	background-color:#196BBA;
+	background-color:#196BBA; */
 }
 
 .k-panel .titlebar table
@@ -421,7 +429,7 @@ button
 	font-size:1.3em;
 	font-weight:bold;
 	color:white;
-	text-shadow:0 1px 0 black;
+	/* text-shadow:0 1px 0 black; */
 	-moz-user-select:none;
 	-webkit-user-select:none;
 	-o-user-select:none;
