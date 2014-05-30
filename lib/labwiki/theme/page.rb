@@ -104,8 +104,12 @@ module OMF::Web::Theme
                   li 'GIMI', class: "dropdown-header"
                   if (authorisation_info = LabWiki::Configurator[:session][:authorisation])
                     li do
-                      #a "Add experiment context", href: "#"
-                      a "Authorise", href: "#{authorisation_info[:url]}?id=labwiki&backto=#{authorisation_info[:callback_url]}"
+                      form method: "post", action: authorisation_info[:url], id: "authorise" do
+                        input name: "tool_id", value: "Labwiki", type: "hidden"
+                        input name: "backto", value: authorisation_info[:callback_url], type: "hidden"
+                        input name: "tool_cert", value: authorisation_info[:certificate], type: "hidden"
+                      end
+                      a "Authorise", href: "#", onclick: "$('form#authorise').submit();"
                     end
                   end
                 end
@@ -114,58 +118,17 @@ module OMF::Web::Theme
               li class: 'last-nav-link' do
                 a id: 'user-menu-a', class: 'nav-menu', href: "#" do
                   i :class => "glyphicon glyphicon-user icon-white"
-                  #text (OMF::Web::SessionStore[:name, :user] || 'Unknown').capitalize
                   text OMF::Web::SessionStore[:name, :user] || 'Unknown'
                 end
                 ul id: 'user-menu-ul', class: 'nav-menu', class: "dropdown-menu" do
                   li do
-                    a id: 'user-menu-logout-a', class: 'nav-menu-item', href: "#" do
+                    a id: 'user-menu-logout-a', class: 'nav-menu-item', href: "/logout" do
                       i :class => "glyphicon glyphicon-off icon-white"
                       text "Logout"
                     end
                   end
                 end
               end
-
-              # li do
-                # a :class => "dropdown-toggle", :id => "topbar-tools-menu-toggle", 'data-toggle' => "dropdown" do
-                  # i :class => "tools"
-                  # text 'Tools'
-                  # span class: "caret"
-                # end
-                # #ul :id => "topbar-tools-menu", :class => "dropdown-menu", :role => "menu", 'aria-labelledby' => "topbar-tools-menu-toggle" do
-                # ul :id => "topbar-tools-menu", :class => "dropdown-menu" do
-                  # li :class => 'dropdown-header', :role => "presentation" do
-                    # text "GIMI"
-                  # end
-                  # li role: "presentation" do
-                    # a 'Action', role: "menuitem", tabindex: "-1", href: "#"
-                  # end
-                  # li :class => 'divider', :role => "presentation"
-                  # li role: "presentation" do
-                    # a 'Action', role: "menuitem", tabindex: "-1", href: "#"
-                  # end
-                # end
-              # end
-#
-              # li do
-                # a :href => '#new-exp-modal', :role => 'button', :"data-toggle" => "modal" do
-                  # i :class => "icon-asterisk icon-white"
-                  # text "Add experiment context"
-                # end
-              # end
-              # li do
-                # a :href => '#', :class => 'user' do
-                  # i :class => "glyphicon glyphicon-user icon-white"
-                  # text (OMF::Web::SessionStore[:name, :user] || 'Unknown').capitalize
-                # end
-              # end
-              # li do
-                # a :href => '/logout', :class => 'logout' do
-                  # i :class => "glyphicon glyphicon-off icon-white"
-                  # text "Log out"
-                # end
-              # end
             end
           end
 
