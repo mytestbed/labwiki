@@ -16,8 +16,6 @@ module LabWiki::Plugin::PlanText
 			@respond = opts[:respond]
 			@email = opts[:email]
 			@password = opts[:password]
-			@name = "TEST" #opts[:title]
-			#@name = OMF::Web::SessionStore[:name, :user] if opts[:title] == nil 
 			@sitename = opts[:sitename]
 	                @cookie = "-1"
 		end
@@ -57,9 +55,14 @@ module LabWiki::Plugin::PlanText
 	
 		def publish(content_proxy, opts)
 
-			print "#{OMF::Web::SessionStore[:id, :user]}"
-			print "\n#{OMF::Web::SessionStore[:name, :user]}"
-			return 
+			time = Time.new
+			date = time.strftime("%Y-%m-%d %H:%M:%S")
+			title = "TITLE" #opts[:title]
+			author = "AUTHOR" #OMF::Web::SessionStore[:name, :user]
+			@name = "#{title} by #{author} #{date}" 
+
+			print "\n\n id: #{OMF::Web::SessionStore[:id, :user]}"
+			print "\n name: #{OMF::Web::SessionStore[:name, :user]}"
 
 			print "\n\n\n"	
 			
@@ -77,10 +80,7 @@ module LabWiki::Plugin::PlanText
 					:description => "" # "Author: #{OMF::Web::SessionStore[:id, :user]}"
 				}
 				#optional parameters
-				# addPageParams[:PageTypeId] =>
-				# addPageParams[:Layout] =>
-				# addPageParams[:Stylesheet] =>
-				# addPageParams[:categories] =>
+				# addPageParams[:categories] =
 	
 				tried = 0
 				begin
@@ -120,8 +120,8 @@ module LabWiki::Plugin::PlanText
 					:keywords => "TEST",
 					:callout => "",
 					:rss => "",
-					:layout => "",
-					:stylesheet => "",
+					#:layout => "content",
+					#:stylesheet => "content",
 					:beginDate => "",
 					:endDate => "",
 					:timeZone => "",
@@ -206,13 +206,15 @@ module LabWiki::Plugin::PlanText
 			####
 
 			require 'omf-web/widget/text/maruku'
+			require 'securerandom'
+			uuid = SecureRandom.uuid
 			url2local = {}
 			m = OMF::Web::Widget::Text::Maruku.format_content_proxy(cp)
 			docI = m.to_html_tree(:img_url_resolver => lambda() do |u|
 				#print "\n #{u} \n"
 				unless iu = url2local[u]
 					ext = u.split('.')[-1]
-					iu = url2local[u] = "img#{url2local.length}.#{ext}"
+					iu = url2local[u] = "img#{url2local.length}-#{uuid}.#{ext}"
 				end
 				#puts "IMAGE>>> #{u} => #{iu}"e
 				iu
@@ -231,25 +233,26 @@ module LabWiki::Plugin::PlanText
 			imgUrl = "sites/#{@sitename}/files/"
 
 			url2local.each do |key, value|
-				newDoc.gsub! key, "#{imgUrl}#{key}"
+				newDoc.gsub! key, "#{imgUrl}#{value}"
+				print "\n"
+				print value
 			end
+			print "\n"
 
 			c = 0
 			url2local.each do |key, value|
 				print "\n #{c} \n"
 				path = "#{public_repo.top_dir}/wiki/#{post_name}/"
-				sendFile("#{path}#{key}")
+				sendFile("#{path}#{key}", value)
 				c=c+1
 			end
 		
-
-			#print "\n\n #{newDoc} \n\n"
 			return newDoc
 
 		end
 
 
-		def sendFile(path)
+		def sendFile(path, filename)
 			boundary = "------------------AaB03x"
 			url = "#{@respond}file/post/"
 	
@@ -257,7 +260,7 @@ module LabWiki::Plugin::PlanText
 			
 			post_body = []
 			post_body << "--#{boundary}\n"
-			post_body << "Content-Disposition: form-data; name=\"file\"; filename=\"#{File.basename(path)}\"\n"
+			post_body << "Content-Disposition: form-data; name=\"file\"; filename=\"#{filename}\"\n"
 			post_body << "Content-Type: image/jpeg\n"
 			post_body << "\n"
 			post_body << File.read(path)
@@ -267,44 +270,11 @@ module LabWiki::Plugin::PlanText
 			request = Net::HTTP::Post.new(uri.request_uri)
 			request.body = post_body.join
 
-			#print "\n\n#{post_body.join}\n\n"
-
 			request["Content-Type"] = "multipart/form-data; boundary=#{boundary}"
 			request["cookie"] = "#{@cookie}"
 			response = http.request(request)
 			print "\n\n #{response.body} \n\n"
 		end
-
-		def sendFile2(path)
-
-				@cookie = login
-
-				url = "#{@respond}file/post/"
-				
-				uri = URI.parse(url)
-
-				data = File.read("#{path}")  
-
-				print "\nname: #{File.basename(path)}\n"
-
-				http = Net::HTTP.new(uri.host, uri.port)
-				request = Net::HTTP::Post.new(uri.request_uri)
-				request.body = data
-				request["content-type"] = 'image/jpeg'
-				request["cookie"] = '#{@cookie}'
-				request["content-disposition"] = 'form-data; name=\"file\"; filename=\"#{File.basename(path)}\"'
-				
-				#print "\n\nbody: #{request.inspect}\n\n"
-				#request.header.each_header {|key,value| print "\n#{key} = #{value}\n" }
-
-
-				response = http.request(request)
-				print "\n\n Response: #{response.body} \n\n"
-				print "#{response.code}"
-
-				
-
-			end
 
 	end
 	
