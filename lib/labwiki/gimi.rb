@@ -112,24 +112,28 @@ class LabWiki::Gimi < OMF::Base::LObject
   def init_git_repository(id)
     git_path = File.expand_path("#{@opts[:git][:repos_dir]}/#{id}/")
     repos_dir_path = File.expand_path(@opts[:git][:repos_dir])
-    sample_path = File.expand_path(@opts[:git][:sample_repo])
+    sample_path = File.expand_path(@opts[:git][:sample_repo]) if @opts[:git][:sample_repo]
 
     begin
       unless File.exist?("#{git_path}.git")
         FileUtils.mkdir_p(git_path)
         Dir.chdir(repos_dir_path) do
-          system "git clone #{sample_path} #{id}"
+          if sample_path
+            system "git clone #{sample_path} #{id}"
+          else
+            system "git init #{id}"
+          end
         end
       end
 
-      opts = { type: :git, top_dir: git_path }
-      OMF::Web::ContentRepository.register_repo(id, opts)
+      opts = { name: id.to_sym, type: :git, top_dir: git_path, read_only: false }
 
-      repo = OMF::Web::ContentRepository.find_repo_for("git:#{id}")
+      my_repo = OMF::Web::ContentRepository.create(opts.delete(:name), opts)
+
       # Set the repos to search for content for each column
-      OMF::Web::SessionStore[:plan, :repos] = [repo]
-      OMF::Web::SessionStore[:prepare, :repos] = [repo]
-      OMF::Web::SessionStore[:execute, :repos] = [repo]
+      (OMF::Web::SessionStore[:plan, :repos] ||= []) << my_repo
+      (OMF::Web::SessionStore[:prepare, :repos] ||= []) << my_repo
+      (OMF::Web::SessionStore[:execute, :repos] ||= []) << my_repo
     rescue => e
       error e.message
     end

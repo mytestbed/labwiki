@@ -13,11 +13,8 @@ map "/plugin/source_edit/create_script" do
                             when 'md' then ['wiki', 'text/markup']
                             end
 
-    repo = (LabWiki::Configurator[:repositories] || {}).first
-    if repo.class == Array
-      repo = OMF::Web::ContentRepository.find_repo_for("#{repo[1][:type]}:#{repo[0]}")
-    end
-    repo ||= (OMF::Web::SessionStore[:prepare, :repos] || []).first
+    repo = (OMF::Web::SessionStore[:prepare, :repos] || []).first
+    return [500, {}, "Could not find any available repo to write"] if repo.nil?
 
     begin
       path = "#{sub_folder}/#{file_name}"
