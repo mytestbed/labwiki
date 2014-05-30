@@ -16,5 +16,6 @@ plugins
 /coverage
 /log
 /tmp
+.ruby-version
 
 

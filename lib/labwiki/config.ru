@@ -187,6 +187,17 @@ map "/" do
   run handler
 end
 
+map "/authorised" do
+  handler = Proc.new do |env|
+    req = ::Rack::Request.new(env)
+    if req.post?
+      OMF::Web::SessionStore[:speak_for, :user] = req.params['data-credential']
+      [302, {'Location' => '/labwiki', "Content-Type" => ""}, ['Next window!']]
+    end
+  end
+  run handler
+end
+
 # Allow the plugins to add their own maps
 LabWiki::PluginManager.extend_config_ru(binding)
 
