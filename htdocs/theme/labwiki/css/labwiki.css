@@ -296,6 +296,9 @@ a.nav-menu-item i {
   border-top: 1px solid #BBB;
 }
 
+.ui-menu li.tool-menu-item { padding: 5px; }
+.ui-menu li.tool-name { padding: 5px; }
+
 /*
 .ui-state-hover, .ui-widget-content .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus { border: 1px solid #fbcb09; background: #fdf5ce url(../images/?new=fdf5ce&w=1&h=400&f=png&q=100&fltr[]=over|textures/02_glass.png|0|0|100) 50% 50% repeat-x; font-weight: bold; color: #c77405; outline: none; }
 .ui-state-hover a, .ui-state-hover a:hover { color: #c77405; text-decoration: none; outline: none; }

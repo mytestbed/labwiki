@@ -71,8 +71,8 @@ define([], function () {
       var context_el = this._context_el;
       var tools_list = context_el.find('.tools-list');
       var tools_ul = tools_list.find('ul');
-      tools_ul.append('<li class="tool_name">' + name + '</li>');
-      tools_ul.append('<li>' + html_frag + '</li>');
+      tools_ul.append('<li class="tool-name">' + name + '</li>');
+      tools_ul.append('<li class="tool-menu-item">' + html_frag + '</li>');
 
       // Fist time around make tool button visible and attach interaction handlers
       var ab = context_el.find('.action-buttons');
