@@ -12,13 +12,12 @@ strong, b {
 }
 
 #k-topbar .brand {
-  color: #BBB;
+  color: #999;
   display: block;
   float: left;
-  padding-top: 5px;
-  padding-left: 20px;
-  font-size: 20px;
-  font-weight: 200;
+  margin-left: 20px;
+  font-size: 18px;
+  line-height: 32px;
 }
 
 .navbar-nav li a {
@@ -295,6 +294,9 @@ a.nav-menu-item i {
   padding-top: 5px;
   border-top: 1px solid #BBB;
 }
+
+.ui-menu li.tool-menu-item { padding: 5px; }
+.ui-menu li.tool-name { padding: 5px; }
 
 /*
 .ui-state-hover, .ui-widget-content .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus { border: 1px solid #fbcb09; background: #fdf5ce url(../images/?new=fdf5ce&w=1&h=400&f=png&q=100&fltr[]=over|textures/02_glass.png|0|0|100) 50% 50% repeat-x; font-weight: bold; color: #c77405; outline: none; }
