@@ -445,6 +445,14 @@ div.widget-title-toolbar-container {
 
 }
 
+div.widget-title-toolbar-container div.toolbar-separator {
+  display: inline-block;
+  color: transparent;
+  border-right: 1px solid #CCCCCC;
+  padding-top: 4px;
+  margin: 0px 3px 0px 3px;
+}
+
 div.widget-title-toolbar-container button {
   font-size: 16px;
   padding: 4px;
@@ -558,6 +566,72 @@ ul.suggestion-list div.title {
 ul.suggestion-list div.sub_title {
   font-size: 0.9em;
   color: #333;
+}
+
+/**** LABWIKI FORM ****/
+div.lw-form {
+  padding: 20px;
+  background-color: #FFF7C0;
+  background: #eaf1fb;
+
+}
+
+div.lw-form tr td {
+  padding: 5px;
+}
+
+div.lw-form tr.row_0 td {
+  //padding-top: 20px;
+}
+
+div.lw-form td.row_label {
+  font-size: 95%;
+  font-family: inherit;
+  font-style: normal;
+  font-weight: bold;
+  color: #444;
+  max-width: 100px;
+}
+
+div.lw-form input.text {
+  font-style: normal;
+  font-weight: normal;
+  color: #333;
+  font-size: 100%;
+  border-top: 1px solid #7C7C7C;
+  border-left: 1px solid #C3C3C3;
+  border-right: 1px solid #C3C3C3;
+  border-bottom: 1px solid #DDD;
+  /* background: white url(/resource/theme/labwiki/images/fieldbg.gif)  repeat-x top; */
+  margin: 0;
+  padding: 2px 0 2px 5px;
+  width: auto;  /* overriding bootstrap */
+}
+
+div.lw-form td.row_input {
+  /* width: 60%; */
+  font-family: inherit;
+  font-style: normal;
+  font-weight: bold;
+}
+
+div.lw-form td.row_info {
+/*
+ *   width: 100%;
+ */
+  font-size: 85%;
+  color: #444;
+}
+
+div.lw-form input.button-text {
+  padding: 0px 7px;
+  width: auto;
+  overflow: visible;
+  font-size: 120%;
+}
+
+div.lw-form tr.buttons td {
+  padding-top: 10px;
 }
 
 
