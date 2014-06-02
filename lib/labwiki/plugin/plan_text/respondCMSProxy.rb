@@ -55,11 +55,12 @@ module LabWiki::Plugin::PlanText
 	
 		def publish(content_proxy, opts)
 
-			time = Time.new
-			date = time.strftime("%Y-%m-%d %H:%M:%S")
-			title = "TITLE" #opts[:title]
+			#time = Time.new
+			#date = time.strftime("%Y-%m-%d %H:%M:%S")
+			title = "#{(opts[:url].split('/')[-1]).split('.')[0]}"
 			author = "AUTHOR" #OMF::Web::SessionStore[:name, :user]
-			@name = "#{title} by #{author} #{date}" 
+			#@name = "#{title} by #{author} #{date}" 
+			@name = "#{title} by #{author}"
 
 			print "\n\n id: #{OMF::Web::SessionStore[:id, :user]}"
 			print "\n name: #{OMF::Web::SessionStore[:name, :user]}"
@@ -68,7 +69,11 @@ module LabWiki::Plugin::PlanText
 			
 			@cookie = login if @cookie == "-1"
 
-			EventMachine.synchrony do	
+			EventMachine.synchrony do
+
+				pages = get_pages
+
+				unless get_pages.keys.include? @name 	
 				
 				debug "\n\n ---- ADD PAGE ---- \n"
 	
@@ -77,7 +82,7 @@ module LabWiki::Plugin::PlanText
 					:pageTypeUniqId => "-1",
 					:name => "#{@name}",
 					:friendlyId => "#{@name.downcase.tr('^A-Za-z0-9', '')}",
-					:description => "" # "Author: #{OMF::Web::SessionStore[:id, :user]}"
+					:description => "" 
 				}
 				#optional parameters
 				# addPageParams[:categories] =
@@ -110,7 +115,9 @@ module LabWiki::Plugin::PlanText
 				json_response = JSON.parse(http.response)
 				pageID = json_response["PageUniqId"]			
 				debug "ID: #{pageID}"
-	
+
+			
+=begin
 	
 				debug "\n\n ---- UPDATE PAGE ---- \n"
 	
@@ -120,8 +127,8 @@ module LabWiki::Plugin::PlanText
 					:keywords => "TEST",
 					:callout => "",
 					:rss => "",
-					#:layout => "content",
-					#:stylesheet => "content",
+					:layout => "content",
+					:stylesheet => "content",
 					:beginDate => "",
 					:endDate => "",
 					:timeZone => "",
@@ -130,6 +137,7 @@ module LabWiki::Plugin::PlanText
 					:longitude => ""
 				}
 				updatePageParams = updatePageParams.merge(addPageParams)
+
 
 
 				tried = 0
@@ -156,8 +164,13 @@ module LabWiki::Plugin::PlanText
 				rescue Exception => ex
 					raise Exception.new("TODO: handle Exception: #{ex.inspect}")
 				end
+=end
 
-
+				#end
+				else
+					pageID = pages[@name]
+					print "\n\n>>>>>>>>>>>only save<<<<<<<<<<<< \n\n"
+				end
 				debug "\n\n ---- SAVE PAGE ---- \n"
 
 				doc = to_html(content_proxy, true, opts)
@@ -208,15 +221,16 @@ module LabWiki::Plugin::PlanText
 			require 'omf-web/widget/text/maruku'
 			require 'securerandom'
 			uuid = SecureRandom.uuid
+			path = "#{public_repo.top_dir}/wiki/#{post_name}/"
 			url2local = {}
 			m = OMF::Web::Widget::Text::Maruku.format_content_proxy(cp)
 			docI = m.to_html_tree(:img_url_resolver => lambda() do |u|
 				#print "\n #{u} \n"
 				unless iu = url2local[u]
 					ext = u.split('.')[-1]
-					iu = url2local[u] = "img#{url2local.length}-#{uuid}.#{ext}"
+					iu = url2local[u] = "#{get_checksum("#{path}#{u}")}.#{ext}"
 				end
-				#puts "IMAGE>>> #{u} => #{iu}"e
+				#puts "IMAGE>>> #{u} => #{iu}"
 				iu
 			end)
 
@@ -239,16 +253,59 @@ module LabWiki::Plugin::PlanText
 			end
 			print "\n"
 
+
+			images = get_images
 			c = 0
 			url2local.each do |key, value|
 				print "\n #{c} \n"
-				path = "#{public_repo.top_dir}/wiki/#{post_name}/"
-				sendFile("#{path}#{key}", value)
+				sendFile("#{path}#{key}", value) unless images.include? value
 				c=c+1
 			end
 		
 			return newDoc
 
+		end
+
+		def get_images
+			print "\n\n --- GET_IMAGES --- \n\n"
+				url = "#{@respond}image/list/all/"
+				uri = URI(url)
+
+				http = Net::HTTP.new(uri.host, uri.port)
+				req = Net::HTTP::Get.new(uri.path)
+				req["cookie"] = "#{@cookie}"
+				response = http.request(req)
+				images = []
+				parsed = JSON.parse(response.body)	
+				parsed.each do |image|
+					filename = image["filename"]
+					images << filename
+				end
+				return images
+		end
+
+		def get_pages
+			url = "#{@respond}page/list/all/"
+			uri = URI(url)
+
+			http = Net::HTTP.new(uri.host, uri.port)
+			req = Net::HTTP::Get.new(uri.path)
+			req["cookie"] = "#{@cookie}"
+			response = http.request(req)
+			parsed = JSON.parse(response.body)
+			pages = {}
+			parsed.each do |id, details|
+				pageTitle = details["Name"]
+				pages[pageTitle] = id	
+			end
+			return pages
+		end
+
+		def get_checksum(path)
+
+			require 'digest/md5'
+			digest = Digest::MD5.hexdigest(File.read(path))
+			return digest
 		end
 
 
