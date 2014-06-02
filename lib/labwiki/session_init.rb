@@ -188,7 +188,7 @@ class SessionInit < OMF::Base::LObject
       if res_path =~ /projects/
         users = obj['irods_user'].split('|')
         current_irods_user = OMF::Web::SessionStore[:id, :irods_user]
-        unless current_irods_user.to_s == "" || users.include? current_irods_user
+        unless current_irods_user.to_s == "" || users.include?(current_irods_user)
           new_irods_user = "#{obj['irods_user']}|#{current_irods_user}"
           info "Need to write this #{new_irods_user}"
           HTTParty.post("#{ges_url}/#{res_path}/#{res_id}", body: { irods_user: new_irods_user })
