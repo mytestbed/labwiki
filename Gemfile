@@ -10,7 +10,7 @@ def override_with_local(opts)
 end
 
 gemspec
-gem "omf_web", override_with_local(path: '../omf_web', github: 'mytestbed/omf_web', tag: 'v1.2.6')
+gem "omf_web", override_with_local(path: '../omf_web', github: 'mytestbed/omf_web', tag: 'v1.2.7')
 gem "httparty"
 gem "god"
 gem 'rack-cors', :require => 'rack/cors'
