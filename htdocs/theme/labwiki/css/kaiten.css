@@ -382,7 +382,7 @@ button
 	padding: 0 4px;
 	text-align:center;
 
-  background: #3498DB;
+  background: #838383;
   /*
 	background: -o-linear-gradient(top,#b2b2b2,#838383) repeat scroll 0 0 #838383;
 	background: -moz-linear-gradient(top,#b2b2b2, #838383) repeat scroll 0 0 #838383;
@@ -398,7 +398,7 @@ button
 /* panel focus via keyboard */
 .k-panel.k-focus .titlebar
 {
-  background: #3498DB;
+  background: #196BBA;
   /*
 	background: -o-linear-gradient(top,#6BA5DD,#196BBA) repeat scroll 0 0 #196BBA;
 	background: -moz-linear-gradient(top,#6BA5DD,#196BBA) repeat scroll 0 0 #196BBA;
