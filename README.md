@@ -18,6 +18,9 @@ from Github.
 If that fails you may need to install some required libraries. On a 'naked' Ubuntu system, we usually install the following:
 
     sudo apt-get install libpq-dev
+    sudo apt-get install libicu-dev
+
+If there are any additional issues, please also refer to the README for 'omf_web'.
 
 ## Getting Started
 
