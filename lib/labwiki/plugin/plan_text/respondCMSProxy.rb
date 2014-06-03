@@ -5,6 +5,7 @@ require 'em-synchrony/em-http'
 require 'eventmachine'
 require 'em-http-request'
 require 'json'
+require 'yaml'
 require 'labwiki/plugin/plan_text/abstract_publish_proxy'
 	
 module LabWiki::Plugin::PlanText
@@ -13,11 +14,16 @@ module LabWiki::Plugin::PlanText
 	
 		def initialize(opts)
 			super
-			@respond = opts[:respond]
-			@email = opts[:email]
-			@password = opts[:password]
-			@sitename = opts[:sitename]
-	                @cookie = "-1"
+			config = YAML.load_file('lib/labwiki/plugin/plan_text/respond.yaml')
+			@respond = config["config"]["respond"]
+			@email = config["config"]["email"]
+			@password = config["config"]["password"]
+			@sitename = config["config"]["sitename"]
+			#@respond = opts[:respond]
+			#@email = opts[:email]
+			#@password = opts[:password]
+			#@sitename = opts[:sitename]
+	                @cookie = "-1"		
 		end
 	
 		def login
@@ -29,11 +35,12 @@ module LabWiki::Plugin::PlanText
 		        	response = Net::HTTP.post_form(uri, params)
 				debug response.body
 				debug response.code
-				cookie = response["set-cookie"]
-		
-				if "#{response.body}" == "Access denied" && "#{response.code}" == "401"
+				
+				if "#{response.body}" == "Access denied" || "#{response.code}" == "401"
 					raise AccessDeniedError.new("")
 				end
+
+				cookie = response["set-cookie"]
 	
 			rescue AccessDeniedError 
 				raise AccessDeniedError.new("Access denied. Check Email and Password in Config-File!")		
@@ -44,7 +51,7 @@ module LabWiki::Plugin::PlanText
 				else if "#{e.class}" == "NoMethodError"
 					raise InvalidUrlError.new("Url is invalid. Check Url in config-file!")
 				else
-					raise e.new("TODO: Rescue Exception -> #{e.insepect}")
+					raise e.new("TODO: Rescue Exception -> #{e.inspect}")
 				end
 				end
 			end

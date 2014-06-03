@@ -54,7 +54,23 @@ module LabWiki::Plugin::PlanText
       end
 
       params[:title] ||= self.title
-      AbstractPublishProxy.instance.publish(cp, params)
+	mesage = ""
+	begin
+      		AbstractPublishProxy.instance.publish(cp, params)
+	rescue AccessDeniedError
+		message = "Access Denied. Check email and password in the config file."
+	rescue NoConnectionToCMSError
+		message = "Server could not be reached. Check the server's url in the config file."
+	rescue InvalidUrlError
+		message = "The url of the server is invalid. Please check."
+	rescue Exception => e
+		message = "TODO: Rescue Exception -> #{e.inspect}"
+	end
+
+	debug "\n\n #{message} \n\n"
+
+# # TODO: Pop up with message 
+
 
       # # TODO: The following is very dodgy and needs to be done right
       # public_repo = cp.repository

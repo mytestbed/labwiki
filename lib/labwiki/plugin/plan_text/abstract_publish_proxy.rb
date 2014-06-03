@@ -44,7 +44,8 @@ module LabWiki::Plugin::PlanText
     end
 
     def publish(content_proxy, opts)
-      _to_html(content_proxy, true, opts)
+	raise Exception.new("Missing implementation")
+      #_to_html(content_proxy, true, opts)
     end
 
     def _to_html(cp, store_locally, opts)
