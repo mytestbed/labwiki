@@ -59,5 +59,19 @@ module LabWiki
       on_get_content(@content_opts, req)
     end
 
+    protected
+
+    # This method is used by the widget to send
+    # logging messages to the rendered widget in the
+    # browser where it is up to the specific theme
+    # to deal with it.
+    #
+    # @param level - Level :error, :warn, :info, :debug
+    # @param msg Text representation of the log message
+    # @param opts Widget specific options
+    #
+    def gui_log(level, msg, opts = {})
+      # TODO: Implement me
+    end
   end
 end
