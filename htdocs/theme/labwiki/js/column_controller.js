@@ -131,7 +131,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       if (selected.mime_type) opts.mime_type = selected.mime_type;
       if (selected.plugin) opts.plugin = selected.plugin;
 
-      this.refresh_content(opts, 'GET');
+      this.refresh_content(opts, 'POST');
     },
 
     refresh_content: function(opts, type) {
@@ -141,7 +141,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       $.ajax({
         url: '_column',
         data: JSON.stringify(opts),
-        type: type,
+        type: (type != undefined) ? type : 'POST',
         contentType: "application/json"
       }).done(function(data) {
         self.on_drop_handler = null; // remove drop handler as it may be related to old content
@@ -194,7 +194,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
         };
         this.load_content(o);
       } else {
-        this.refresh_content(content_descriptor, 'GET');
+        this.refresh_content(content_descriptor, 'POST');
       }
     },
 
@@ -401,7 +401,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
               // ... nad clickable
               el.attr('href', '#');
               el.click(function() {
-                controller.refresh_content(cmd, 'GET');
+                controller.refresh_content(cmd, 'POST');
                 return false;
               });
             } else {
