@@ -98,6 +98,7 @@ module LabWiki
           wd[:name] == wname
         end
       else
+        # FIXME Seems now all widget is based on plugin, it never got here. Then the whole priority logic never got executed.
         widget = @@plugins_for_col[column.to_sym].reduce(:priority => 0, :wdescr => {}) do |best, wdescr|
           if wdescr[:priority] && priority = wdescr[:priority].call(params)
             if priority > best[:priority]
