@@ -36,12 +36,11 @@ module LabWiki
         warn "No search repo defined for '#{col}'"
         raise NoReposToSearchException.new
       end
-      PluginManager.plugins_for_column(col).map do |plugin|
+      result = PluginManager.plugins_for_column(col).map do |plugin|
         next unless sproc = plugin[:search]
         name = plugin[:name]
         wopts = Configurator["plugins/#{name}"]
         cl = (sproc.call(pat, opts, wopts) || [])
-        #puts "CL: >> #{cl}"
         cl.map do |f|
           f[:plugin] = name
           url = f.delete(:url)
@@ -50,6 +49,13 @@ module LabWiki
           f
         end
       end.flatten.compact
+
+      result.each do |r_item|
+        puts r_item
+        PluginManager.plugins_for_column(col).each do |plugin|
+          r_item[:plugin] = plugin[:name] if [plugin[:handle_mime_type]].flatten.include?(r_item[:mime_type])
+        end
+      end
     end
 
   end # class
