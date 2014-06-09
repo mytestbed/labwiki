@@ -140,7 +140,7 @@ module LabWiki
     def self.init_session()
       @@plugins.each do |name, plugin_descr|
         if block = plugin_descr[:on_session_init]
-          block.call()
+          _safe_call(block)
         end
       end
     end
@@ -149,10 +149,32 @@ module LabWiki
     def self.close_session(user_info = nil)
       @@plugins.each do |name, plugin_descr|
         if block = plugin_descr[:on_session_close]
-          block.call()
+          _safe_call(block)
         end
       end
     end
+
+    # Called when session got authorised
+    # Note: Authorisation tokens are stored in session store
+    #
+    def self.authorised()
+      @@plugins.each do |name, plugin_descr|
+        puts ">>>>> #{plugin_descr.keys}"
+        if block = plugin_descr[:on_authorised]
+          _safe_call(block)
+        end
+      end
+    end
+
+    def self._safe_call(block)
+      begin
+        block.call
+      rescue Exeception => ex
+        error ex
+        debug "#{ex}\n\t#{ex.backtrace.join("\n\t")}"
+      end
+    end
+
 
 
   end # class

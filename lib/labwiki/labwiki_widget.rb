@@ -42,7 +42,7 @@ module LabWiki
       no_render = params.delete(:no_render)
 
       col_widget = @widgets[col]
-      puts "dispatch params: #{params} - col_wgt: #{col_widget}"
+      debug "dispatch params: #{params} - col_wgt: #{col_widget}"
       if widget_id = params[:widget_id]
         unless col_widget && col_widget.widget_id == widget_id
           if w = OMF::Web::SessionStore[widget_id, :widgets]

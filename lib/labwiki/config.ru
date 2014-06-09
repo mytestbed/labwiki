@@ -191,7 +191,12 @@ map "/authorised" do
   handler = Proc.new do |env|
     req = ::Rack::Request.new(env)
     if req.post?
-      OMF::Web::SessionStore[:speak_for, :user] = req.params['data-credential']
+      speak_for = req.params['data_credential']
+      OMF::Web::SessionStore[:speak_for, :user] = speak_for
+      #puts ">>>>>>>> CONFIG.RU - authorised: #{speak_for} -- #{req.params.keys} -- #{req.params}"
+
+      require 'labwiki/plugin_manager'
+      LabWiki::PluginManager.authorised()
       [302, {'Location' => '/labwiki', "Content-Type" => ""}, ['Next window!']]
     end
   end

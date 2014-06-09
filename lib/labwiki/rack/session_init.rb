@@ -37,6 +37,11 @@ module LabWiki
               'pretty_name' => "User 1"
             }
           end
+          OMF::Web::SessionStore[:name, :user] = debug_user['pretty_name']
+          urn = debug_user['urn']
+          OMF::Web::SessionStore[:urn, :user] = urn
+          OMF::Web::SessionStore[:id, :user] = urn && urn.split('|').last
+
           identity_url = "https://localhost?id=xxx"
           debug "Debug user: #{debug_user}"
           $users[identity_url] = debug_user
