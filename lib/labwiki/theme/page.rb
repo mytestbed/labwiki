@@ -103,6 +103,7 @@ module OMF::Web::Theme
                 ul id: 'tools-menu-ul', class: "dropdown-menu" do
                   li 'GIMI', class: "dropdown-header"
                   if (authorisation_info = LabWiki::Configurator[:session][:authorisation])
+                    authorisation_info[:certificate] = File.read(File.expand_path(authorisation_info[:cert_file]))
                     li do
                       form method: "post", action: authorisation_info[:url], id: "authorise" do
                         input name: "tool_id", value: "Labwiki", type: "hidden"
