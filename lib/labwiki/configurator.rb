@@ -9,6 +9,7 @@ module LabWiki
     @@configuration = nil
     @@session_start_monitors = []
     @@session_close_monitors = []
+    @@cfg_dir = nil # Directory main configuration file is located
 
     # Load a YAML config file from 'fname' and make it available
     # through self[key].
@@ -18,11 +19,11 @@ module LabWiki
     def self.load_from(fname)
       info "Loading config from '#{fname}'"
       @@configuration = OMF::Web.deep_symbolize_keys(YAML::load(File.open(fname)))
-      OMF::Web::ContentRepository.reference_dir = cfg_dir = File.dirname(fname)
+      OMF::Web::ContentRepository.reference_dir = @@cfg_dir = File.dirname(fname)
 
       # Include other config files if required
       if pattern = LabWiki::Configurator[:include]
-        Dir.glob(File.join(cfg_dir, pattern)).each do |f|
+        Dir.glob(File.join(@@cfg_dir, pattern)).each do |f|
           debug "Loading additional config from #{f}"
           cfg = OMF::Web.deep_symbolize_keys(YAML::load(File.open(f)))
 
@@ -122,6 +123,25 @@ module LabWiki
       #debug "Configuration for '#{key_path}' is '#{v}'"
       v
     end
+
+    # Read the content of a file referenced as value to 'key_path'.
+    # Returns nil if key_path is not defined, otherwise it throws
+    # exception if file name is given, but file can't be read.
+    #
+    def self.read_file(key_path)
+      unless fn = self[key_path]
+        return nil
+      end
+      unless fn.start_with? '/'
+        fn = File.join(@@cfg_dir, fn)
+      end
+      path = File.expand_path(fn)
+      unless File.readable? path
+        raise "Can't read file '#{path}"
+      end
+      File.read(path)
+    end
+
   end
 end
 
