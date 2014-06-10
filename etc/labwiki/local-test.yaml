@@ -1,5 +1,8 @@
 
 labwiki:
+  login:
+    page: 'foo'
+
   session:
     repositories:
       - name: foo
@@ -11,6 +14,12 @@ labwiki:
       callback_url: http://localhost:4000/authorised
 
   include: ../../plugins/*/etc/labwiki/local.yaml
+
+  plugins:
+    plan_text:
+      publish:
+        # require: ....
+        class: 'LabWiki::Plugin::PlanText::AbstractPublishProxy'
 
   # debug:
     # user:

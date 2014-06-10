@@ -1,0 +1,5 @@
+config:
+    respond: 'http://10.129.128.41/respond/api/'
+    email: 'julia.kreyssig@gmx.de'
+    password: 'test123'
+    sitename: 'testsite'
