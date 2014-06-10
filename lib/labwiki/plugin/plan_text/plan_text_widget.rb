@@ -54,23 +54,23 @@ module LabWiki::Plugin::PlanText
       end
 
       params[:title] ||= self.title
-	message = ""
-	begin
-      		AbstractPublishProxy.instance.publish(cp, params)
-	rescue AccessDeniedError => e
-		message = "#{e.inspect}"
-	rescue NoConnectionToCMSError => e
-		message = "#{e.inspect}"
-	rescue InvalidUrlError => e
-		message = "#{e.inspect}"
-	rescue Exception => e
-		message = "TODO: Rescue Exception -> #{e.inspect}"
-	end
+      message = ""
+      begin
+        AbstractPublishProxy.instance.publish(cp, params)
+      rescue LabWiki::Plugin::PlanText::AccessDeniedError => e
+        message = "#{e.inspect}"
+      rescue LabWiki::Plugin::PlanText::NoConnectionToCMSError => e
+        message = "#{e.inspect}"
+      rescue LabWiki::Plugin::PlanText::InvalidUrlError => e
+        message = "#{e.inspect}"
+      rescue Exception => e
+        message = "TODO: Rescue Exception -> #{e.inspect}"
+      end
 
-	debug "error-message: #{message}" unless message == ""
-	gui_log(:error, message)
+      debug "error-message: #{message}" unless message == ""
+      gui_log(:error, message)
 
-# # TODO: Pop up with message 
+      # # TODO: Pop up with message
 
 
       # # TODO: The following is very dodgy and needs to be done right

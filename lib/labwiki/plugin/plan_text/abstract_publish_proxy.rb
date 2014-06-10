@@ -1,6 +1,14 @@
-
-
 module LabWiki::Plugin::PlanText
+  class AccessDeniedError < StandardError
+    # if credentials are wrong -> check config file
+  end
+
+  class NoConnectionToCMSError < StandardError
+    #if server can't be accessed
+  end
+
+  class InvalidUrlError < StandardError
+  end
 
   # Maintains the context for a MarkDown formatted text column.
   #
