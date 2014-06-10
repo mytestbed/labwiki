@@ -2,15 +2,15 @@
 
 ## Overview
 
-With this plugin the results of experiments can be published.
-What you need to use it:
-1. CMS of your choice
-2. Implementation of a class that communicates with your CMS
+With this plugin the results of experiments can be published.  
+What you need to use it:  
+1. CMS of your choice  
+2. Implementation of a class that communicates with your CMS  
 
-## CMS - Proxy
+### CMS - Proxy
 
 As mentioned before, you need to implement your own class that publishes to the CMS of your choice.
-This class inherits from the abstract class abstract_publish_proxy.rb (lib/labwiki/plan_text/)
+This class has to inherit from the abstract class abstract_publish_proxy.rb (lib/labwiki/plan_text/)
 
 ## Configuration
 
