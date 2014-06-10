@@ -1,6 +1,14 @@
 
 labwiki:
   session:
+    repositories:
+      - name: foo
+        type: file
+        top_dir: /tmp
+
+    authorisation:
+      url: http://gentle-journey-8139.herokuapp.com/index.php
+      callback_url: http://localhost:4000/authorised
 
   include: ../../plugins/*/etc/labwiki/local.yaml
 
