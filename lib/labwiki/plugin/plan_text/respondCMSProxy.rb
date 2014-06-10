@@ -29,7 +29,6 @@ module LabWiki::Plugin::PlanText
 		def login
 			begin
 				url = "#{@respond}user/login/"
-				debug "LOGIN-URL #{url}"
 				params = {:email => "#{@email}", :password => "#{@password}" }
 				uri = URI(url)
 		        	response = Net::HTTP.post_form(uri, params)
@@ -47,9 +46,9 @@ module LabWiki::Plugin::PlanText
 			rescue Exception => e
 				debug "Class: #{e.class} --- Message: #{e.inspect}"
 				if "#{e.class}" == "Errno::EHOSTUNREACH"
-					raise NoConnectionToCMSError.new("Server not reached. Check Server and Url in Configfile") 
+					raise NoConnectionToCMSError.new("Server not reached. Check Server and Url in config-file -> original message: #{e.inspect}") 
 				else if "#{e.class}" == "NoMethodError"
-					raise InvalidUrlError.new("Url is invalid. Check Url in config-file!")
+					raise InvalidUrlError.new("Url is invalid. Check Url in config-file! -> original message: #{e.inspect}")
 				else
 					raise e.new("TODO: Rescue Exception -> #{e.inspect}")
 				end
@@ -62,17 +61,9 @@ module LabWiki::Plugin::PlanText
 	
 		def publish(content_proxy, opts)
 
-			#time = Time.new
-			#date = time.strftime("%Y-%m-%d %H:%M:%S")
-			title = "#{(opts[:url].split('/')[-1]).split('.')[0]}"
-			author = "AUTHOR" #OMF::Web::SessionStore[:name, :user]
-			#@name = "#{title} by #{author} #{date}" 
+			title = opts[:title]
+			author = "#OMF::Web::SessionStore[:id, :user]"
 			@name = "#{title} by #{author}"
-
-			print "\n\n id: #{OMF::Web::SessionStore[:id, :user]}"
-			print "\n name: #{OMF::Web::SessionStore[:name, :user]}"
-
-			print "\n\n\n"	
 			
 			@cookie = login if @cookie == "-1"
 
@@ -111,7 +102,6 @@ module LabWiki::Plugin::PlanText
 					print "EXCEPTION: #{e.inspect}"
 					if tried == 1
 					@cookie = login
-					print "RETRY\n"
 					retry
 					end
 					raise AccessDeniedError.new("AddPage: Login not possible") if tried == 2
@@ -123,7 +113,7 @@ module LabWiki::Plugin::PlanText
 				pageID = json_response["PageUniqId"]			
 				debug "ID: #{pageID}"
 
-			
+#not necessary to update pages			
 =begin
 	
 				debug "\n\n ---- UPDATE PAGE ---- \n"
@@ -145,8 +135,6 @@ module LabWiki::Plugin::PlanText
 				}
 				updatePageParams = updatePageParams.merge(addPageParams)
 
-
-
 				tried = 0
 				begin
 					head = {"Cookie" => "#{@cookie}"} 
@@ -164,7 +152,6 @@ module LabWiki::Plugin::PlanText
 					print "EXCEPTION: #{e.inspect}"
 					if tried == 1
 					@cookie = login
-					print "RETRY\n"
 					retry
 					end
 					raise AccessDeniedError.new("UpdatePage: Login not possible") if tried == 2
@@ -173,10 +160,8 @@ module LabWiki::Plugin::PlanText
 				end
 =end
 
-				#end
 				else
 					pageID = pages[@name]
-					print "\n\n>>>>>>>>>>>only save<<<<<<<<<<<< \n\n"
 				end
 				debug "\n\n ---- SAVE PAGE ---- \n"
 
@@ -206,7 +191,6 @@ module LabWiki::Plugin::PlanText
 					print "EXCEPTION: #{e.inspect}"
 					if tried == 1
 					@cookie = login
-					print "RETRY\n"
 					retry
 					end
 					raise AccessDeniedError.new("SavePage: Login not possible") if tried == 2
@@ -226,8 +210,6 @@ module LabWiki::Plugin::PlanText
 			####
 
 			require 'omf-web/widget/text/maruku'
-			require 'securerandom'
-			uuid = SecureRandom.uuid
 			path = "#{public_repo.top_dir}/wiki/#{post_name}/"
 			url2local = {}
 			m = OMF::Web::Widget::Text::Maruku.format_content_proxy(cp)
@@ -242,7 +224,6 @@ module LabWiki::Plugin::PlanText
 			end)
 
 			doc = m.to_html_tree(suppress_section: true)
-			print "\n\n doc true: \n\n #{doc}"
 
 			doc.root.attributes["class"] = "col col-md-12"
 
@@ -255,18 +236,12 @@ module LabWiki::Plugin::PlanText
 
 			url2local.each do |key, value|
 				newDoc.gsub! key, "#{imgUrl}#{value}"
-				print "\n"
-				print value
 			end
-			print "\n"
 
 
 			images = get_images
-			c = 0
 			url2local.each do |key, value|
-				print "\n #{c} \n"
 				sendFile("#{path}#{key}", value) unless images.include? value
-				c=c+1
 			end
 		
 			return newDoc
@@ -274,7 +249,8 @@ module LabWiki::Plugin::PlanText
 		end
 
 		def get_images
-			print "\n\n --- GET_IMAGES --- \n\n"
+				@cookie = login
+
 				url = "#{@respond}image/list/all/"
 				uri = URI(url)
 
@@ -282,6 +258,8 @@ module LabWiki::Plugin::PlanText
 				req = Net::HTTP::Get.new(uri.path)
 				req["cookie"] = "#{@cookie}"
 				response = http.request(req)
+				code = response.code
+				
 				images = []
 				parsed = JSON.parse(response.body)	
 				parsed.each do |image|
@@ -292,6 +270,9 @@ module LabWiki::Plugin::PlanText
 		end
 
 		def get_pages
+
+			@cookie = login			
+
 			url = "#{@respond}page/list/all/"
 			uri = URI(url)
 
@@ -317,6 +298,9 @@ module LabWiki::Plugin::PlanText
 
 
 		def sendFile(path, filename)
+
+			@cookie = login
+
 			boundary = "------------------AaB03x"
 			url = "#{@respond}file/post/"
 	
@@ -339,7 +323,6 @@ module LabWiki::Plugin::PlanText
 			response = http.request(request)
 			print "\n\n #{response.body} \n\n"
 		end
-
 	end
 	
 	

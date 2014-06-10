@@ -54,20 +54,21 @@ module LabWiki::Plugin::PlanText
       end
 
       params[:title] ||= self.title
-	mesage = ""
+	message = ""
 	begin
       		AbstractPublishProxy.instance.publish(cp, params)
-	rescue AccessDeniedError
-		message = "Access Denied. Check email and password in the config file."
-	rescue NoConnectionToCMSError
-		message = "Server could not be reached. Check the server's url in the config file."
-	rescue InvalidUrlError
-		message = "The url of the server is invalid. Please check."
+	rescue AccessDeniedError => e
+		message = "#{e.inspect}"
+	rescue NoConnectionToCMSError => e
+		message = "#{e.inspect}"
+	rescue InvalidUrlError => e
+		message = "#{e.inspect}"
 	rescue Exception => e
 		message = "TODO: Rescue Exception -> #{e.inspect}"
 	end
 
-	debug "\n\n #{message} \n\n"
+	debug "error-message: #{message}" unless message == ""
+	gui_log(:error, message)
 
 # # TODO: Pop up with message 
 
