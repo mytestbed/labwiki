@@ -1,8 +1,17 @@
 
 labwiki:
+  login:
+    page: 'foo'
+
   session:
 
   include: ../../plugins/*/etc/labwiki/local.yaml
+
+  plugins:
+    plan_text:
+      publish:
+        # require: ....
+        class: 'LabWiki::Plugin::PlanText::AbstractPublishProxy'
 
   # debug:
     # user:
