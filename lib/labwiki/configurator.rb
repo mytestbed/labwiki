@@ -24,6 +24,7 @@ module LabWiki
       # Include other config files if required
       if pattern = LabWiki::Configurator[:include]
         Dir.glob(File.join(@@cfg_dir, pattern)).each do |f|
+          f = File.expand_path(f)
           debug "Loading additional config from #{f}"
           cfg = OMF::Web.deep_symbolize_keys(YAML::load(File.open(f)))
 
