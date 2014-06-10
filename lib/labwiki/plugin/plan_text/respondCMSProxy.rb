@@ -9,17 +9,17 @@ require 'yaml'
 require 'labwiki/plugin/plan_text/abstract_publish_proxy'
 
 module LabWiki::Plugin::PlanText
-	class RespondCMSProxy < AbstractPublishProxy
-		def initialize(opts)
-			super
-			config = YAML.load_file('lib/labwiki/plugin/plan_text/respond.yaml')
-			@respond = config["config"]["respond"]
-			@email = config["config"]["email"]
-			@password = config["config"]["password"]
-			@sitename = config["config"]["sitename"]
-			@sitename = opts[:sitename]
+  class RespondCMSProxy < AbstractPublishProxy
+    def initialize(opts)
+      super
+      config = YAML.load_file('lib/labwiki/plugin/plan_text/respond.yaml')
+      @respond = config["config"]["respond"]
+      @email = config["config"]["email"]
+      @password = config["config"]["password"]
+      @sitename = config["config"]["sitename"]
+      @sitename = opts[:sitename]
       @cookie = "-1"
-		end
+    end
 
     def login
       begin
@@ -33,16 +33,14 @@ module LabWiki::Plugin::PlanText
         if "#{response.body}" == "Access denied" || "#{response.code}" == "401"
           raise AccessDeniedError.new("")
         end
-
         cookie = response["set-cookie"]
-
       rescue AccessDeniedError
         raise AccessDeniedError.new("Access denied. Check Email and Password in Config-File!")
       rescue Exception => e
         debug "Class: #{e.class} --- Message: #{e.inspect}"
         if "#{e.class}" == "Errno::EHOSTUNREACH"
           raise NoConnectionToCMSError.new("Server not reached. Check Server and Url in config-file -> original message: #{e.inspect}")
-        else if "#{e.class}" == "NoMethodError"
+        elsif "#{e.class}" == "NoMethodError"
           raise InvalidUrlError.new("Url is invalid. Check Url in config-file! -> original message: #{e.inspect}")
         else
           raise e.new("TODO: Rescue Exception -> #{e.inspect}")
@@ -52,7 +50,6 @@ module LabWiki::Plugin::PlanText
     end
 
     def publish(content_proxy, opts)
-
       title = opts[:title]
       author = "#OMF::Web::SessionStore[:id, :user]"
       @name = "#{title} by #{author}"
@@ -64,7 +61,6 @@ module LabWiki::Plugin::PlanText
         pages = get_pages
 
         unless get_pages.keys.include? @name
-
           debug "\n\n ---- ADD PAGE ---- \n"
 
           addPageUrl = "#{@respond}page/add/"
@@ -74,8 +70,6 @@ module LabWiki::Plugin::PlanText
             :friendlyId => "#{@name.downcase.tr('^A-Za-z0-9', '')}",
             :description => ""
           }
-          #optional parameters
-          # addPageParams[:categories] =
 
           tried = 0
           begin
@@ -155,13 +149,12 @@ module LabWiki::Plugin::PlanText
       path = "#{public_repo.top_dir}/wiki/#{post_name}/"
       url2local = {}
       m = OMF::Web::Widget::Text::Maruku.format_content_proxy(cp)
+
       docI = m.to_html_tree(:img_url_resolver => lambda() do |u|
-        #print "\n #{u} \n"
         unless iu = url2local[u]
           ext = u.split('.')[-1]
           iu = url2local[u] = "#{get_checksum("#{path}#{u}")}.#{ext}"
         end
-        #puts "IMAGE>>> #{u} => #{iu}"
         iu
       end)
 
@@ -187,7 +180,6 @@ module LabWiki::Plugin::PlanText
       end
 
       return newDoc
-
     end
 
     def get_images
@@ -212,7 +204,6 @@ module LabWiki::Plugin::PlanText
     end
 
     def get_pages
-
       @cookie = login
 
       url = "#{@respond}page/list/all/"
@@ -232,20 +223,16 @@ module LabWiki::Plugin::PlanText
     end
 
     def get_checksum(path)
-
       require 'digest/md5'
       digest = Digest::MD5.hexdigest(File.read(path))
       return digest
     end
 
-
     def sendFile(path, filename)
-
       @cookie = login
 
       boundary = "------------------AaB03x"
       url = "#{@respond}file/post/"
-
       uri = URI.parse(url)
 
       post_body = []
