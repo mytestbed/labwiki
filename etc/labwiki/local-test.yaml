@@ -12,6 +12,7 @@ labwiki:
     authorisation:
       url: http://gentle-journey-8139.herokuapp.com/index.php
       callback_url: http://localhost:4000/authorised
+      cert_file: certs/urn:publicid:IDN+ch.geni.net+tool+job_service.testing.local.pem
 
   include: ../../plugins/*/etc/labwiki/local.yaml
 
