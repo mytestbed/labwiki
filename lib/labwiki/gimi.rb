@@ -42,7 +42,7 @@ class LabWiki::Gimi < OMF::Base::LObject
 
     if urn_a = user['http://geni.net/user/urn']
       urn = urn_a.first
-      OMF::Web::SessionStore[:urn, :user] = urn
+      OMF::Web::SessionStore[:urn, :user] = urn.gsub '|', '+'
       OMF::Web::SessionStore[:id, :user] = urn && urn.split('|').last
     end
     if iu_a = user['http://geni.net/irods/username']
