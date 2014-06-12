@@ -96,12 +96,17 @@ module LabWiki
       si = self[:session]
       return unless si
 
-      if (req = si[:require])
-        begin
-          require(req)
-        rescue Exception => ex
-          error "Loading session require '#{req}' - #{ex}"
-          abort
+      if (reqs = si[:require])
+        unless reqs.is_a? Array
+          reqs = [reqs]
+        end
+        reqs.each do |req|
+          begin
+            require(req)
+          rescue Exception => ex
+            error "Loading session require '#{req}' - #{ex}"
+            abort
+          end
         end
       end
     end
