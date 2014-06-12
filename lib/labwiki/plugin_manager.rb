@@ -162,7 +162,7 @@ module LabWiki
     #
     def self.authorised()
       @@plugins.each do |name, plugin_descr|
-        puts ">>>>> #{plugin_descr.keys}"
+        #puts ">>>>> #{plugin_descr.keys}"
         if block = plugin_descr[:on_authorised]
           _safe_call(block)
         end
