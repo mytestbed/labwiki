@@ -31,8 +31,8 @@ div.widget_body_plan p.drop-target {
 .plan_text ul li {
   list-style: disc inside;
   display: list-item;
-  margin-left: 20;
-  margin-bottom: 10;
+  margin-left: 10px;
+  margin-bottom: 10px;
 }
 
 /* .plan_text pre code { */
