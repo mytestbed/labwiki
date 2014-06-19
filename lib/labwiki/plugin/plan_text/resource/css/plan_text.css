@@ -5,7 +5,7 @@ div.widget_body_plan p.content {
 
 div.widget_body_plan p.drop-target {
   height: 20px;
-  margin-bottom: 0px;  
+  margin-bottom: 0px;
 }
 
 .plan_text strong {
@@ -23,33 +23,32 @@ div.widget_body_plan p.drop-target {
   line-height: 1.3em;
 }
 
-
 .plan_text ul {
   display: block;
-  list-style-type: disc;
+  list-style: disc inside;
 }
 
-.plan_text li {
-  list-style-type: disc;
+.plan_text ul li {
+  list-style: disc inside;
   display: list-item;
   margin-left: 20;
-  margin-bottom: 10;  
+  margin-bottom: 10;
 }
 
 /* .plan_text pre code { */
-.plan_text pre {  
+.plan_text pre {
   margin: 10;
   padding: 10;
   border: 1px solid rgba(0, 0, 0, 0.15)
 }
 
-.plan_text code {  
+.plan_text code {
   border: 0;
   padding: 0;
   color: inherit;
   background-color: transparent;
   font-family: monospace;
-  line-height: 120%;  
-  font-size: 14px;  
+  line-height: 120%;
+  font-size: 14px;
 }
 
