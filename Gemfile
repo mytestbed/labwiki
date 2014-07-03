@@ -11,7 +11,7 @@ end
 
 gemspec
 #gem "omf_web", override_with_local(path: '../omf_web', git: 'git://github.com/mytestbed/omf_web', tag: 'v0.9.10')
-gem "omf_web", override_with_local(path: '../omf_web', git: 'git://github.com/mytestbed/omf_web')
+gem "omf_web", override_with_local(path: '../omf_web', git: 'git://github.com/mytestbed/omf_web', ref: 'fc3b04fb44c526eb330cf380c0b182705721140b')
 gem "httparty"
 gem "god"
 gem 'rack-cors', :require => 'rack/cors'
