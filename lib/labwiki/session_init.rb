@@ -122,7 +122,7 @@ class SessionInit < OMF::Base::LObject
     # We can create a default experiment for each project
     if LabWiki::Configurator[:gimi] && LabWiki::Configurator[:gimi][:ges]
       OMF::Web::SessionStore[:projects, :geni_portal].each do |p|
-        proj = find_or_create("projects", p[:name], { irods_user: OMF::Web::SessionStore[:id, :irods_user] })
+        proj = post_to_ges(p[:name], { name: p[:name], irods_user: OMF::Web::SessionStore[:id, :irods_user] })
       end
     end
   end
@@ -175,28 +175,8 @@ class SessionInit < OMF::Base::LObject
     end
   end
 
-  def find_or_create(res_path, res_id, additional_data = {})
+  def post_to_ges(project_name, additional_data = {})
     ges_url = LabWiki::Configurator[:gimi][:ges]
-    obj = HTTParty.get("#{ges_url}/#{res_path}/#{res_id}")
-
-    if obj['uuid'].nil?
-      debug "Create a new #{res_path}"
-      obj = HTTParty.post("#{ges_url}/#{res_path}", body: { name: res_id }.merge(additional_data))
-    else
-      debug "Found existing #{res_path} #{obj['name']}"
-      # FIXME this hack appends irods user to projects
-      if res_path =~ /projects/
-        users = obj['irods_user'].split('|')
-        current_irods_user = OMF::Web::SessionStore[:id, :irods_user]
-        unless current_irods_user.to_s == "" || users.include?(current_irods_user)
-          new_irods_user = "#{obj['irods_user']}|#{current_irods_user}"
-          info "Need to write this #{new_irods_user}"
-          HTTParty.post("#{ges_url}/#{res_path}/#{res_id}", body: { irods_user: new_irods_user })
-        end
-      end
-    end
-
-    obj
+    HTTParty.post("#{ges_url}/projects/#{project_name}", body: additional_data)
   end
 end
-
