@@ -64,18 +64,6 @@ module LabWiki
       @@session_start_monitors.each do |block|
         block.call(user_info)
       end
-
-      (self['session/repositories'] || []).each do |ropts|
-        opts = ropts.dup
-
-        unless name = opts.delete(:name)
-          raise "Missing 'name' declaration in config file's 'session/repositories' - #{opts}"
-        end
-        repo = OMF::Web::ContentRepository.create(name.to_sym, opts)
-        (OMF::Web::SessionStore[:plan, :repos] ||= []) << repo
-        (OMF::Web::SessionStore[:prepare, :repos] ||= []) << repo
-        (OMF::Web::SessionStore[:execute, :repos] ||= []) << repo
-      end
     end
 
     def self.close_session(user_info = nil)
@@ -107,6 +95,26 @@ module LabWiki
             error "Loading session require '#{req}' - #{ex}"
             abort
           end
+        end
+      end
+
+      _init_repositories
+    end
+
+    def self._init_repositories
+      self.on_session_start do |user_info|
+        (self['session/repositories'] || []).each do |ropts|
+          opts = ropts.dup
+
+          opts.each {|k, v| opts[k] = ERB.new(v).result(binding) if v.kind_of? String}
+
+          unless name = opts.delete(:name)
+            raise "Missing 'name' declaration in config file's 'session/repositories' - #{opts}"
+          end
+          repo = OMF::Web::ContentRepository.create(name.to_sym, opts)
+          (OMF::Web::SessionStore[:plan, :repos] ||= []) << repo
+          (OMF::Web::SessionStore[:prepare, :repos] ||= []) << repo
+          (OMF::Web::SessionStore[:execute, :repos] ||= []) << repo
         end
       end
     end

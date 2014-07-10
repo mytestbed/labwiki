@@ -29,14 +29,15 @@ class LabWiki::Gimi < OMF::Base::LObject
   def on_session_start(user_info)
     return unless @opts
 
-    init_user(user_info)
-    init_repo(user_info)
+    #init_user(user_info)
+    #init_repo(user_info)
   end
 
   def on_session_close
     #TODO What to do?
   end
 
+=begin
   def init_user(user)
     case user["lw:auth_type"]
     when "OpenID.GENI"
@@ -66,6 +67,7 @@ class LabWiki::Gimi < OMF::Base::LObject
     init_git_repository(OMF::Web::SessionStore[:id, :user]) if @opts[:git]
     init_irods_repository(OMF::Web::SessionStore[:id, :irods_user]) if @opts[:irods]
   end
+=end
 
   def update_geni_projects_slices(user)
     if (geni_projects = user['http://geni.net/projects']) &&
@@ -94,10 +96,15 @@ class LabWiki::Gimi < OMF::Base::LObject
     end
   end
 
+=begin
+  This can ALL go.
+
   def init_irods_repository(id)
     irods_home = @opts[:irods][:home]
     id = 'user1' if @opts[:mocking]
+
     script_folder = "#{irods_home}/#{id}/#{@opts[:irods][:script_folder]}"
+
     opts = { type: :irods, top_dir: script_folder }
     repo = OMF::Web::ContentRepository.register_repo(id, opts)
     repo ||= OMF::Web::ContentRepository.find_repo_for("irods:#{id}")
@@ -145,6 +152,7 @@ class LabWiki::Gimi < OMF::Base::LObject
       error e.message
     end
   end
+=end
 
   def find_or_create(res_path, res_id, additional_data = {})
     ges_url = @opts[:ges]

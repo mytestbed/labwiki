@@ -3,6 +3,7 @@
 # require 'omf-web/content/git_repository'
 require 'omf-web/session_store'
 require 'labwiki/plugin_manager'
+require 'labwiki/core_ext/object'
 
 module LabWiki
 
@@ -14,7 +15,6 @@ module LabWiki
     def call(env)
       req = ::Rack::Request.new(env)
       unless req.path =~ /^\/resource/ || req.path == '/login' # Do not care about resource files
-
         # Session ID should be in cookie, but if cookies don't work (iBook widgets) we try
         # to carry them in the parameters.
         #
@@ -52,6 +52,7 @@ module LabWiki
         if env['warden'].authenticated?
           user = $users[env['warden'].user]
         end
+
         if user.nil?
           req.session['sid'] = nil # necessary?
           req.session.clear
@@ -66,6 +67,7 @@ module LabWiki
         end
 
         unless OMF::Web::SessionStore[:initialised, :session]
+          init_user(user)
           LabWiki::Configurator.start_session(user)
           LabWiki::PluginManager.init_session()
           LabWiki::LWWidget.init_session()
@@ -74,6 +76,31 @@ module LabWiki
         #end
       end
       @app.call(env)
+    end
+
+    def init_user(user)
+      case user["lw:auth_type"]
+      when "OpenID.GENI"
+        pretty_name = user['http://geni.net/user/prettyname'].try(:first)
+
+        if (urn = user['http://geni.net/user/urn'].try(:first))
+          OMF::Web::SessionStore[:urn, :user] = urn.gsub '|', '+'
+          OMF::Web::SessionStore[:id, :user] = urn && urn.split('|').last
+        end
+        if (irods_user = user['http://geni.net/irods/username'].try(:first))
+          OMF::Web::SessionStore[:id, :irods_user] = irods_user
+        end
+        if (irods_zone = user['http://geni.net/irods/zone'].try(:first))
+          OMF::Web::SessionStore[:id, :irods_zone] = irods_zone
+        end
+      when "OpenID.Google"
+        last_name = user["http://axschema.org/namePerson/last"].try(:first)
+        first_name = user["http://axschema.org/namePerson/first"].try(:first)
+        pretty_name = "#{first_name} #{last_name}"
+        OMF::Web::SessionStore[:id, :user] = user["http://axschema.org/contact/email"].try(:first)
+      end
+
+      OMF::Web::SessionStore[:name, :user] = pretty_name || "Unknown"
     end
   end
 end
