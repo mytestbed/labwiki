@@ -10,7 +10,6 @@ Bundler.setup()
 require 'yaml'
 require 'god'
 require 'rake/testtask'
-require "bundler/gem_tasks"
 
 task :default => :test
 

@@ -6,13 +6,14 @@ Visit http://labwiki.mytestbed.net for more information on this project.
 
 ## Installation
 
-Labwiki is currently still under constant devlopment and it is therfore best to fetch the latest version
-from Github.
+Labwiki is currently still under constant devlopement and it is therefore best to fetch the latest version from Github.
 
     git clone https://github.com/mytestbed/labwiki.git
     cd labwiki
     export LABWIKI_TOP=`pwd`
+
     bundle install --path vendor
+
     rake post-install
 
 If that fails you may need to install some required libraries. On a 'naked' Ubuntu system, we usually install the following:
@@ -51,6 +52,10 @@ following:
 
     $LABWIKI_TOP/install_plugin https://github.com/mytestbed/labwiki_experiment_plugin.git
 
+If you need to install a sepcific version other than latest master, provide optional branch/tag name
+
+    $LABWIKI_TOP/install_plugin https://github.com/mytestbed/labwiki_experiment_plugin.git some_other_branch_or_tag
+
 ## Configuration
 
 All the site specific configurations are captured in a YAML file which is provided at startup through
@@ -64,7 +69,7 @@ The structure of this file is as following:
           - name: system
             type: file
             read_only: true
-            top_dir: ../../system_repo
+            top_dir: ../../system_repo # This is relative to config file location
         default_plugins: # Show these plugins the first time a user logs in
           - column: plan
             plugin: 'wiki'
@@ -74,6 +79,7 @@ The structure of this file is as following:
       plugins:
         experiment:
           plugin_dir: labwiki_experiment_plugin
+          # Require job service setup & running
           job_service:
             host: localhost
             port: 8002
