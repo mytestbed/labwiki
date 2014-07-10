@@ -56,8 +56,14 @@ task 'create_server_bin' do
   tmpl = File.read("#{target}.in")
 
   home = ENV['HOME']
-  rvm_home = ENV["rvm_bin_path"].match(/.*rvm/)[0]
-  d, ruby, gemset = GEM_PATH.match(/.*(ruby.*)@(.*)/).to_a
+
+  rvm_home = ruby = gemset = ''
+  rvm_bin_path = ENV["rvm_bin_path"]
+
+  if rvm_bin_path
+    rvm_home = rvm_bin_path.match(/.*rvm/)[0]
+    d, ruby, gemset = GEM_PATH.match(/.*(ruby.*)@(.*)/).to_a
+  end
 
   s = tmpl.gsub('%HOME%', home).gsub('%RVM_HOME%', rvm_home).gsub('%RUBY%', ruby).gsub('%GEMSET%', gemset)
   File.open(target, 'w') do |f|
