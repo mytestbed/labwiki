@@ -13,7 +13,8 @@ map "/plugin/source_edit/create_script" do
                             when 'md' then ['wiki', 'text/markup']
                             end
 
-    repo = (OMF::Web::SessionStore[:prepare, :repos] || []).first
+    # Only fetch repo that can be written to
+    repo = (OMF::Web::SessionStore[:prepare, :repos] || []).find { |v| !v.read_only? }
     return [500, {}, "Could not find any available repo to write"] if repo.nil?
 
     begin

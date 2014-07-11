@@ -1,0 +1,73 @@
+
+labwiki:
+  session:
+    authentication:
+      #type: "LabWiki::Authentication::OpenId"
+      type: none
+      #provider: google
+      #provider: geni
+
+      #page: /resource/login/google_openid.html
+      #auth_type: OpenID.Google
+
+    #authorisation:
+    #  url: "http://localhost/index.php"
+    #  callback_url: "http://localhost:4000/authorised"
+    #  cert_file: /home/jack/dummy_certs/job_service.pem
+
+    #require: 'labwiki/gimi'
+    #gimi:
+    #  git:
+    #    repos_dir: /home/jack/lw_other_peoples_repos
+        # home: http://foo.com
+
+    repositories:
+      #- name: system
+      #  type: git
+      #  read_only: true
+      #  create_if_not_exists: true
+      #  top_dir: ~/lw_default_git_repo
+      - name: system
+        type: file
+        read_only: true
+        top_dir: ../../test/repo
+      - name: <%= OMF::Web::SessionStore[:id, :user] %>
+        type: git
+        read_only: false
+        create_if_not_exists: true
+        #top_dir: /home/jack/lw_other_peoples_repos/<%= OMF::Web::SessionStore[:id, :user] %>
+        top_dir: ~/lw_other_peoples_dir/<%= OMF::Web::SessionStore[:id, :user] %>
+        #top_dir: /home/jack/nicta/labwiki/plugins/labwiki_experiment_plugin/system_repo
+      #- name: <%= OMF::Web::SessionStore[:id, :irods_user] %>
+      #  type: irods
+      #  read_only: false
+      #  top_dir: irods_home/<%= OMF::Web::SessionStore[:id, :irods_user] %>/default_script_location
+
+    default_plugins: # Create these plugins the first time a user logs in
+      - column: plan
+        plugin: 'wiki'
+        action: "on_get_content"
+        url: 'system:wiki/README.md'
+
+
+  plugins:
+    topology:
+      plugin_dir: labwiki_topology_plugin
+      slice_service:
+        url: http://localhost:8006
+    experiment:
+      plugin_dir: labwiki_experiment_plugin
+      job_service:
+        host: localhost
+        #host: 221.199.209.244
+        port: 8002
+
+  debug:
+    user:
+      "lw:auth_type": OpenID.GENI
+      "http://geni.net/projects": ['Project A', 'Project B']
+      "http://geni.net/slices": ['sliceA', 'sliceB']
+      "http://geni.net/user/urn": ["urn:publicid:IDN|ch.geni.net|user|joedoe"]
+      "http://geni.net/user/prettyname": ["Joe Doe"]
+      "http://geni.net/irods/zone": ["geniRenci"]
+      'http://geni.net/irods/username': ["bob"]
