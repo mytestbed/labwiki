@@ -192,6 +192,17 @@ a.nav-menu-item i {
 .widget_body .text p {
 }
 
+.widget_container .widget_body {
+/*
+  width: 100%;
+  overflow: hidden;
+  text-align: left;
+  zoom: 1;
+  margin: 0px auto;
+*/
+  margin-bottom: 0px;
+}
+
 /** SEARCH BOX **/
 
 /***
