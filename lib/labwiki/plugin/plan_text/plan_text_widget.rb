@@ -10,13 +10,20 @@ module LabWiki::Plugin::PlanText
 
     # Check for data sources and create them if they don't exist yet
     def self.on_pre_create_embedded_widget(wdescr)
-      if dss = wdescr[:data_sources]
-        dss.each do |name, ds|
-          #puts ">>>>>>>> FIX DS(#{name})- #{ds}"
-          #ds[:id] = ds[:stream] = ds[:name] = 'foo'
+      if wdescr[:mime_type] == 'data/graph'
+        wdescr[:type] = "data/#{wdescr.delete(:graph_type)}"
+
+        if dss = wdescr[:data_sources]
+          dss.each do |ds|
+            puts ">>>>>>>> FIX DS #{ds}"
+            if data_url = ds[:data_url]
+              puts ">>>>> RESOLVE #{data_url}"
+            end
+            #ds[:id] = ds[:stream] = ds[:name] = 'foo'
+          end
         end
       end
-      #puts ">>>>>>>> FIX WIDGET - #{wdescr}"
+      puts ">>>>>>>> FIX WIDGET - #{wdescr}"
       wdescr
     end
 
@@ -42,6 +49,40 @@ module LabWiki::Plugin::PlanText
 
     def on_insert_widget(params, req)
       debug "INSERT WIDGET - p: #{params}"
+      return unless @content_proxy # TODO: Should return some error message
+
+      # Line numbers are relative to original content
+      unless @content
+        c = @content_proxy.read
+        @content = c.split("\n")
+        @header_lines = OMF::Web::Widget::Text::Maruku.count_header_lines(c)
+      end
+      #puts "CONTENT: #{@content.inspect}"
+      line_no = params[:line_no] + @header_lines
+      line_idx = line_no - 1 # Line_no starts at 1
+      line = @content[line_idx]
+      unless line.is_a? Array
+        @content[line_idx] = line = [line]
+      end
+      w = params[:widget]
+      if dss = w.delete(:data_sources)
+        w[:data_sources] = dss.map do |ds|
+          {name: ds[:name], data_url: ds[:data_url]}
+        end
+      end
+      gd = {widget: w}.to_yaml(line_width: -1, indentation: 2)
+      if gd.start_with? "---\n"
+        gd = gd[4 .. -1]
+      end
+      line << "{{{\n#{gd}\n}}}"
+      #puts "LINE: #{line}"
+
+      # Now save it
+      s = @content.map do |l|
+        l.is_a?(Array) ? l.join("\n") : l
+      end.join("\n")
+      puts "WRITE: #{s}"
+      @content_proxy.write(s, "Added widget")
       nil
     end
 
