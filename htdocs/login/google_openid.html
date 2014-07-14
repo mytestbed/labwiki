@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Login | LabWiki</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="/resource/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/resource/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <script src="/resource/vendor/jquery/jquery.js"></script>
+    <script src="/resource/vendor/bootstrap/js/bootstrap.js"></script>
+
+    <style type="text/css">
+      /* Override some defaults */
+      html, body {
+        background-color: #eee;
+      }
+      body {
+        padding-top: 40px;
+      }
+
+      .navbar-fixed-top .container {
+        width: 100%;
+      }
+
+      .container {
+        width: 700px;
+      }
+
+      .navbar-inverse .brand {
+        padding-left: 25px;
+      }
+
+      /* The white background content wrapper */
+      .container > .content {
+        background-color: #fff;
+        padding: 20px;
+        margin: 80px -20px;
+        -webkit-border-radius: 10px 10px 10px 10px;
+           -moz-border-radius: 10px 10px 10px 10px;
+                border-radius: 10px 10px 10px 10px;
+        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+           -moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+                box-shadow: 0 1px 2px rgba(0,0,0,.15);
+      }
+
+      .form-signin-heading {
+        margin-bottom: 30px;
+      }
+
+      button.sign-in {
+        margin-top: 0px;
+      }
+
+      .login-form {
+        margin-left: 40px;
+        margin-right: 30px;
+      }
+
+
+      legend {
+        margin-right: -50px;
+        font-weight: bold;
+        color: #404040;
+      }
+
+    </style>
+
+
+  </head>
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">LabWiki</a>
+        </div>
+
+        <div class="collapse navbar-collapse pull-right">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#aboutModal" data-toggle="modal" >About</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div id="aboutModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3>About</h3>
+          </div>
+          <div class="modal-body">
+            <p>Labwiki is a web-based workspace for experimenters. It strives to support the entire
+              investigative life-cycle from planning to preparation to execution to analysis.</p>
+
+            <p>It is still under active development and more details can (should) be found on
+              LabWiki's <a href="http://labwiki.mytestbed.net">web site</a>.</p>
+          </div>
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>   <!-- /About -->
+
+
+    <div class="container">
+      <div class="content">
+        <div class="row">
+          <div class="login-form">
+
+            <form class="form-inline" action="/login" method="post">
+              <!--
+              <h3 class="form-signin-heading">Login with OpenID</h3>
+
+              <div class="alert alert-block alert-error fade in" id="missing_name" style="display:none;">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <p>Missing user name</p>
+              </div>
+              <input type="text" name="openid_username" id="openid_username" class="input-block-level" placeholder="Username">
+              -->
+
+              <div style="text-align: center;">
+                <p>
+                  <a class="btn btn-primary openurlbutton" data-toggle="button" id="google">Login with Google ID</a>
+                </p>
+
+                <hr />
+
+                <p>
+                <a href="http://www.nicta.com.au" target="blank"><img src="/resource/login/img/Logo-Nicta-S.jpg" alt="NICTA" target='_blank'/></a>
+                <img width=30px height=0 />
+                <a href="http://gimi.ecs.umass.edu" target="blank"><img src="/resource/login/img/logo-gimi.png" alt="GIMI"/></a>
+                <img width=30px height=0 />
+                <a href="http://www.fed4fire.eu" target="blank"><img src="/resource/login/img/fed4fire-logo_small.jpg" alt="Fed4Fire"/></a>
+                <img width=30px height=0 />
+                <a href="http://www.ict-openlab.eu" target="blank"><img src="/resource/login/img/openlab_logo_square_small.png" alt="Openlab"/></a>
+                </p>
+              </div>
+
+              <div id="collapseOne" class="collapse">
+                <div class="accordion-inner">
+                  OpenID URL:
+                  <input type="text" name="openid_identifier" id="openIdUrl" placeholder="http://bob.myopenid.com">
+                  <button type="submit" class="btn">Sign in</button>
+                </div>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div> <!-- /container -->
+
+    <script type="text/javascript">
+
+    var provider = '';
+
+    $(document).ready(function() {
+
+      $(".alert").alert();
+
+    $(".openurlbutton").click(function() {
+      var provider = $(this).attr('id');
+      if (setProvider(provider)) {
+        $('form').submit();
+      }
+    });
+
+    $(".openidbutton").click(function(){
+      $('#collapseOne').toggle();
+    });
+
+    $("#openid_identifier").keyup(function(){
+      setProvider(provider);
+      $('form').submit();
+    });
+
+    $("#doLogin").click(function(){
+      $('form').submit();
+    });
+
+    });
+
+      // a brief piece of script that will populate the openID identifier when the user clicks on a provider
+      // it will also deal with the page aesthetics of clicking a provider
+      function setProvider(provider)
+      {
+        var providerBox = $('#openIdUrl');
+        // userName = $('#openid_username').val();
+        // if (userName == '') {
+          // $("#missing_name").show();
+          // return false;
+        // }
+
+        var selected = 0;
+
+        switch (provider) {
+        case "aol":
+    providerBox.val("http://openid.aol.com/" + userName);
+    break;
+        case "blogger":
+    providerBox.val("http://" + userName + ".blogspot.com");
+    break;
+    case "claimid":
+    providerBox.val("http://claimid.com/" + userName);
+    break;
+    case "flickr":
+    providerBox.val("http://flickr.com/" + userName);
+    break;
+    case "google":
+    providerBox.val("https://www.google.com/accounts/o8/id");
+    providerBox.val("http://www.google.com/accounts/o8/id");
+    break;
+    case "livejournal":
+    providerBox.val("http://" + userName + ".livejournal.com");
+    break;
+        case "myopenid":
+    providerBox.val("http://" + userName + ".myopenid.com");
+    break;
+    case "technorati":
+    providerBox.val("http://technorati.com/people/technorati/" + userName);
+    break;
+    case "verisign":
+    providerBox.val("http://" + userName + ".pip.verisignlabs.com");
+    break;
+    case "vidoop":
+    providerBox.val("http://" + userName + ".myvidoop.com");
+    break;
+    case "yahoo":
+    providerBox.val("https://me.yahoo.com/");
+    case "geni":
+    providerBox.val("https://portal.geni.net/server/server.php");
+    break;
+        }
+        return true;
+      }
+
+    </script>
+  </body>
+</html>

@@ -9,11 +9,12 @@ def override_with_local(opts)
   Dir.exist?(local_dir) ? {path: local_dir} : opts
 end
 
-gemspec
 gem "omf_web", override_with_local(path: '../omf_web', github: 'mytestbed/omf_web')
 gem "httparty"
 gem "god"
 gem 'rack-cors', :require => 'rack/cors'
+gem "warden-openid"
+gem "i18n"
 
 # Install gems from each plugin
 # Credit: http://madebynathan.com/2010/10/19/how-to-use-bundler-with-plugins-extensions

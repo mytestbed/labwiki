@@ -81,12 +81,11 @@ module OMF::Web::Theme
             td do
               form :id => "lw#{object_id}_csf", :class => "quicksearch k-active", :onsubmit => "return false;" do
                 div :class => "container rounded-corners" do
-                  #button :class => "head_add" # "add_content"
                   button :class => "head search"
                   input :id => "lw#{object_id}_si", :class => "input", :type => "text", :value => "" do
-                    button :class => "tail reset" #, :onclick => "$(this).prev('input:text').val('');return false;"
+                    button :class => "tail reset"
                   end
-                  button :class => "tail reset" #, :onclick => "$(this).prev('input:text').val('');return false;"
+                  button :class => "tail reset"
                 end
               end
             end

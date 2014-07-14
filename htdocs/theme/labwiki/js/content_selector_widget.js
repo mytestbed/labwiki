@@ -40,9 +40,10 @@ define([], function () {
       var context_el = this._context_el = $('#' + el_prefix + '_search');
       var si = this._input_el = context_el.find('.input');
 
-      si.bind('keyup click blur focus change paste', function(ev) {
+      si.bind('keyup click focus', function(ev) {
         return self._process_input(ev, si);
       });
+
       si.bind('focus', function() {
         self._refresh_suggestion_list();
         context_el.find('.suggestion-list').show();
@@ -120,7 +121,6 @@ define([], function () {
     },
 
     _process_input: function(ev, input_el) {
-      //console.log('INPUT: ' + ev.keyCode);
       switch (ev.keyCode) {
         case 13: {
           input_el.blur(); // try to loose focus - doesn't seem to work, though

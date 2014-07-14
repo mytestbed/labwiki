@@ -1,6 +1,6 @@
 
 module LabWiki
-  VERSION = [0, 15, 'pre']
+  VERSION = [1, 0, 0, 'rc', 1]
   @@version = nil
 
   def self.version

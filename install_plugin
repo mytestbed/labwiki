@@ -1,15 +1,23 @@
 #!/usr/bin/env ruby
 
-unless ARGV.size == 1
+plugin = ARGV[0]
+
+if plugin.nil?
   puts "ERROR: Missing plugin name"
-  puts "USAGE: #{$0} url_to_git_repo"
+  puts "USAGE: #{$0} url_to_git_repo <tag/branch default to master>"
   exit(-1)
 end
 
-plugin = ARGV[0]
+tag = ARGV[1] || 'master'
+
 plugin_dir = File.join(File.dirname(__FILE__), 'plugins')
 Dir.mkdir(plugin_dir) unless Dir.exist?(plugin_dir)
-`cd #{plugin_dir}; git clone #{plugin}`
-puts "Running bundler - may be silent"
+
+`cd #{plugin_dir}; git clone #{plugin} -b #{tag}`
+unless $?.exitstatus == 0
+  exit(-1)
+end
+
+puts "Updating dependencies - may be silent"
 puts `bundle update`
-puts "====> Plugin installed"
+puts "===> Plugin installed"

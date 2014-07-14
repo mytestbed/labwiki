@@ -6,6 +6,7 @@ div.widget_body_plan p.content {
 
 div.widget_body_plan p.drop-target {
   height: 20px;
+  margin-bottom: 0px;
 }
 
 .plan_text strong {
@@ -23,17 +24,16 @@ div.widget_body_plan p.drop-target {
   line-height: 1.3em;
 }
 
-
 .plan_text ul {
   display: block;
-  list-style-type: disc;
+  list-style: disc inside;
 }
 
-.plan_text li {
-  list-style-type: disc;
+.plan_text ul li {
+  list-style: disc inside;
   display: list-item;
-  margin-left: 20;
-  margin-bottom: 10;
+  margin-left: 10px;
+  margin-bottom: 10px;
 }
 
 /* .plan_text pre code { */

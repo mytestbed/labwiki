@@ -18,15 +18,21 @@ use ::Rack::ShowExceptions
 use ::Rack::Session::Cookie, secret: LW_PORT, key: "labwiki.session.#{LW_PORT}"
 
 ######## AUTHENTICATION SECTION - Should move into separate file
-
-LOGIN_PAGE = '/resource/login/geni_openid.html'
-#LOGIN_PAGE = '/resource/login/login.html'
+LOGIN_PAGE = LabWiki::Configurator["session/login/page"] || "/resource/login/geni_openid.html"
+LOGIN_AUTH_TYPE = LabWiki::Configurator["session/login/auth_type"] || "OpenID.GENI"
 
 OPENID_FIELDS = {
-  google: ["http://axschema.org/contact/email", "http://axschema.org/namePerson/last"],
-  geni: ['http://geni.net/projects', 'http://geni.net/slices',
-         'http://geni.net/user/urn', 'http://geni.net/user/prettyname',
-         'http://geni.net/irods/username', 'http://geni.net/irods/zone']
+  "OpenID.Google" => [
+    "http://axschema.org/namePerson/last",
+    "http://axschema.org/contact/email",
+    "http://axschema.org/namePerson/first"],
+  "OpenID.GENI" => [
+    "http://geni.net/projects",
+    "http://geni.net/slices",
+    "http://geni.net/user/urn",
+    "http://geni.net/user/prettyname",
+    "http://geni.net/irods/username",
+    "http://geni.net/irods/zone"]
 }
 
 GENI_OPENID_PROVIDER = "https://portal.geni.net/server/server.php"
@@ -37,11 +43,11 @@ use ::Rack::OpenID, OpenID::Store::Filesystem.new("/tmp/openid_#{LW_PORT}")
 $users = {}
 
 Warden::OpenID.configure do |config|
-  config.required_fields = OPENID_FIELDS[:geni]
+  config.required_fields = OPENID_FIELDS[LOGIN_AUTH_TYPE]
   config.user_finder do |response|
     identity_url = response.identity_url
     user_data = OpenID::AX::FetchResponse.from_success_response(response).data
-    user_data['lw:auth_type'] = 'OpenID.GENI'
+    user_data['lw:auth_type'] = LOGIN_AUTH_TYPE
     puts ">>> IDENTITY_URL: #{identity_url}"
     $users[identity_url] = user_data
     identity_url

@@ -6,11 +6,16 @@ RUBY=%RUBY%
 GEMSET=%GEMSET%
 
 export HOME
-export GEM_HOME=${RVM_HOME}/gems/${RUBY}
-export GEM_PATH=${RVM_HOME}/gems/${RUBY}:${RVM_HOME}/gems/${RUBY}@${GEMSET}
-export PATH=${RVM_HOME}/gems/${RUBY}/bin:${RVM_HOME}/gems/${RUBY}@${GEMSET}/bin:${RVM_HOME}/rubies/${RUBY}/bin:${RVM_HOME}/bin:${PATH}
+
+if [ ! -z $RVM_HOME ]; then
+  export GEM_HOME=${RVM_HOME}/gems/${RUBY}
+  export GEM_PATH=${RVM_HOME}/gems/${RUBY}:${RVM_HOME}/gems/${RUBY}@${GEMSET}
+  export PATH=${RVM_HOME}/gems/${RUBY}/bin:${RVM_HOME}/gems/${RUBY}@${GEMSET}/bin:${RVM_HOME}/rubies/${RUBY}/bin:${RVM_HOME}/bin:${PATH}
+fi
 
 export LW_REF_DIR=`pwd` # For script to reolve relative file names in $* arguments
 
-cd "$( dirname "${BASH_SOURCE[0]}" )"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd ${SCRIPT_DIR}
+
 exec bundle exec ruby ../lib/labwiki/start.rb $*
