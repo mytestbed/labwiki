@@ -104,15 +104,14 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
 
     },
 
-    resize: function(left, width) {
-      this.set({left: left, width: width});
+    resize: function(left, width, height) {
+      this.set({left: left, width: width, height: height});
       var cd = $("#kp" + this._opts.col_index);
       cd.css({
           "left"    : left + 'px',
           "display" : width > 0 ? 'block' : 'none'
       });
       cd.width(width);
-      //OHUB.trigger('column.' + this._name + '.resize', {left: left, width: width});
       this.init_content_panel(); // fix panel height
     },
 
@@ -361,6 +360,12 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
         var panel_height = win_height - position.top;
         panel.height(panel_height);
         this.set({panel_height: panel_height});
+        OHUB.trigger('column.' + this._name + '.resize', {
+           left: this.get('left'), top: position.top,
+           width: this.get('width'), panel_height: panel_height,
+           position: position
+        });
+
         //OHUB.trigger('column.' + this._name + '.panel.height', {height: panel_height});
       }
 

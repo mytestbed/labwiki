@@ -55,7 +55,7 @@ define(['theme/labwiki/js/column_controller'], function (column_controller) {
       var col_width = (width / cols);
       _.reduce(LW.controllers, function(left, controller) {
         var w = col_width * controller.col_span;
-        controller.resize(left, w);
+        controller.resize(left, w, height);
         return left + w;
       }, 0);
       OHUB.trigger('layout.resize', {});
