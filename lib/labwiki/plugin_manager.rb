@@ -31,6 +31,7 @@ module LabWiki
           require "labwiki/plugin/#{name}/init"
         else
           fatal "Missing 'plugin_dir' for plugin '#{name}'"
+          exit(-1)
         end
       end
 
