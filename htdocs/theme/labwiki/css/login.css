@@ -9,6 +9,7 @@ body {
 .content {
   background-color: #fff;
   padding: 20px;
+  margin-top: 50px;
   -webkit-border-radius: 10px 10px 10px 10px;
   -moz-border-radius: 10px 10px 10px 10px;
   border-radius: 10px 10px 10px 10px;
@@ -23,6 +24,6 @@ body {
 }
 
 .footer {
-  margin-top: 20px;
+  margin-top: 50px;
   text-align: center;
 }
