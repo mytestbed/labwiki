@@ -56,6 +56,32 @@ If you need to install a sepcific version other than latest master, provide opti
 
     $LABWIKI_TOP/install_plugin https://github.com/mytestbed/labwiki_experiment_plugin.git some_other_branch_or_tag
 
+## Upgrade & Redeployment
+
+You probably noticed that we run everything from the source, so for re-deployment, simply go to each relative repository directory, update the repo by:
+
+    cd <code repository>
+
+Assuming that you have some local changes in the repository directory
+
+    git stash
+
+Assuming your origin is set to official LabWiki reposoitory
+
+    git fetch origin
+
+Assuming that you are in master branch and try to merge with master branch
+
+    git merge origin/master
+
+This will bring your previous local changes back
+
+    git stash pop
+
+Then re-run whatever you need to run.
+
+_Because we run everything from the source, PLEASE report the git commit id whenever you need to report issues_
+
 ## Configuration
 
 All the site specific configurations are captured in a YAML file which is provided at startup through
