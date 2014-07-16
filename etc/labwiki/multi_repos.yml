@@ -1,0 +1,30 @@
+# A quite common set up
+#
+# * Use Google OpenID to authenticate
+# * A default repo which all users could read (Can not modify, READ_ONLY)
+# * Each logged in user would have a repository created (RW), with name determined by user's id
+labwiki:
+  session:
+    authentication:
+      type: openid
+      provider: google
+
+    repositories:
+      - name: system
+        type: file
+        read_only: true
+        top_dir: ../../test/repo
+
+      - name: <%= OMF::Web::SessionStore[:id, :user] %>
+        type: file
+        read_only: false
+        create_if_not_exists: true
+        top_dir: ../../test/<%= OMF::Web::SessionStore[:id, :user] %>
+
+    default_plugins: # Create these plugins the first time a user logs in
+      - column: plan
+        plugin: 'wiki'
+        action: "on_get_content"
+        url: 'system:wiki/README.md'
+
+
