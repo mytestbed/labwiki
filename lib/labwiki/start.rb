@@ -56,6 +56,9 @@ opts = {
       p.on("--lw-no-login", "If set, all sessions are automatically assigned to local account") do
         OMF::Web::Runner.instance.options[:no_login_required] = true
       end
+      p.on("--use-rack-common-logger", "If set, display each HTTP request") do
+        OMF::Web::Runner.instance.options[:use_rack_common_logger] = true
+      end
       p.separator ""
     end,
     # post_parse should return true if everything is ok

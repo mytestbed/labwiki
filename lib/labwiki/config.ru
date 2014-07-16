@@ -16,7 +16,8 @@ end
 
 use ::Rack::ShowExceptions
 use ::Rack::Session::Cookie, secret: LW_PORT, key: "labwiki.session.#{LW_PORT}"
-use ::Rack::CommonLogger
+
+use ::Rack::CommonLogger if OMF::Web::Runner.instance.options[:use_rack_common_logger]
 
 # AUTHENTICATION
 
