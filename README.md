@@ -124,3 +124,28 @@ this README file.
 The 'plugins' node holds additional configuration options for each of the plugins. The above
 example defines the configuration options of the 'experiment' plugin. Check the documentation of each particular plugin
 you use for how to configure it.
+
+### Multi-user & Authentication
+
+LabWiki will start without authentication by default, if multi-user is required, simply add a simple 'authentication' section to your config file:
+
+    labwiki:
+      session:
+        authentication:
+          type: openid
+          provider: google
+
+
+LabWiki has built in support for openid, with choice of providers: google or geni
+
+#### Separate repository per user
+
+A common multi-user set up for LabWiki would be to let each authenticated user having an empty repository for their own use, while all the users would share a single common repository where some default content and scripts locate. This can be achieved by specifying repository name dynamically using authenticated user's id.
+
+For example:
+
+https://github.com/mytestbed/labwiki/blob/master/etc/labwiki/multi_repos.yml
+
+#### Customise additional authentication strategies
+
+TBD
