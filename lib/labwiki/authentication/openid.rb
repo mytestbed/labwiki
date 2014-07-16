@@ -17,8 +17,9 @@ module LabWiki
           login_content:
             Erector.inline do
               p do
-                a :href => "/?openid_identifier=http://www.google.com/accounts/o8/id", :class => "btn btn-primary" do
-                  text "Login with Google ID"
+                a :href => "/?openid_identifier=http://www.google.com/accounts/o8/id", :class => "btn btn-lg btn-success" do
+                  i :class => "fa fa-google fa-lg"
+                  text " Login with Google ID"
                 end
               end
             end
