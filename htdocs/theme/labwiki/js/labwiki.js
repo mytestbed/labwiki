@@ -14,12 +14,12 @@ require.config({
         graph: 'graph/js',
         graph_css: 'graph/css'
     },
-    shim: {
-      'vendor/jquery/jquery': {
-          //deps: ['jquery'],
-          exports: 'jQuery'
-      },
-    },
+    // shim: {
+      // 'vendor/jquery/jquery': {
+          // //deps: ['jquery'],
+          // exports: 'jQuery'
+      // },
+    // },
     map: {
       '*': {
         'css': 'vendor/require-css/css'
@@ -27,6 +27,8 @@ require.config({
     },
     waitSeconds: 30
 });
+//OML.require_dependency('vendor/jquery/jquery', { exports: 'jQuery' });
+
 require(['css!graph_css/graph'], function(css) {});
 
 define(['theme/labwiki/js/column_controller'], function (column_controller) {

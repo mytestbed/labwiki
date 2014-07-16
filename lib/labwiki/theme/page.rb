@@ -28,9 +28,10 @@ module OMF::Web::Theme
     #depends_on :js, "/resource/theme/labwiki/js/exp_context.js"
 
     depends_on :js, "/resource/vendor/bootstrap/js/bootstrap.js"
-    depends_on :js, '/resource/vendor/jquery/jquery.js'
-    depends_on :js, '/resource/vendor/jquery/jquery.periodicalupdater.js'
-    depends_on :js, '/resource/vendor/jquery-ui/js/jquery-ui.min.js'
+    #depends_on :js, '/resource/vendor/jquery/jquery.js'
+    #depends_on :js, '/resource/vendor/jquery/jquery.periodicalupdater.js'
+    #depends_on :js, '/resource/vendor/jquery-ui/js/jquery-ui.min.js'
+    depends_on :js, '/resource/vendor/jquery-ui/js/jquery-ui.js'
     depends_on :js, '/resource/vendor/jquery.ui.touch-punch.min.js'
     depends_on :js, '/resource/vendor/smartmenus/jquery.smartmenus.js'
     depends_on :js, '/resource/vendor/smartmenus/addons/bootstrap/jquery.smartmenus.bootstrap.js'
