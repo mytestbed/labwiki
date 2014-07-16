@@ -13,7 +13,15 @@ module LabWiki
             "http://axschema.org/namePerson/last",
             "http://axschema.org/contact/email",
             "http://axschema.org/namePerson/first"
-          ]
+          ],
+          login_content:
+            Erector.inline do
+              p do
+                a :href => "/?openid_identifier=http://www.google.com/accounts/o8/id", :class => "btn btn-primary" do
+                  text "Login with Google ID"
+                end
+              end
+            end
         },
         "geni" => {
           provider: "https://portal.geni.net/server/server.php",
@@ -24,12 +32,21 @@ module LabWiki
             "http://geni.net/user/prettyname",
             "http://geni.net/irods/username",
             "http://geni.net/irods/zone"
-          ]
+          ],
+          login_content:
+            Erector.inline do
+              p { img :src => "/resource/login/img/geni.png", :alt => "GENI" }
+              p do
+                a :href => "/?openid_identifier=https://portal.geni.net/server/server.php", :class => "btn btn-success" do
+                  text "Login with GENI ID"
+                end
+              end
+            end
         }
       }
 
       def initialize(opts)
-        super(opts)
+        super
         # Default we let google do it
         @provider = opts[:provider] || "google"
 
@@ -47,6 +64,8 @@ module LabWiki
 
       def parse_user(user)
         user = @users[user]
+        return if user.nil?
+
         case @provider
         when "geni"
           pretty_name = user['http://geni.net/user/prettyname'].try(:first)
@@ -69,6 +88,10 @@ module LabWiki
         end
 
         OMF::Web::SessionStore[:name, :user] = pretty_name || "Unknown"
+      end
+
+      def login_content
+        PROVIDERS[@provider][:login_content]
       end
     end
   end

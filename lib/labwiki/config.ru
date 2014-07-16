@@ -19,14 +19,17 @@ use ::Rack::Session::Cookie, secret: LW_PORT, key: "labwiki.session.#{LW_PORT}"
 use ::Rack::CommonLogger
 
 # AUTHENTICATION
-LabWiki::Authentication.setup(LabWiki::Configurator["session/authentication"])
+
+LabWiki::Authentication.setup(
+  OMF::Web::Runner.instance.options[:no_login_required] ? nil : LabWiki::Configurator["session/authentication"]
+)
 
 if LabWiki::Authentication.openid?
   use ::Rack::OpenID, OpenID::Store::Filesystem.new("/tmp/openid_#{LW_PORT}")
 end
 
 use Warden::Manager do |manager|
-  manager.failure_app = LabWiki::Authentication::Failure
+  manager.failure_app = LabWiki::LoginHandler.new
 end
 # END AUTHENTICATION
 

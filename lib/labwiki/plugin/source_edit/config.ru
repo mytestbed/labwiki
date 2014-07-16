@@ -26,7 +26,7 @@ map "/plugin/source_edit/create_script" do
       OMF::Base::Loggable.logger('repository').error e_msg
       return [500, {}, e_msg]
     end
-    [200, {'Content-Type' => 'application/json'}, { url: url, mime_type: mime_type }.to_json]
+    [200, {'Content-Type' => 'application/json'}, [{ url: url, mime_type: mime_type }.to_json]]
   end
   run handler
 end

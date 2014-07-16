@@ -1,7 +1,6 @@
 require 'warden'
-
-#LOGIN_PAGE = LabWiki::Configurator["session/authentication/page"] || "/resource/login/google_openid.html"
-LOGIN_PAGE = "/resource/login/google_openid.html"
+require 'erector'
+require 'labwiki/rack/login_handler'
 
 TRUST_REFERRER = "portal.geni.net"
 
@@ -9,7 +8,7 @@ module LabWiki
   class Authentication < OMF::Base::LObject
     @@types = {}
 
-    attr_reader :type
+    attr_reader :type, :users
 
     def self.register_type(type_name)
       @@types[type_name.to_s] = self
@@ -27,6 +26,14 @@ module LabWiki
       @@instance.type.to_sym
     end
 
+    def self.login_content
+      @@instance.login_content
+    end
+
+    def self.know_this_user?(user_id)
+      @@instance.users.keys.include? user_id
+    end
+
     # TODO use define_method
     def self.openid?
       @@instance.type == 'openid'
@@ -40,23 +47,25 @@ module LabWiki
       @type = opts.delete(:type)
       @users = {}
 
-      Warden::Manager.after_set_user do |user, auth, opts|
-        parse_user(user)
+      if @type == 'none'
+        # When manually set_user under no login, after_authentication would not trigger
+        Warden::Manager.after_set_user do |user, auth, opts|
+          parse_user(user) unless OMF::Web::SessionStore[:initialised, :session]
+        end
+      else
+        Warden::Manager.after_authentication do |user, auth, opts|
+          parse_user(user) unless OMF::Web::SessionStore[:initialised, :session]
+        end
       end
     end
 
+    # Parse warden user information into omf web session store
     def parse_user(user)
     end
 
-    module Failure
-      def self.call(env)
-        #[401, {'Location' => '/labwiki', "Content-Type" => ""}, [
-        #  "<p>Authentication failed. #{env['warden'].message}<p>
-        # <a href='/labwiki/logout'>Try again</a>
-        #  "
-        #]]
-        [302, {'Location' => "/resource/login/google_openid.html", "Content-Type" => ""}, ['Redirect to login']]
-      end
+    # To display in login page
+    def login_content
     end
+
   end
 end
