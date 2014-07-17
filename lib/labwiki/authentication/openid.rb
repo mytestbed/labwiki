@@ -74,7 +74,7 @@ module LabWiki
         user = @users[identity_url]
         return if user.nil?
 
-        user.each { |k, v| user[k] = v.try(:first)
+        user.each { |k, v| user[k] = v.try(:first) if v.kind_of? Array }
         OMF::Web::SessionStore[:data, :user] = user
 
         case @provider
@@ -84,9 +84,9 @@ module LabWiki
           end
           OMF::Web::SessionStore[:name, :user] = user['http://geni.net/user/prettyname']
         when "google"
-          OMF::Web::SessionStore[:id, :user] = user["http://axschema.org/contact/email"].try(:first)
-          last_name = user["http://axschema.org/namePerson/last"].try(:first)
-          first_name = user["http://axschema.org/namePerson/first"].try(:first)
+          OMF::Web::SessionStore[:id, :user] = user["http://axschema.org/contact/email"]
+          last_name = user["http://axschema.org/namePerson/last"]
+          first_name = user["http://axschema.org/namePerson/first"]
           OMF::Web::SessionStore[:name, :user] = "#{first_name} #{last_name}"
         end
       end
