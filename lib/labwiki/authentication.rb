@@ -12,7 +12,6 @@ module LabWiki
 
     def self.register_type(type_name)
       @@types[type_name.to_s] = self
-      puts @@types
     end
 
     def self.setup(opts)
@@ -30,11 +29,10 @@ module LabWiki
       @@instance.login_content
     end
 
-    def self.know_this_user?(user_id)
-      @@instance.users.keys.include? user_id
+    def self.configure_warden(manager)
+      @@instance.configure_warden(manager)
     end
 
-    # TODO use define_method
     def self.openid?
       @@instance.type == 'openid'
     end
@@ -45,18 +43,14 @@ module LabWiki
 
     def initialize(opts)
       @type = opts.delete(:type)
-      @users = {}
 
-      if @type == 'none'
-        # When manually set_user under no login, after_authentication would not trigger
-        Warden::Manager.after_set_user do |user, auth, opts|
-          parse_user(user) unless OMF::Web::SessionStore[:initialised, :session]
-        end
-      else
-        Warden::Manager.after_authentication do |user, auth, opts|
-          parse_user(user) unless OMF::Web::SessionStore[:initialised, :session]
-        end
+      Warden::Manager.after_set_user do |user, auth, opts|
+        parse_user(user) unless OMF::Web::SessionStore[:initialised, :session]
       end
+    end
+
+    def configure_warden(manager)
+      manager.failure_app = LabWiki::LoginHandler.new
     end
 
     # Parse warden user information into omf web session store
@@ -66,6 +60,5 @@ module LabWiki
     # To display in login page
     def login_content
     end
-
   end
 end

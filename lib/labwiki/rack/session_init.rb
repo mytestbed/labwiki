@@ -23,16 +23,7 @@ module LabWiki
 
         # Unless visiting public/unprotected pages
         unless req.path =~ /^\/(login|logout|unauthenticated)/
-          if env['warden'].authenticated?
-            unless LabWiki::Authentication.know_this_user?(env['warden'].user)
-              req.session.clear
-              if req.xhr?
-                return [401, {}, ['Session lost, re-authenticate.']]
-              else
-                return [302, {'Location' => '/', "Content-Type" => ""}, ['Session lost, re-authenticate.']]
-              end
-            end
-          else
+          unless env['warden'].authenticated?
             if LabWiki::Authentication.none?
               # No login hack, set a default user
               env['warden'].set_user "https://localhost?id=xxx"

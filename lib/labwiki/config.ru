@@ -15,7 +15,10 @@ use Rack::Cors, debug: true do
 end
 
 use ::Rack::ShowExceptions
-use ::Rack::Session::Cookie, secret: LW_PORT, key: "labwiki.session.#{LW_PORT}"
+
+cookie_key_affix = ENV['RACK_ENV'] == 'production' ? LW_PORT : Time.now
+
+use ::Rack::Session::Cookie, secret: LW_PORT, key: "labwiki.session.#{cookie_key_affix}"
 
 use ::Rack::CommonLogger if OMF::Web::Runner.instance.options[:use_rack_common_logger]
 
@@ -30,8 +33,9 @@ if LabWiki::Authentication.openid?
 end
 
 use Warden::Manager do |manager|
-  manager.failure_app = LabWiki::LoginHandler.new
+  LabWiki::Authentication.configure_warden(manager)
 end
+
 # END AUTHENTICATION
 
 use LabWiki::SessionInit

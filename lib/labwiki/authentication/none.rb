@@ -20,10 +20,10 @@ module LabWiki
         end
       end
 
-      def parse_user(user)
-        user = @users[@identity_url] = @debug_user
-        OMF::Web::SessionStore[:name, :user] = user['pretty_name']
-        urn = user['urn']
+      def parse_user(identity_url)
+        @identity_url = identity_url
+        OMF::Web::SessionStore[:name, :user] = @debug_user['pretty_name']
+        urn = @debug_user['urn']
         OMF::Web::SessionStore[:urn, :user] = urn
         OMF::Web::SessionStore[:id, :user] = urn && urn.split('|').last
       end

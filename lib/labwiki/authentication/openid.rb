@@ -1,5 +1,5 @@
 require 'warden-openid'
-require 'labwiki/ruby_openid_patch'
+require 'labwiki/authentication/ruby_openid_patch'
 
 module LabWiki
   class Authentication
@@ -48,6 +48,7 @@ module LabWiki
 
       def initialize(opts)
         super
+        @users = {} # Authenticated users
         # Default we let google do it
         @provider = opts[:provider] || "google"
 
@@ -57,14 +58,16 @@ module LabWiki
             identity_url = response.identity_url
             user_data = ::OpenID::AX::FetchResponse.from_success_response(response).data
             user_data['lw:auth_type'] = "openid.#{@provider}"
+
             @users[identity_url] = user_data
+
             identity_url
           end
         end
       end
 
-      def parse_user(user)
-        user = @users[user]
+      def parse_user(identity_url)
+        user = @users[identity_url]
         return if user.nil?
 
         case @provider

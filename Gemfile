@@ -13,7 +13,6 @@ gem "omf_web", override_with_local(path: '../omf_web', github: 'mytestbed/omf_we
 gem "httparty"
 gem "god"
 gem 'rack-cors', :require => 'rack/cors'
-gem "warden-openid"
 gem "i18n"
 
 # Install gems from each plugin
@@ -23,3 +22,13 @@ Dir.glob(File.join(File.dirname(__FILE__), 'plugins', '*', "Gemfile")) do |gemfi
   #puts "GEMFILE: #{gemfile}"
   eval(IO.read(gemfile), binding)
 end
+
+group :warden do
+  gem "warden-openid"
+  gem "warden-github"
+end
+
+group :dev do
+  gem "pry"
+end
+
