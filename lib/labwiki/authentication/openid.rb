@@ -52,6 +52,10 @@ module LabWiki
         # Default we let google do it
         @provider = opts[:provider] || "google"
 
+        unless PROVIDERS.keys.include?(@provider)
+          raise StandardError, "Unknown OpenID provider '#{@provider}'"
+        end
+
         Warden::OpenID.configure do |config|
           config.required_fields = PROVIDERS[@provider][:required_fields]
           config.user_finder do |response|
@@ -70,28 +74,21 @@ module LabWiki
         user = @users[identity_url]
         return if user.nil?
 
+        user.each { |k, v| user[k] = v.try(:first)
+        OMF::Web::SessionStore[:data, :user] = user
+
         case @provider
         when "geni"
-          pretty_name = user['http://geni.net/user/prettyname'].try(:first)
-
-          if (urn = user['http://geni.net/user/urn'].try(:first))
-            OMF::Web::SessionStore[:urn, :user] = urn.gsub '|', '+'
-            OMF::Web::SessionStore[:id, :user] = urn && urn.split('|').last
+          if (urn = user['http://geni.net/user/urn'])
+            OMF::Web::SessionStore[:id, :user] = urn.split('|').last
           end
-          if (irods_user = user['http://geni.net/irods/username'].try(:first))
-            OMF::Web::SessionStore[:id, :irods_user] = irods_user
-          end
-          if (irods_zone = user['http://geni.net/irods/zone'].try(:first))
-            OMF::Web::SessionStore[:id, :irods_zone] = irods_zone
-          end
+          OMF::Web::SessionStore[:name, :user] = user['http://geni.net/user/prettyname']
         when "google"
+          OMF::Web::SessionStore[:id, :user] = user["http://axschema.org/contact/email"].try(:first)
           last_name = user["http://axschema.org/namePerson/last"].try(:first)
           first_name = user["http://axschema.org/namePerson/first"].try(:first)
-          pretty_name = "#{first_name} #{last_name}"
-          OMF::Web::SessionStore[:id, :user] = user["http://axschema.org/contact/email"].try(:first)
+          OMF::Web::SessionStore[:name, :user] = "#{first_name} #{last_name}"
         end
-
-        OMF::Web::SessionStore[:name, :user] = pretty_name || "Unknown"
       end
 
       def login_content

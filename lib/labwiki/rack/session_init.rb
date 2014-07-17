@@ -36,7 +36,7 @@ module LabWiki
 
         # Trigger start session callbacks
         unless OMF::Web::SessionStore[:initialised, :session]
-          LabWiki::Configurator.start_session(OMF::Web::SessionStore[:id, :user])
+          LabWiki::Configurator.start_session(OMF::Web::SessionStore[:data, :user])
           LabWiki::PluginManager.init_session()
           LabWiki::LWWidget.init_session()
           OMF::Web::SessionStore[:initialised, :session] = true

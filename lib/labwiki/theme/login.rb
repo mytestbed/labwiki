@@ -8,6 +8,7 @@ module OMF::Web::Theme
 
     def initialize(widget, opts)
       super
+      @page_title = "Login : LabWiki"
     end
 
     def content

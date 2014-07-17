@@ -173,7 +173,7 @@ module LabWiki
     def self._safe_call(block)
       begin
         block.call
-      rescue Exeception => ex
+      rescue => ex
         error ex
         debug "#{ex}\n\t#{ex.backtrace.join("\n\t")}"
       end

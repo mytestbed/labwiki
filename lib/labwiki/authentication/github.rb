@@ -23,6 +23,7 @@ module LabWiki
       def parse_user(user)
         OMF::Web::SessionStore[:id, :user] = user.id
         OMF::Web::SessionStore[:name, :user] = user.name || "Unknown"
+        OMF::Web::SessionStore[:data, :user] = user
       end
     end
   end

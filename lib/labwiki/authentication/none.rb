@@ -14,18 +14,17 @@ module LabWiki
         else
           @debug_user = {
             'lw:auth_type' => 'NoLogin',
-            'urn' => 'user1',
-            'pretty_name' => "User 1"
+            'id' => 'user1',
+            'name' => "User 1"
           }
         end
       end
 
       def parse_user(identity_url)
         @identity_url = identity_url
-        OMF::Web::SessionStore[:name, :user] = @debug_user['pretty_name']
-        urn = @debug_user['urn']
-        OMF::Web::SessionStore[:urn, :user] = urn
-        OMF::Web::SessionStore[:id, :user] = urn && urn.split('|').last
+        OMF::Web::SessionStore[:id, :user] = @debug_user['id']
+        OMF::Web::SessionStore[:name, :user] = @debug_user['name']
+        OMF::Web::SessionStore[:data, :user] = @debug_user
       end
     end
   end
