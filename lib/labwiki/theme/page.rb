@@ -188,6 +188,32 @@ module OMF::Web::Theme
           end
         end
       end
+
+      full_screen_modal
+    end
+
+    def full_screen_modal
+      div class: "modal fade", id: "fullscreen_modal", tabindex: "-1", role: "dialog", 'aria-labelledby' => "myModalLabel", 'aria-hidden' => "true" do
+        div class: "modal-dialog" do
+          div class: "modal-content" do
+            div class: "modal-header" do
+              button type: "button", class: "close", 'data-dismiss' => "modal" do
+                span class: "glyphicon glyphicon-remove"
+                span 'Close', class: "sr-only"
+             end
+             h2 "XXX", class: "modal-title"
+            end
+            div class: "modal-body" do
+              text '....'
+            end
+            # div class: "modal-footer" do
+              # button 'Close', type: "button", class: "btn btn-default", 'data-dismiss' => "modal"
+              # button 'Save changes', type: "button", class: "btn btn-primary"
+            # end
+          end
+        end
+      end
+
     end
 
   end # class Page

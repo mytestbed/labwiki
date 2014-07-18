@@ -43,6 +43,20 @@ define(['theme/labwiki/js/column_controller'], function (column_controller) {
     LW.execute_controller = new column_controller({name: 'execute', col_index: 2})
   ];
 
+  function resize_modal() {
+    var height = $('#k-slider').height();
+    var fd = $('#fullscreen_modal .modal-content');
+    var hc = height - 20;
+    fd.css('height', '' + hc + 'px');
+
+    var fd_h = fd.find('.modal-header');
+    var h = fd_h[0].scrollHeight;
+    if (h > 0) {
+      var fd_b = fd.find('.modal-body');
+      fd_b.css('height', '' + hc - h - 5 + 'px');
+    }
+  }
+
   LW.layout = function(window) {
 
     function layout() {
@@ -61,9 +75,28 @@ define(['theme/labwiki/js/column_controller'], function (column_controller) {
         return left + w;
       }, 0);
       OHUB.trigger('layout.resize', {});
+      resize_modal();
     }
     return layout;
   }($(window));
+
+  LW.show_modal = function(title, content, on_show) {
+    var fm = $('#fullscreen_modal');
+    var th = fm.find('.modal-title');
+    th.text(title);
+
+    var fb = fm.find('.modal-body');
+    fb.empty();
+    fb.append(content);
+    if (on_show) {
+      fm.on('shown.bs.modal', function() {
+        resize_modal();
+        on_show();
+      });
+    }
+    fm.modal({});
+  };
+
 
 
   LW.resize = function(window) {

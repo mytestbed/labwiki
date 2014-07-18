@@ -648,4 +648,22 @@ div.lw-form tr.buttons td {
 }
 
 
-//style='display: inline-block'
+/**** GLOBAL MODAL *****/
+
+#fullscreen_modal {
+  overflow-y: auto;
+
+}
+#fullscreen_modal .modal-dialog {
+  width: 90%;
+}
+
+#fullscreen_modal .modal-header h2 {
+  font-size: 160%;
+}
+
+#fullscreen_modal .modal-body {
+  overflow: auto;
+}
+
+
