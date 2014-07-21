@@ -22,6 +22,7 @@ module OMF::Web::Theme
       style = "overflow-y: hidden; left: #{width * pos}px; width: #{width}px; display: block; "
       div :class => "k-panel k-focus", :id => "kp#{pos}", :style => style do
         render_panel_titlebar(title)
+        render_alert_panel
         render_panel_selector_bar
         rawtext @content_renderer.to_html()
         div :class => "mask", :style => "display: none; " do
@@ -66,7 +67,10 @@ module OMF::Web::Theme
           end
         end
       end
+    end
 
+    def render_alert_panel
+      div :id => "lw#{object_id}_alerts", class: 'col-alerts', :style => 'display: none;'
     end
 
     def render_panel_selector_bar

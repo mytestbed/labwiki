@@ -370,6 +370,14 @@ a.nav-menu-item i {
   border-bottom: 1px solid #CCCCCC;
 }
 
+/** ALERTS ***/
+
+.k-panel .col-alerts .alert {
+  margin: 8px;
+  padding:10px;
+}
+
+
 /*** DRAGGING CONTENT */
 
 .ui-drop-hover {

@@ -22,8 +22,51 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       this._content_selector.set_search_list_formatter(plugin_name, formatter_f);
     },
 
-    add_tool: function(name, html_frag) {
-      this._content_selector.add_tool(name, html_frag);
+    // type: success, info, warning, danger
+    show_alert: function(type, msg, hide_after) {
+      var self = this;
+      var ad = $('<div class="alert alert-' + type + ' fade in" role="alert">'
+                 + '<button type="button" class="close" data-dismiss="alert">'
+                 + '<span aria-hidden="true">×</span><span class="sr-only">Close</span></button>'
+                 + msg + '</div>');
+      var ap = this.top_el.find('.col-alerts');
+      ap.prepend(ad);
+      if (hide_after || type == 'success' || type == 'info') {
+        if (!hide_after) hide_after = 5000; // default
+        ad.delay(hide_after).fadeOut().promise().done(function() {
+          ad.remove();
+          self.check_size();
+        });
+      }
+      ap.show();
+    },
+
+    add_tool: function(name, html_frag, callback) {
+      var self = this;
+      var id = this._name + '_tool_form_' + (this.tool_count += 1);
+      var hf = '<form class="form-inline" role="form" id="' + id + '" method="POST">'
+              + html_frag + '</form>';
+      this._content_selector.add_tool(name, hf);
+      var form = $('#' + id);
+      form.submit(function(event) {
+        callback(form, function(status, msg) {
+          self.show_alert(status, msg);
+          switch (status) {
+          case 'success':
+            self.close_tool_list();
+            break;
+          }
+        });
+        return false;
+      });
+      return form;
+    },
+
+    close_tool_list: function() {
+      var self = this;
+      $("div.tools-list").hide(0).promise().done(function() {
+        self.check_size();
+      });
     },
 
     add_toolbar_element: function(el) {
@@ -94,6 +137,8 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       this.top_el = $("#kp" + opts.col_index);
       this.col_span = 1;
 
+      this.tool_count = 0; // enumerate tools added
+
       var self = this;
       // OHUB.bind('layout.resize', function(e) {
         // self.init_content_panel();
@@ -133,14 +178,14 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       this.refresh_content(opts, 'POST');
     },
 
-    refresh_content: function(opts, type) {
+    refresh_content: function(opts, type, status_cbk) {
       //opts['id'] = selected.id;
       var self = this;
       opts.sid = LW.session_id;
       $.ajax({
+        type: (type != undefined) ? type : 'POST',
         url: '_column',
         data: JSON.stringify(opts),
-        type: (type != undefined) ? type : 'POST',
         contentType: "application/json"
       }).done(function(data) {
         self.on_drop_handler = null; // remove drop handler as it may be related to old content
@@ -152,17 +197,20 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
           var s = printStackTrace({e: err});
           console.log(s);
         }
+        if (status_cbk) status_cbk('success', 'OK');
         delete data['html'];
         self.content_descriptor = data;
         self.fix_toolbar();
         self.init_drag_n_drop();
         self.init_content_panel();
         OHUB.trigger('column.content.showing', {column: self._name, content: data, selector: content_div});
+      }).fail(function(jqXHR, textStatus, errorThrown) {
+        if (status_cbk) status_cbk('error', textStatus);
       });
 
     },
 
-    request_action: function(opts, type, callback) {
+    request_action: function(opts, type, callback, status_cbk) {
       //opts['id'] = selected.id;
       var self = this;
       opts.sid = LW.session_id;
@@ -175,11 +223,15 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       }).done(function(data) {
         try {
           if (callback) callback(data.action_reply);
+          if (status_cbk) status_cbk('success', 'OK');
         } catch(err) {
           // TODO: Find a better way of conveying problem
+          if (status_cbk) status_cbk('error', err);
           var s = printStackTrace({e: err});
           console.log(s);
         }
+      }).fail(function(jqXHR, textStatus, errorThrown) {
+        if (status_cbk) status_cbk('error', textStatus);
       });
     },
 
@@ -349,7 +401,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       });
     },
 
-    init_content_panel: function() {
+    check_size: function() {
       var opts = this._opts;
   //    $('#col_content_' + opts.col)
       var col = $('#col_content_' + opts.name);
@@ -368,6 +420,15 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
 
         //OHUB.trigger('column.' + this._name + '.panel.height', {height: panel_height});
       }
+    },
+
+    init_content_panel: function() {
+      this.check_size();
+      var opts = this._opts;
+  //    $('#col_content_' + opts.col)
+      var col = $('#col_content_' + opts.name);
+      var panel = col.find('.panel-body');
+      var position = panel.offset();
 
       // fix links in content panel
       panel.find('.widget_body a').each(function() {
