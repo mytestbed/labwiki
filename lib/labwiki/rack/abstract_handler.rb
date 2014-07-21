@@ -13,7 +13,11 @@ module LabWiki
     def call(env)
       begin
         req = ::Rack::Request.new(env)
-        body, headers = on_request(req)
+        res = on_request(req)
+        if res.length == 3 # proper reply?
+          return res
+        end
+        body, headers = res
         if headers.kind_of? String
           headers = {"Content-Type" => headers}
         end
