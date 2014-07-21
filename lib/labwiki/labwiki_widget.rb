@@ -68,7 +68,7 @@ module LabWiki
         raise "Can't create widget for for column '#{col}' (#{params.inspect})"
       end
       unless col_widget.respond_to? action
-        raise "Unknown action '#{action}' for column '#{col}'"
+        raise "Unknown action '#{action}' for widget '#{col_widget}'"
       end
 
       OMF::Web::SessionStore[col_widget.widget_id, :widgets] # just to reset expiration timer
