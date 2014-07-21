@@ -24,6 +24,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
 
     // type: success, info, warning, danger
     show_alert: function(type, msg, hide_after) {
+      if (type == 'error') type = 'danger';
       var self = this;
       var ad = $('<div class="alert alert-' + type + ' fade in" role="alert">'
                  + '<button type="button" class="close" data-dismiss="alert">'
@@ -205,9 +206,22 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
         self.init_content_panel();
         OHUB.trigger('column.content.showing', {column: self._name, content: data, selector: content_div});
       }).fail(function(jqXHR, textStatus, errorThrown) {
-        if (status_cbk) status_cbk('error', textStatus);
+        self._report_ajax_fail(jqXHR, '_column', opts, status_cbk);
       });
 
+    },
+
+    _report_ajax_fail: function(jqXHR, url, opts, status_cbk) {
+      var type = 'danger';
+      var msg = jqXHR.responseText || jqXHR.statusText;
+      switch (jqXHR.status) {
+        case 500:
+          msg = "Server Error: " + jqXHR.responseText;
+          break;
+
+      }
+      console.log('Ajax failed: ' + msg);
+      if (status_cbk) status_cbk(type, msg);
     },
 
     request_action: function(opts, type, callback, status_cbk) {
@@ -231,7 +245,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
           console.log(s);
         }
       }).fail(function(jqXHR, textStatus, errorThrown) {
-        if (status_cbk) status_cbk('error', textStatus);
+        self._report_ajax_fail(jqXHR, '_column', opts, status_cbk);
       });
     },
 
