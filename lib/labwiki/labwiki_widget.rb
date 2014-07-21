@@ -43,6 +43,7 @@ module LabWiki
 
       if action == :on_new
         col_widget = nil
+        action = :on_get_content
       else
         col_widget = @widgets[col]
         debug "dispatch params: #{params} - col_wgt: #{col_widget}"
