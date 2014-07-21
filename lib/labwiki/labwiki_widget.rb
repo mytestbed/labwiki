@@ -41,20 +41,24 @@ module LabWiki
       params = expand_req_params(col, params, req)
       no_render = params.delete(:no_render)
 
-      col_widget = @widgets[col]
-      debug "dispatch params: #{params} - col_wgt: #{col_widget}"
-      if widget_id = params[:widget_id]
-        unless col_widget && col_widget.widget_id == widget_id
-          if w = OMF::Web::SessionStore[widget_id, :widgets]
-            # good we found an existing old one
-            col_widget = @widgets[col] = w
-          else
-            raise "Requesting unknown widget id '#{widget_id}::#{widget_id.class}' -- #{col_widget.inspect}"
+      if action == :on_new
+        col_widget = nil
+      else
+        col_widget = @widgets[col]
+        debug "dispatch params: #{params} - col_wgt: #{col_widget}"
+        if widget_id = params[:widget_id]
+          unless col_widget && col_widget.widget_id == widget_id
+            if w = OMF::Web::SessionStore[widget_id, :widgets]
+              # good we found an existing old one
+              col_widget = @widgets[col] = w
+            else
+              raise "Requesting unknown widget id '#{widget_id}::#{widget_id.class}' -- #{col_widget.inspect}"
+            end
           end
-        end
-      elsif col_widget
-        if url = params[:url] || (params[:params] || {})[:url]
-          col_widget = nil if col_widget.content_url != url
+        elsif col_widget
+          if url = params[:url] || (params[:params] || {})[:url]
+            col_widget = nil if col_widget.content_url != url
+          end
         end
       end
       unless col_widget
@@ -67,9 +71,14 @@ module LabWiki
         raise "Unknown action '#{action}' for column '#{col}'"
       end
 
-      debug "Calling '#{action} on '#{col_widget.class}' widget"
       OMF::Web::SessionStore[col_widget.widget_id, :widgets] # just to reset expiration timer
-      action_reply = col_widget.send(action, params, req)
+
+      if action == :on_new
+        action_reply = nil
+      else
+        debug "Calling '#{action} on '#{col_widget.class}' widget"
+        action_reply = col_widget.send(action, params, req)
+      end
 
       res = col_widget.content_descriptor.dup
       if no_render
