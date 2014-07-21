@@ -17,7 +17,7 @@ module LabWiki
         params = req.params
       else
         (body = body.string) if body.is_a? StringIO
-        unless req.content_type == 'application/json'
+        unless req.content_type.start_with? 'application/json'
           warn "Received request with unknown content type '#{req.content_type}'"
           return [400, {"Content-Type" => 'text/json'}, 'Unknown content type']
         end
