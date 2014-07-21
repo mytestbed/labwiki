@@ -40,6 +40,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
         });
       }
       ap.show();
+      self.check_size();
     },
 
     add_tool: function(name, html_frag, callback) {
@@ -197,6 +198,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
           // TODO: Find a better way of conveying problem
           var s = printStackTrace({e: err});
           console.log(s);
+          self.show_alert('danger', s.slice(0, 2).join("\n"));
         }
         if (status_cbk) status_cbk('success', 'OK');
         delete data['html'];
@@ -212,6 +214,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
     },
 
     _report_ajax_fail: function(jqXHR, url, opts, status_cbk) {
+      var self = this;
       var type = 'danger';
       var msg = jqXHR.responseText || jqXHR.statusText;
       switch (jqXHR.status) {
@@ -221,7 +224,14 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
 
       }
       console.log('Ajax failed: ' + msg);
-      if (status_cbk) status_cbk(type, msg);
+      switch (typeof(status_cbk)) {
+      case 'function':
+        status_cbk(type, msg);
+        break;
+      case 'undefined':
+        self.show_alert(type, msg);
+        break;
+      }
     },
 
     request_action: function(opts, type, callback, status_cbk) {
@@ -243,6 +253,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
           if (status_cbk) status_cbk('error', err);
           var s = printStackTrace({e: err});
           console.log(s);
+          self.show_alert('danger', s.slice(0, 2).join("\n"));
         }
       }).fail(function(jqXHR, textStatus, errorThrown) {
         self._report_ajax_fail(jqXHR, '_column', opts, status_cbk);
