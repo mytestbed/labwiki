@@ -46,7 +46,7 @@ define([], function () {
 
       si.bind('focus', function() {
         self._refresh_suggestion_list();
-        context_el.find('.suggestion-list').show();
+        context_el.find('.suggestion-list').css('overflow', 'auto').show();
         return false;
       });
       si.bind('blur', function() {

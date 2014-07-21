@@ -560,6 +560,12 @@ div.widget_toolbar ol li a {
 /*
  * SUGGESTION LIST
  */
+
+div.suggestion-list {
+  max-height: 300px;
+  overflow: auto;
+}
+
 ul.suggestion-list {
 
 }
