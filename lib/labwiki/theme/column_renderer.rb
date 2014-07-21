@@ -4,14 +4,20 @@ require 'labwiki/theme/col_content_renderer'
 
 module OMF::Web::Theme
   class ColumnRenderer < Erector::Widget
-
+    include OMF::Base::Loggable
 
     def initialize(title, widget, col_name, position)
       @title = title
       @widget = widget
       @col_name = col_name
       @position = position
-      @content_renderer = ColumnContentRenderer.new(widget, col_name)
+      @content_renderer = nil
+      begin
+        @content_renderer = ColumnContentRenderer.new(widget, col_name)
+      rescue => ex
+        error "While creating renderer for '#{widget}' - #{ex}"
+        debug ex.backtrace.join("\n\t")
+      end
     end
 
     def content
@@ -24,7 +30,11 @@ module OMF::Web::Theme
         render_panel_titlebar(title)
         render_alert_panel
         render_panel_selector_bar
-        rawtext @content_renderer.to_html()
+        if @content_renderer
+          rawtext @content_renderer.to_html()
+        else
+          div "Internal Error", class: 'internal-error'
+        end
         div :class => "mask", :style => "display: none; " do
           div :class => "loader"
         end
