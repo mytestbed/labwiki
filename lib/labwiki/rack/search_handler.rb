@@ -25,8 +25,6 @@ module LabWiki
       rescue NoReposToSearchException
         return [{warn: 'No repository defined'}.to_json, 'application/json']
       end
-      #puts "Plugins>> #{PluginManager.plugins_for_column(col)}"
-
       [{result: res}.to_json, 'application/json']
     end
 
@@ -36,13 +34,13 @@ module LabWiki
         warn "No search repo defined for '#{col}'"
         raise NoReposToSearchException.new
       end
-      result = PluginManager.plugins_for_column(col).map do |plugin|
-        next unless sproc = plugin[:search]
-        name = plugin[:name]
+      result = PluginManager.widgets_for_column(col).map do |widget|
+        next unless sproc = widget[:search]
+        name = widget[:name]
         wopts = Configurator["plugins/#{name}"]
         cl = (sproc.call(pat, opts, wopts) || [])
         cl.map do |f|
-          f[:plugin] = name
+          f[:widget] = name
           url = f.delete(:url)
           f[:label] ||= url
           f[:content] ||= Base64.encode64("#{f[:mime_type]}::#{url}").gsub("\n", '')
@@ -51,9 +49,9 @@ module LabWiki
       end.flatten.compact
 
       result.each do |r_item|
-        puts r_item
-        PluginManager.plugins_for_column(col).each do |plugin|
-          r_item[:plugin] = plugin[:name] if [plugin[:handle_mime_type]].flatten.include?(r_item[:mime_type])
+        #puts r_item
+        PluginManager.widgets_for_column(col).each do |widget|
+          r_item[:widget] = widget[:name] if [widget[:handle_mime_type]].flatten.include?(r_item[:mime_type])
         end
       end
     end

@@ -7,7 +7,7 @@ module LabWiki
 
   class PluginManager < OMF::Base::LObject
     @@plugins = {}
-    @@plugins_for_col = { plan: [], prepare: [], execute: []}
+    @@widgets_for_col = { plan: [], prepare: [], execute: []}
 
     def self.init
       info "Initializing Plugins"
@@ -67,11 +67,16 @@ module LabWiki
         # :context => :execute,
         # :priority => lambda(),
         # :widget_class => Class
-        wdescr[:config_name] ||= name
-        if ctxt = @@plugins_for_col[wdescr[:context]]
+        unless wdescr[:name]
+          warn "Missing widget name, default to 'name' -- #{wdescr}"
+          wdescr[:name] = name
+        end
+        wdescr[:config_name] ||= wdescr[:name] || name
+        wdescr[:plugin_name] = name
+        if ctxt = @@widgets_for_col[wdescr[:context]]
           ctxt << wdescr
         else
-          warn "Ignoring plugin '#{name} for context '#{wdescr[:context]}'"
+          warn "Ignoring widget '#{name} for unknown context '#{wdescr[:context]}'"
         end
       end
 
@@ -94,15 +99,15 @@ module LabWiki
     end
 
     def self.create_widget(column, params)
-      debug "Creating widget for '#{column}' from '#{params}'"
-      if wname = params[:plugin]
-        wdescr = plugins_for_column(column).find do |wd|
-          debug "creating widget #{wname} - #{wd[:name] == wname} - #{wd}"
+      debug "Attempting to creating widget for column '#{column}' from '#{params}'"
+      if wname = params[:widget]
+        wdescr = widgets_for_column(column).find do |wd|
+          #debug "creating widget '#{wname}' - #{wd[:name] == wname} - #{wd}"
           wd[:name] == wname
         end
       else
         # FIXME Seems now all widget is based on plugin, it never got here. Then the whole priority logic never got executed.
-        widget = @@plugins_for_col[column.to_sym].reduce(:priority => 0, :wdescr => {}) do |best, wdescr|
+        widget = @@widgets_for_col[column.to_sym].reduce(:priority => 0, :wdescr => {}) do |best, wdescr|
           if wdescr[:priority] && priority = wdescr[:priority].call(params)
             if priority > best[:priority]
               best = {:priority => priority, :wdescr => wdescr}
@@ -125,8 +130,8 @@ module LabWiki
       widget
     end
 
-    def self.plugins_for_column(column)
-      @@plugins_for_col[column.to_sym]
+    def self.widgets_for_column(column)
+      @@widgets_for_col[column.to_sym]
     end
 
     def self.resource_directory_for(plugin_name)
