@@ -64,8 +64,8 @@ define([], function () {
       this._init_suggestion_lists(context_el);
     },
 
-    set_search_list_formatter: function(plugin_name, formatter_f) {
-      this._formatters[plugin_name] = formatter_f;
+    set_search_list_formatter: function(widget_name, formatter_f) {
+      this._formatters[widget_name] = formatter_f;
     },
 
     add_tool: function(name, html_frag) {
@@ -296,7 +296,7 @@ define([], function () {
         return h;
       };
       var lia = slist.map(function(row, i) {
-        var f = formatters[row.plugin] || formatters['_'];
+        var f = formatters[row.widget] || formatters['_'];
         return f(row, i, type, defFormatter);
       });
       var li = lia.join('');

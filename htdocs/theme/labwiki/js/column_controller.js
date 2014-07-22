@@ -163,7 +163,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
     },
 
     load_content: function(selected) {
-      console.log(selected);
+      //console.log(selected);
       //this.displayed_content = selected;
       var self = this;
       var opts = {
@@ -175,7 +175,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       if (selected.content) opts.content = selected.content;
       if (selected.url) opts.url = selected.url;
       if (selected.mime_type) opts.mime_type = selected.mime_type;
-      if (selected.plugin) opts.plugin = selected.plugin;
+      if (selected.widget) opts.widget = selected.widget;
 
       this.refresh_content(opts, 'POST');
     },
