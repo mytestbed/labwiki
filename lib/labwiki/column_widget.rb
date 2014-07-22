@@ -7,6 +7,16 @@ module LabWiki
 
   # Responsible for the content to be shown in a particular column
   class ColumnWidget < OMF::Base::LObject
+    @@renderers = {}
+
+    # Register the default renderer to use for this widget. Can be
+    # overwritten by implementing 'content_renderer'
+    #
+    # @param renderer_name - Name of renderer registered with Theme (in init.rb)
+    #
+    def self.renderer(renderer_name)
+      @@renderers[self] = renderer_name
+    end
 
     def initialize(col, opts)
       @column = col
@@ -51,6 +61,14 @@ module LabWiki
 
       debug "on_get_content: '#{params.inspect}'"
       self
+    end
+
+    def content_renderer()
+      unless renderer = @@renderers[self.class]
+        raise "Can't find a default renderer for widget '#{self.class}'"
+      end
+      debug "content_renderer: Using renderer '#{renderer}'."
+      OMF::Web::Theme.create_renderer(renderer, self)
     end
 
     def on_get_plugin(params, req)
