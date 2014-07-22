@@ -4,6 +4,23 @@ require 'omf-web/widget'
 require 'labwiki/column_widget'
 
 module LabWiki
+
+  # Thrown by a widget if it wants anotehr widget to handle the
+  # action.
+  #
+  # @param widget_name name of widget to try
+  # @param opts
+  # @param opts action Override action to use on new widget
+  #
+  class RedirectWidget < LWException
+    attr_reader :widget_name, :opts
+
+    def initialize(widget_name, opts)
+      @widget_name = widget_name
+      @opts = opts
+    end
+  end
+
   class LWWidget < OMF::Base::LObject
 
     def self.init_session()
@@ -39,7 +56,6 @@ module LabWiki
     def dispatch_to_column(col, action, params, req)
       action = "on_#{action}".to_sym
       params = expand_req_params(col, params, req)
-      no_render = params.delete(:no_render)
 
       if action == :on_new
         col_widget = nil
@@ -65,34 +81,47 @@ module LabWiki
       unless col_widget
         col_widget = @widgets[col] = create_column_widget(col, params)
       end
-      unless col_widget
+      _dispatch_to_widget(col, col_widget, action, params, req)
+    end
+
+    def _dispatch_to_widget(col, widget, action, params, req)
+      unless widget
         raise "Can't create widget for for column '#{col}' (#{params.inspect})"
       end
-      unless col_widget.respond_to? action
-        raise "Unknown action '#{action}' for widget '#{col_widget}'"
+      unless widget.respond_to? action
+        raise "Unknown action '#{action}' for widget '#{widget}'"
       end
 
-      OMF::Web::SessionStore[col_widget.widget_id, :widgets] # just to reset expiration timer
+      OMF::Web::SessionStore[widget.widget_id, :widgets] # just to reset expiration timer
 
+      no_render = params.delete(:no_render)
       if action == :on_new
         action_reply = nil
       else
-        debug "Calling '#{action} on '#{col_widget.class}' widget"
-        action_reply = col_widget.send(action, params, req)
+        debug "Calling '#{action} on '#{widget.class}' widget"
+        begin
+          action_reply = widget.send(action, params, req)
+        rescue RedirectWidget => rex
+          action = rex.opts[:action] ||= :on_get_content
+          rex.opts[:repo_iterator] ||= params[:repo_iterator]
+          rex.opts[:widget] ||= rex.widget_name
+          debug "Redirect to '#{rex.widget_name}\##{action}' - #{rex.opts}"
+          widget = create_column_widget(col, rex.opts)
+          return _dispatch_to_widget(col, widget, action, rex.opts, req)
+        end
       end
 
-      res = col_widget.content_descriptor.dup
+      res = widget.content_descriptor.dup
       if no_render
         res[:action_reply] = action_reply
       else
-        r = OMF::Web::Theme::ColumnContentRenderer.new(col_widget, col)
+        r = OMF::Web::Theme::ColumnContentRenderer.new(widget, col)
         res[:html] = r.to_html
       end
       [res.to_json, "application/json"]
     end
 
     def create_column_widget(col, params)
-      debug "Creating widget for '#{col}' from '#{params.inspect}'"
       @widgets[col] = PluginManager.create_widget(col, params)
     end
 
