@@ -6,6 +6,8 @@
 # rescue Exception
 # end
 
-module LabWiki; end
+module LabWiki
+  class LWException < Exception
+  end
 
-
+end
