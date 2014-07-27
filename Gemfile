@@ -9,6 +9,7 @@ def override_with_local(opts)
   Dir.exist?(local_dir) ? {path: local_dir} : opts
 end
 
+gem "omf_oml", override_with_local(path: '../omf_oml', github: 'mytestbed/omf_oml')
 gem "omf_web", override_with_local(path: '../omf_web', github: 'mytestbed/omf_web')
 gem "httparty"
 gem "god"
