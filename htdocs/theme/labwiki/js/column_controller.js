@@ -373,6 +373,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
         drop: function(event, ui) {
           var propagate = true;
           var e = ui.draggable;
+          var propagate = null;
           if (self.on_drop_handler) {
             propagate = self.on_drop_handler(e, $(this), self);
           }

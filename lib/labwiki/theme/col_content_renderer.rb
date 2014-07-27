@@ -25,7 +25,7 @@ module OMF::Web::Theme
     end
 
     def content
-      div :id => "col_content_#{@col_name}" do
+      div :id => "col_content_#{@col_name}", class: 'widget-content' do
         if @widget
           render_title2
           render_body
