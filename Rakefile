@@ -23,7 +23,7 @@ end
 
 desc "Starting Labwiki as a daemon"
 task :start, :config do |t, args|
-  config = args[:config] || "etc/labwiki/local.yaml"
+  config = args[:config] || ENV['LW_CONFIG'] || "etc/labwiki/local.yaml"
   config = File.expand_path(config)
   abort "Config file '#{config}' NOT found" unless File.exist?(config)
 
