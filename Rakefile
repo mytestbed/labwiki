@@ -23,7 +23,10 @@ end
 
 desc "Starting Labwiki as a daemon"
 task :start, :config do |t, args|
-  config = args[:config]
+  config = args[:config] || "etc/labwiki/local.yaml"
+  config = File.expand_path(config)
+  abort "Config file '#{config}' NOT found" unless File.exist?(config)
+
   system("/usr/bin/env LW_CONFIG=#{config} bundle exec god -c etc/labwiki/labwiki.god")
   system('/usr/bin/env bundle exec god start labwiki')
 end
@@ -31,6 +34,7 @@ end
 desc "Stop the Labwiki Daemon"
 task :stop do |t, args|
   system('/usr/bin/env bundle exec god stop labwiki')
+  system('/usr/bin/env bundle exec god quit')
 end
 
 desc "Print the status of the Labwiki daemon"
