@@ -30,7 +30,7 @@ module OMF::Web::Theme
           div :class => "col-lg-8 col-lg-offset-2 footer" do
             p "Copyright #{Time.now.year} NICTA."
 
-            p "Version: #{`git describe --tags 2> /dev/null`}"
+            p "Version: #{LabWiki.version}"
           end
         end
       end
