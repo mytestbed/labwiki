@@ -65,7 +65,7 @@ Record its port number.
 
 ## Get Job Service
 
-Refer to https://github.com/mytestbed/omf\_job\_service
+Refer to https://github.com/mytestbed/omf_job_service
 
 ## Test OML Dump Script
 
@@ -112,35 +112,32 @@ Then try the script
 
 ## Now Configure LabWiki
 
-Make sure you configured EVERYTHING correctly to match your environment.
-
 Create a config file with the following content:
 
-    labwiki:
-      port: 4000
-      stable: true
+*MAKE SURE you replace content with placeholder <> to match your environment *
 
+    labwiki:
       session:
         repositories:
         - name: system
           type: file
           read_only: true
-          top_dir: ../../test/repo
+          top_dir: <../../test/repo>
 
       plugins:
         experiment:
           plugin_dir: labwiki_experiment_plugin
           job_service:
-          host: gimi4.casa.umass.edu
-          port: 8002
+            host: <gimi4.casa.umass.edu>
+            port: <8002>
 
       gimi:
         # Where your Gimi Experiment Service is hosting
-        ges: 'http://gimi5.casa.umass.edu:8002'
-        dump_script: /home/gimiadmin/oml2-irods-dumper.sh
+        ges: <http://gimi5.casa.umass.edu:8002>
+        dump_script: </home/gimiadmin/oml2-irods-dumper.sh>
         git:
-          repos_dir: /home/gimiadmin/exp_repos
-          sample_repo: /home/gimiadmin/exp_repos/default
+          repos_dir: </home/gimiadmin/exp_repos>
+          sample_repo: </home/gimiadmin/exp_repos/default>
 
 ## Start LabWiki
 
