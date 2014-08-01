@@ -1,144 +1,73 @@
-# Installation with GIMI integration
+# Installation Notes in GIMI environment
 
-_All the instruction & script sample here assume that you are in the user's home directory if not specified_
+*All the instruction & script sample here assume that you are in the user's home directory if not specified*
+
+*This document is ONLY supporting 'stable' branch of labwiki and labwiki\_experiment\_plugin repositories*
 
 ## OS
 
-Hopefully you are running a very latest stable Linux release.
+Hopefully you are running a very latest stable Linux release. E.g. Debian 7 Wheezy
 
-## RVM
+## Ruby
 
-Refer to RVM official site for details.
+Your Linux should come with version 1.9, which is supported by LabWiki
 
-Make sure you got RVM installed and configured properly.
+*Make sure old versions Ruby (e.g. 1.8) are NOT installed on your system*
 
-Make sure you installed both ruby 1.8.7 and ruby 1.9.3.
+If you need to use RVM, refer to RVM official site for details.
 
-## Install OMF EC 5.4
+## Additional Packages
 
-Install ec using git, packages will NOT work.
+* libpq-dev
 
-    git clone git://git.mytestbed.net/omf.git
+## Get LabWiki
 
-    cd omf
+Check ruby version is 1.9.3 or above
 
-    git checkout labwiki
-
-    # verify you are in labwiki branch
-    git branch
-
-Now goes back to home directory. Create a temporary folder with a Gemfile inside.
-
-    mkdir omf_5_gems
-
-    cd omf_5_gems
-
-    touch Gemfile
-
-Then add the following to the Gemfile, save it.
-
-    source 'https://rubygems.org'
-    gem "xmpp4r", "0.5"
-    gem "log4r",  "1.1.8"
-    gem "wss4r",  "0.5"
-    gem "rdp-rb-readline",  "0.2.0.1"
-    gem "activesupport",  "3.0.0"
-    gem "gratr",  "0.4.3"
-    gem "oml4r"
-    gem "sequel",  "3.40.0"
-    gem "json",  "1.7.5"
-    gem "pg"
-
-Then use RVM to switch to ruby 1.8.7
-
-    rvm use 1.8.7
-
-    # check ruby version is 1.8.7
     ruby -v
 
-    bundle
-
-    # check gems have been installed properly against Gemfile
-    gem list
-
-## Get Labwiki & omf-web source
-
-Now switch to ruby 1.9.3
-
-    rvm use 1.9.3
-
-    # check ruby version is 1.9.3
-    ruby -v
-
-Get omf web source
-
-    git clone https://github.com/mytestbed/omf_web.git
-    cd omf_web
-    bundle
-    bundle update
-
-Get labwiki source
+### Install
 
     git clone https://github.com/mytestbed/labwiki.git
     cd labwiki
-    bundle update
-    export LABWIKI_TOP=`pwd`
+    git checkout stable
+    bundle install --path vendor
 
-## Get gimi experiment service
+### Install Experiment Plugin
 
-Ensure you are still use ruby 1.9.3
+    install_plugin https://github.com/mytestbed/labwiki_experiment_plugin.git
+    cd plugins/labwiki_experiment_plugin
+    git checkout stable
 
-Get omf sfa source
-
-    git clone https://github.com/mytestbed/omf_sfa.git
-    cd omf_sfa
-    export OMF_SFA_HOME=`pwd`
-    bundle
+    # Back to LabWiki root folder
+    cd ../../
     bundle update
 
-Get gimi exp service, you can use the source from a temp branch for testing purpose, but ultimately it will be your own implementation & instance.
+## Get GIMI Experiment Service
 
-    git clone https://github.com/jackhong/gimi_experiment_service.git ges_temp
-    git checkout temp
-    cd ges_temp
-    bundle
-    bundle update
+### Install
 
-Update lib/gimi/exp_service/server.rb to reflect your own testing data
+    git clone https://github.com/mytestbed/gimi_experiment_service.git
+    cd gimi_experiment_service
+    bundle install --path vendor
 
-    ruby -I lib -I $OMF_SFA_HOME/lib lib/gimi/exp_service.rb --test-load-state  --dm-auto-upgrade --disable-https start
+### Start
+
+    ruby -I lib lib/gimi/exp_service.rb --dm-auto-upgrade --disable-https start
+
+### As Daemon
+
+    ruby -I lib lib/gimi/exp_service.rb --dm-auto-upgrade --disable-https start -d
 
 Record its port number.
 
-MAKE SURE it is running and working properly
+*MAKE SURE it is running and working properly*
 
-## Configure & test run OMF EC
+## Get Job Service
 
-Then switch to ruby 1.8.7
+Refer to https://github.com/mytestbed/omf\_job\_service
 
-    rvm use 1.8.7
-
-    cd labwiki/test/omf_exec
-
-Find etc/omf-expctl.norbit.yaml, and update it to suit your environment. Things you mostly likely to change are:
-
-    repository:
-      path:
-
-    omluri:
-
-    xmpp:
-      pubsub_gateway:
-
-Verify these settings carefully.
-
-Then run a oidl experiment script
-
-    bash -l omf_exec-norbit.sh your_script.rb
-
-MAKE SURE, DOUBLE CHECK that it runs properly and it creates OML database and have measurement data stored correctly.
-
-## Test OML dump script
+## Test OML Dump Script
 
 Ensure that you can irods clients installed properly. Basically ensure that you can run i commands without using username & password.
 
@@ -179,53 +108,53 @@ Then try the script
 
     bash  oml2-irods-dumper.sh --domain <oml exp id> --path <irods path> --token <idos token>
 
-MAKE SURE, DOUBLE CHECK that it got the sql dump & write to irods successfully.
+*MAKE SURE, DOUBLE CHECK that it got the sql dump & write to irods successfully.*
 
-## Now configure Labwiki
+## Now Configure LabWiki
 
-Now examine labwiki/test/test\_gimi.yaml
+Make sure you configured EVERYTHING correctly to match your environment.
 
-Make sure you configure EVERYTHING correctly to meet your environment.
-
-* oml: section here refers to oml's postgres database host, user & password
-* ges: where your gimi experiment service is hosting
-* mocking: ture means all logged in users will act as user 'user1', which should be included in gimi exp service's default data. Set this to false when you are ready to test real data.
-
-
-Content of labwiki/test/test\_gimi.yaml
+Create a config file with the following content:
 
     labwiki:
+      port: 4000
+      stable: true
+
+      session:
+        repositories:
+        - name: system
+          type: file
+          read_only: true
+          top_dir: ../../test/repo
+
       plugins:
         experiment:
-          ec_runner: ~/labwiki/test/omf_exec/omf_exec-norbit.sh
-          oml:
-            host: norbit.npc.nicta.com.au
-            user: oml2
-            pwd: bob
-      # This is added temporarily for gimi integration
+          plugin_dir: labwiki_experiment_plugin
+          job_service:
+          host: gimi4.casa.umass.edu
+          port: 8002
+
       gimi:
-        irods: true
-        ges: http://localhost:8023
-        # If use mocked data
-        mocking: true
+        # Where your Gimi Experiment Service is hosting
+        ges: 'http://gimi5.casa.umass.edu:8002'
+        dump_script: /home/gimiadmin/oml2-irods-dumper.sh
+        git:
+          repos_dir: /home/gimiadmin/exp_repos
+          sample_repo: /home/gimiadmin/exp_repos/default
 
-        # Path to the magic OML sql dump script
-        dump_script: ~/labwiki/test/oml2-irods-dumper.sh
+## Start LabWiki
 
-## Run Labwiki
-Now again, DOUBLE CHECKING EVERYTHING ELSE is working properly.
+*MAKE SURE all your dependent services are running and working properly before you start LabWiki*
 
-Switch to ruby 1.9.3
+    ruby lib/labwiki/start.rb start --lw-config <PATH_TO_CONFIG> start
 
-    rvm use 1.9.3
+### As Daemon
 
-    cd labwiki
+    ruby lib/labwiki/start.rb start --lw-config <PATH_TO_CONFIG> start -d
 
-    ruby -I lib -I ../omf_web/lib lib/labwiki.rb --lw-config test/config/test_gimi.yaml start
+Finger crossed and try it in your favourite  browser.
 
-Finger crossed.
-
-Now try it in the browser.
+*If you start labwiki while using SSH and NOT using daemon mode, the instance will die once SSH terminated. To avoid it, make sure you start a screen session, and run labwiki inside the session*
 
 ## Redeployment
 
@@ -234,47 +163,32 @@ You probably noticed that we run everything from the source (except OML), so to 
     cd <code repository>
     git stash
     git fetch origin
-    git merge origin/master
+    git merge origin/stable
     git stash pop
 
 Then re-run whatever you need to run.
 
-_Because we run everything from the source, PLEASE report the git commit id whenever you need to report issues_
+*Because we run everything from the source, PLEASE report the git commit id whenever you need to report issues*
 
-## Restart Labwiki and/or OML server
+## Restart Labwiki & GES
 
-### Labwiki
+### As Daemon
 
-Firstly you need to find out existing running labwiki instances.
+Simply locate where you launched your application, refer to your start application command and change 'start' to 'stop'.
 
-    ps -ef | grep labwiki.rb
+For example:
+
+    ruby lib/labwiki/start.rb --lw-config <PATH_TO_CONFIG> stop
+
+
+### NOT As Daemon
+
+Firstly you need to find out existing running instances.
+
+    ps -ef | grep <...>
 
 Double check the processes, record the ids and kill them.
 
-Now locate where labwiki installed, given the example of emmy9, it is located at
+Then simply start your applications as described above.
 
-    /home/dbhat/labwiki_new/labwiki
-
-However you could also locate it via:
-
-    ls -l /proc/<process_id>/cwd
-
-
-Get inside of the labwiki directory, make sure using right ruby version, and better running the instance as directory owner.
-
-    sudo -i -u dbhat
-    rvm use 1.9.3
-    ruby -I lib -I ../omf_web/lib lib/labwiki.rb --lw-config test/config/test_gimi.yaml -p <port number> start
-
-Need more than one instance? Simply choose a different port number.
-
-_If you start labwiki while using SSH, the instance will die once SSH terminated. To avoid it, make sure you start a screen session, and run labwiki inside the session_
-
-### OML server
-
-If restarting OML server is needed. Simply run:
-
-    /etc/init.d/oml2-server restart
-
-Root permission is required.
-
+*Need more than one instance? Simply choose a different port number.*
