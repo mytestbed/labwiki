@@ -102,7 +102,7 @@ module OMF::Web::Theme
               li do
                 a :href => '#', :class => 'user' do
                   i :class => "glyphicon glyphicon-user icon-white"
-                  text (OMF::Web::SessionStore[:name, :user] || 'Unknown').capitalize
+                  text (OMF::Web::SessionStore[:name, :user] || 'Unknown').split.map(&:capitalize)*' '
                 end
               end
               li do
