@@ -128,6 +128,8 @@ define(['theme/labwiki/js/column_controller'], function (column_controller) {
     LW.resize();
 
     console.log('hi');
+
+    window.onbeforeunload = function() { return "You unsaved work will be lost."; };
   });
 
   return LW;
