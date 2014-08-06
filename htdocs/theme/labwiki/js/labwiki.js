@@ -129,7 +129,7 @@ define(['theme/labwiki/js/column_controller'], function (column_controller) {
 
     console.log('hi');
 
-    window.onbeforeunload = function() { return "You unsaved work will be lost."; };
+    window.onbeforeunload = function() { return "Your unsaved work will be lost."; };
   });
 
   return LW;
