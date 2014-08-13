@@ -22,7 +22,7 @@ module OMF::Web::Theme
     #depends_on :js, "/resource/theme/labwiki/js/content_selector_widget.js"
     #depends_on :js, "/resource/theme/labwiki/js/execute_col_controller.js"
     #depends_on :js, "/resource/theme/labwiki/js/labwiki.js"
-    depends_on :js, "/resource/theme/labwiki/js/exp_context.js"
+    depends_on :js, "/resource/theme/labwiki/js/exp_context.js" if LabWiki::Configurator[:gimi] && LabWiki::Configurator[:gimi][:ges]
 
     depends_on :js, "/resource/vendor/bootstrap/js/bootstrap.js"
     depends_on :js, '/resource/vendor/jquery/jquery.js'
@@ -56,6 +56,18 @@ module OMF::Web::Theme
           #{gjsa.join("\n")}
         });
       }
+
+      javascript %{
+        $(function() {
+          window.ges_url = '#{LabWiki::Configurator[:gimi][:ges]}';
+
+          if (typeof(window.exp_list) === "undefined") {
+            window.exp_list = new ExpListView();
+          }
+          window.exp_list.setupNewForm();
+        });
+      } if LabWiki::Configurator[:gimi] && LabWiki::Configurator[:gimi][:ges]
+
       div :id => "container", :style => "position: relative; height: 100%;" do
         div :id => "k-window" do
           div :id => "k-topbar" do
@@ -93,12 +105,15 @@ module OMF::Web::Theme
                 end
               end
 
-              li do
-                a :href => '#new-exp-modal', :role => 'button', :"data-toggle" => "modal" do
-                  i :class => "icon-asterisk icon-white"
-                  text "Add experiment context"
+              if LabWiki::Configurator[:gimi] && LabWiki::Configurator[:gimi][:ges]
+                li do
+                  a :href => '#new-exp-modal', :role => 'button', :"data-toggle" => "modal" do
+                    i :class => "icon-asterisk icon-white"
+                    text "Add experiment context"
+                  end
                 end
               end
+
               li do
                 a :href => '#', :class => 'user' do
                   i :class => "glyphicon glyphicon-user icon-white"
@@ -122,47 +137,49 @@ module OMF::Web::Theme
         end
       end
 
-      div id: "new-exp-modal", class: "modal fade" do
-        div class: "modal-dialog" do
-          div class: "modal-content" do
+      if LabWiki::Configurator[:gimi] && LabWiki::Configurator[:gimi][:ges]
+        div id: "new-exp-modal", class: "modal fade" do
+          div class: "modal-dialog" do
+            div class: "modal-content" do
 
-            div class: "modal-header" do
-              button :type => "button", :class => "close", :"data-dismiss" => "modal", :"aria-hidden" => "true" do
-                rawtext '&times;'
+              div class: "modal-header" do
+                button :type => "button", :class => "close", :"data-dismiss" => "modal", :"aria-hidden" => "true" do
+                  rawtext '&times;'
+                end
+                h3 "New experiment context", style: "font-size: 20px;"
               end
-              h3 "New experiment context", style: "font-size: 20px;"
-            end
 
-            div class: "modal-body" do
-              form class: "form-horizontal", role: "form" do
-                div class: "form-group" do
-                  label "Project", class: "col-sm-3 control-label"
-                  div class: "col-sm-9" do
-                    select id: "project", class: "form-control" do
-                      if OMF::Web::SessionStore[:projects, :geni_portal]
-                        OMF::Web::SessionStore[:projects, :geni_portal].each do |p|
-                          option p[:name], value: p[:name]
+              div class: "modal-body" do
+                form class: "form-horizontal", role: "form" do
+                  div class: "form-group" do
+                    label "Project", class: "col-sm-3 control-label"
+                    div class: "col-sm-9" do
+                      select id: "project", class: "form-control" do
+                        if OMF::Web::SessionStore[:projects, :geni_portal]
+                          OMF::Web::SessionStore[:projects, :geni_portal].each do |p|
+                            option p[:name], value: p[:name]
+                          end
                         end
                       end
                     end
                   end
-                end
 
-                div class: "form-group" do
-                  label class: "col-sm-3 control-label" do
-                    text "Name"
-                  end
-                  div class: "col-sm-9" do
-                    input id: "exp-name", type: "text", class: "form-control"
-                    input id: "irods-user-name", type: "hidden", value: OMF::Web::SessionStore[:id, :user]
+                  div class: "form-group" do
+                    label class: "col-sm-3 control-label" do
+                      text "Name"
+                    end
+                    div class: "col-sm-9" do
+                      input id: "exp-name", type: "text", class: "form-control"
+                      input id: "irods-user-name", type: "hidden", value: OMF::Web::SessionStore[:id, :user]
+                    end
                   end
                 end
               end
-            end
 
-            div class: "modal-footer" do
-              a "Close", :href => "#", :class => "btn btn-default", :"data-dismiss" => "modal"
-              a "Save", :href => "#", :id => "save-exp", :class => "btn btn-primary", :"data-dismiss" => "modal"
+              div class: "modal-footer" do
+                a "Close", :href => "#", :class => "btn btn-default", :"data-dismiss" => "modal"
+                a "Save", :href => "#", :id => "save-exp", :class => "btn btn-primary", :"data-dismiss" => "modal"
+              end
             end
           end
         end

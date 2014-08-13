@@ -32,7 +32,7 @@ var ExpListView = Backbone.View.extend({
     var select_slice = $('select[name="propslice"]');
 
     select_project.change(function() {
-      exps.url = 'http://' + document.domain + ':8002/projects/' + select_project.val() + '/experiments';
+      exps.url = window.ges_url + '/projects/' + select_project.val() + '/experiments';
       exps.fetch({reset: true});
 
       var filtered_slices = _.find(geni_projects, function(proj) {
@@ -49,9 +49,11 @@ var ExpListView = Backbone.View.extend({
   setupNewForm: function() {
     $('#save-exp').on('click', function() {
       new_exp = new Exp({ name: $('input#exp-name').val() });
-      new_exp.url = 'http://' + document.domain + ':8002/projects/' + $('select#project').val() +'/experiments';
-      new_exp.save();
-      exps.add(new_exp);
+      new_exp.url = window.ges_url + '/projects/' + $('select#project').val() +'/experiments';
+      new_exp.save({}, {
+        wait: true,
+        success: function() { exps.add(new_exp); }
+      });
     });
   },
 
@@ -66,9 +68,4 @@ var ExpListView = Backbone.View.extend({
   }
 });
 
-$(function() {
-  if (typeof(window.exp_list) === "undefined") {
-    window.exp_list = new ExpListView();
-  }
-  window.exp_list.setupNewForm();
-});
+
