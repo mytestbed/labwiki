@@ -150,6 +150,8 @@ map "/authorised" do
     if req.post?
       speak_for = req.params['data_credential']
       OMF::Web::SessionStore[:speak_for, :user] = speak_for
+      # FIXME Write to file now for testing
+      File.write("/tmp/#{OMF::Web::SessionStore[:id, :user]}.speaks_for.xml", speak_for)
       #puts ">>>>>>>> CONFIG.RU - authorised: #{speak_for} -- #{req.params.keys} -- #{req.params}"
 
       require 'labwiki/plugin_manager'
