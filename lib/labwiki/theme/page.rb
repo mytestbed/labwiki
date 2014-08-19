@@ -96,7 +96,7 @@ module OMF::Web::Theme
                   a id: 'projects-menu-a', class: 'nav-menu', href: "#" do
                     i :class => "glyphicon glyphicon-th-list icon-white"
                     OMF::Web::SessionStore[:current_project, :user] ||= OMF::Web::SessionStore[:projects, :user].first[:uuid]
-                    text OMF::Web::SessionStore[:projects, :user].find { |p| p[:uuid].to_s == OMF::Web::SessionStore[:current_project, :user].to_s }[:name]
+                    text OMF::Web::SessionStore[:projects, :user].find { |p| p[:uuid].to_s == OMF::Web::SessionStore[:current_project, :user].to_s }.try(:[], :name)
                   end
                   ul id: 'projects-menu-ul', class: "dropdown-menu" do
                     OMF::Web::SessionStore[:projects, :user].each do |project|
