@@ -22,10 +22,14 @@ module LabWiki
 
         if req.params["project_id"] && OMF::Web::SessionStore[:current_project, :user] != req.params["project_id"]
           req.session['sid'] = req.params['sid'] || "s#{(rand * 10000000).to_i}_#{(rand * 10000000).to_i}"
-          OMF::Web::SessionStore[:current_project, :user] = req.params["project_id"]
         end
 
         Thread.current["sessionID"] = req.session['sid'] # needed for Session Store
+
+        # Reset current project after new session created
+        if req.params["project_id"]
+          OMF::Web::SessionStore[:current_project, :user] = req.params["project_id"]
+        end
 
         # Unless visiting public/unprotected pages
         unless req.path =~ /^\/(login|logout|unauthenticated)/
