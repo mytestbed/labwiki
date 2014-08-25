@@ -12,7 +12,7 @@ module LabWiki
           @debug_user = {}
           du.each {|k, v| @debug_user[k.to_s] = v}
         end
-
+        @debug_user ||= {}
         @debug_user['lw:auth_type'] ||= 'NoLogin'
         @debug_user['id'] ||= 'user1'
         @debug_user['name'] ||= "User 1"
