@@ -1,0 +1,59 @@
+# Provide SSH Access to LabWiki Managed Git Repository (Via Gitolite)
+
+By integrating with Gitolite, LabWiki now allows end users to access and update git repositories via standard git command. They could now use their favourite text editor to create and modify experiment scripts; use normal git work flow to synchronise changes.
+
+## Install Gitolite
+
+*Gitolite does NOT have to be installed on the same server as LabWiki, HOWEVER fast speed link between Gitolite and LabWiki instances shall be ensured to avoid delay during synchronising repositories.*
+
+Create a user named git, WITHOUT password, and home location should be somewhere under /var/lib. /var/lib/labwiki/git is a good location if all your LabWiki related services are installed under /var/lib/labwiki .
+
+    sudo adduser --home /var/lib/labwiki/git --disabled-password git
+
+Change to user git and complete the installation:
+
+    sudo -i -u git
+    mkdir -p ~/bin
+
+    git clone git://github.com/sitaramc/gitolite
+    gitolite/install -ln ~/bin
+
+Now you are ready to set up public key for administrative access. You could generate a new pair of keys or use the existing ones, to make the matter simpler, do not create passphrase for the private key. Then locate gitolite binary, normally at ~/bin/gitolite, together with the public key you intend to use.
+
+
+    # Assuming the public key is located at /tmp/gitolite_admin.pub
+
+    bin/gitolite setup -pk /tmp/gitolite_admin.pub
+
+You should be able to test the installation now by cloning the administration repository.
+
+
+    git clone git@localhost:gitolite-admin.git
+
+Given you have private key on your local environment, you will not be prompted for entering password.
+
+
+# Enable Gitolite Support in LabWiki
+
+LabWiki now supports using gitolite as a repository type. To enable it, locate repository section of LabWiki configuration file, and insert the repository definition:
+
+
+    repositories:
+    - name: testing
+      type: gitolite
+      top_dir: git@localhost:testing.git
+      create_if_not_exists: true
+      gitolite:
+        admin_repo: git@localhost:gitolite-admin.git
+        credentials:
+          username: git
+          publickey: /home/bob/.ssh/gitolite-admin.pub
+          privatekey: /home/bob/.ssh/gitolite-admin
+
+By providing gitolite admin repository URL and credentials, LabWiki will be able to modify gitolite repositories and permissions. When create_if_not_exists option provided, it will tell gitolite to create such repository.
+
+Normal LabWiki content editing will work as usual, except now the changes will be pushed to the gitolite instance as well.
+
+End users can also use git to clone such repository and update the repository using normal git workflow.
+
+LabWiki will pull changes from gitolite before searching, reading and writing the files, so the changes you made through standard git operation will always be available in LabWiki too.
