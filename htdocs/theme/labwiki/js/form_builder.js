@@ -87,6 +87,35 @@ define([], function () {
             vc.attr('checked', 'checked');
           }
           break;
+        case 'selector':
+          vc = $('<select class="form-control" />');
+          shows_def_value = true;
+          _.each(rdecl.choices || [], function(c) {
+            var o = $('<option>' + (c.label || 'Unknown') + '</option>');
+            if (c.value) {
+              o.attr('value', c.value);
+              if (rdecl.value) {
+                if (c.value == rdecl.value) {
+                  o.attr('selected', 'selected');
+                  shows_def_value = false;
+                }
+              } else if (rdecl.def_value) {
+                if (c.value == rdecl.def_value) {
+                  o.attr('selected', 'selected');
+
+                }
+              }
+            }
+            vc.append(o);
+          });
+          if (shows_def_value) vc.addClass('shows-def-value');
+          vc.change(function() {
+            if (on_change_callback) {
+              var value = vc.val();
+              vc.removeClass('shows-def-value');
+              on_change_callback(value, rdecl);
+            }
+          });
       };
       if (vc) {
         $('<td />').attr('class', 'row_value').append(vc).appendTo(r);
