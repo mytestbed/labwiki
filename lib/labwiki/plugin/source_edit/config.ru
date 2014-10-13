@@ -11,6 +11,7 @@ map "/plugin/source_edit/create_script" do
     sub_folder, mime_type = case file_ext
                             when 'oedl' then ['oedl', 'text/ruby']
                             when 'md' then ['wiki', 'text/markup']
+                            when 'r' then ['r', 'text/r']
                             end
 
     # Only fetch repo that can be written to

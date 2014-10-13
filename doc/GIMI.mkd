@@ -1,0 +1,191 @@
+# Installation Notes in GIMI environment
+
+*All the instruction & script sample here assume that you are in the user's home directory if not specified*
+
+*This document is ONLY supporting 'stable' branch of labwiki and labwiki\_experiment\_plugin repositories*
+
+## OS
+
+Hopefully you are running a very latest stable Linux release. E.g. Debian 7 Wheezy
+
+## Ruby
+
+Your Linux should come with version 1.9, which is supported by LabWiki
+
+*Make sure old versions Ruby (e.g. 1.8) are NOT installed on your system*
+
+If you need to use RVM, refer to RVM official site for details.
+
+## Additional Packages
+
+* libpq-dev
+
+## Get LabWiki
+
+Check ruby version is 1.9.3 or above
+
+    ruby -v
+
+### Install
+
+    git clone https://github.com/mytestbed/labwiki.git
+    cd labwiki
+    git checkout stable
+    bundle install --path vendor
+
+### Install Experiment Plugin
+
+    install_plugin https://github.com/mytestbed/labwiki_experiment_plugin.git
+    cd plugins/labwiki_experiment_plugin
+    git checkout stable
+
+    # Back to LabWiki root folder
+    cd ../../
+    bundle update
+
+## Get GIMI Experiment Service
+
+### Install
+
+    git clone https://github.com/mytestbed/gimi_experiment_service.git
+    cd gimi_experiment_service
+    bundle install --path vendor
+
+### Start
+
+    ruby -I lib lib/gimi/exp_service.rb --dm-auto-upgrade --disable-https start
+
+### As Daemon
+
+    ruby -I lib lib/gimi/exp_service.rb --dm-auto-upgrade --disable-https start -d
+
+Record its port number.
+
+*MAKE SURE it is running and working properly*
+
+## Get Job Service
+
+Refer to https://github.com/mytestbed/omf_job_service
+
+## Test OML Dump Script
+
+Ensure that you can irods clients installed properly. Basically ensure that you can run i commands without using username & password.
+
+Then cd into labwiki test directory.
+
+    cd labwiki/test
+
+Edit oml-irods-dumper.sh and make sure you have these variables correct
+
+    irodsHost
+    irodsPort
+    PGDATAPATH
+
+Make sure you have these information with you, and verify them:
+
+* OML server is using postgres
+
+* You know the postgres server uri & port number.
+
+* You know the postgres username & password
+
+* Postgres server has been configured allow you to login remotely
+
+* You have pg\_dump installed
+
+* You have irods commands installed, configured and you can accesss irods
+
+Then in your home directory, create a file called .pgpass, storing your postgres credential
+
+    touch .pgpass
+    chmod 600 .pgpass
+
+Add following to the file, save.
+
+    <db_host>:<port>:*:<username>:<password>
+
+Then try the script
+
+    bash  oml2-irods-dumper.sh --domain <oml exp id> --path <irods path> --token <idos token>
+
+*MAKE SURE, DOUBLE CHECK that it got the sql dump & write to irods successfully.*
+
+## Now Configure LabWiki
+
+Create a config file with the following content:
+
+*MAKE SURE you replace content with placeholder <> to match your environment *
+
+    labwiki:
+      session:
+        repositories:
+        - name: system
+          type: file
+          read_only: true
+          top_dir: <../../test/repo>
+
+      plugins:
+        experiment:
+          plugin_dir: labwiki_experiment_plugin
+          job_service:
+            host: <gimi4.casa.umass.edu>
+            port: <8002>
+
+      gimi:
+        # Where your Gimi Experiment Service is hosting
+        ges: <http://gimi5.casa.umass.edu:8002>
+        dump_script: </home/gimiadmin/oml2-irods-dumper.sh>
+        git:
+          repos_dir: </home/gimiadmin/exp_repos>
+          sample_repo: </home/gimiadmin/exp_repos/default>
+
+## Start LabWiki
+
+*MAKE SURE all your dependent services are running and working properly before you start LabWiki*
+
+    ruby lib/labwiki/start.rb start --lw-config <PATH_TO_CONFIG> start
+
+### As Daemon
+
+    ruby lib/labwiki/start.rb start --lw-config <PATH_TO_CONFIG> start -d
+
+Finger crossed and try it in your favourite  browser.
+
+*If you start labwiki while using SSH and NOT using daemon mode, the instance will die once SSH terminated. To avoid it, make sure you start a screen session, and run labwiki inside the session*
+
+## Redeployment
+
+You probably noticed that we run everything from the source (except OML), so to do re-deployment, simply go to the repository directory, kill the process and update the repo by:
+
+    cd <code repository>
+    git stash
+    git fetch origin
+    git merge origin/stable
+    git stash pop
+
+Then re-run whatever you need to run.
+
+*Because we run everything from the source, PLEASE report the git commit id whenever you need to report issues*
+
+## Restart Labwiki & GES
+
+### As Daemon
+
+Simply locate where you launched your application, refer to your start application command and change 'start' to 'stop'.
+
+For example:
+
+    ruby lib/labwiki/start.rb --lw-config <PATH_TO_CONFIG> stop
+
+
+### NOT As Daemon
+
+Firstly you need to find out existing running instances.
+
+    ps -ef | grep <...>
+
+Double check the processes, record the ids and kill them.
+
+Then simply start your applications as described above.
+
+*Need more than one instance? Simply choose a different port number.*

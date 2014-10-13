@@ -149,3 +149,8 @@ https://github.com/mytestbed/labwiki/blob/master/etc/labwiki/multi_repos.yml
 #### Customise additional authentication strategies
 
 TBD
+
+
+### Provide SSH Access to LabWiki Managed Git Repository (Via Gitolite)
+
+https://github.com/mytestbed/labwiki/blob/master/doc/gitolite.mkd

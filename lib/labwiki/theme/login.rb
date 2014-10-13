@@ -19,14 +19,18 @@ module OMF::Web::Theme
       div :class => "container" do
         div :class => "row" do
           div :class => "col-lg-8 col-lg-offset-2 content" do
-            rawtext LabWiki::Authentication.login_content
+            div :class => "login_content" do
+              rawtext LabWiki::Authentication.login_content
+            end
             logos
           end
         end
 
         div :class => "row" do
           div :class => "col-lg-8 col-lg-offset-2 footer" do
-            text "Copyright #{Time.now.year} NICTA"
+            p "Copyright #{Time.now.year} NICTA."
+
+            p "Version: #{LabWiki.version}"
           end
         end
       end

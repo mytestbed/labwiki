@@ -13,7 +13,9 @@ LabWiki::PluginManager.register :plan_text, {
       :name => 'wiki',
       :context => :plan,
       :priority => lambda do |opts|
-        (opts[:mime_type].start_with? 'text') ? 500 : nil
+        # FIXME missing :mime_type from opts
+        #(opts[:mime_type].start_with? 'text') ? 500 : nil
+        500
       end,
       :widget_class => LabWiki::Plugin::PlanText::PlanTextWidget,
       :search => lambda do |pat, opts, wopts|

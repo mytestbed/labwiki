@@ -372,11 +372,12 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
         activeClass: "ui-state-default",
         hoverClass: "ui-state-hover ui-drop-hover",
         drop: function(event, ui) {
-          var propagate = true;
           var e = ui.draggable;
           //var propagate = null;
           if (self.on_drop_handler) {
             propagate = self.on_drop_handler(e, $(this), self);
+          } else {
+            propagate = true;
           }
           if (propagate) {
             self.on_drop(e, $(this));

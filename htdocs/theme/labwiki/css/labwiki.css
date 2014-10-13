@@ -44,6 +44,7 @@ strong, b {
 /* Needed to tag links with an ID to overide bootstrap */
 #about-menu-a,
 #tools-menu-a,
+#projects-menu-a,
 #user-menu-a  {
   background: transparent;
 }

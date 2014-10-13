@@ -11,19 +11,19 @@ module LabWiki
           du = @debug_user
           @debug_user = {}
           du.each {|k, v| @debug_user[k.to_s] = v}
-        else
-          @debug_user = {
-            'lw:auth_type' => 'NoLogin',
-            'id' => 'user1',
-            'name' => "User 1"
-          }
         end
+        @debug_user ||= {}
+        @debug_user['lw:auth_type'] ||= 'NoLogin'
+        @debug_user['id'] ||= 'user1'
+        @debug_user['name'] ||= "User 1"
+        @debug_user['projects'] ||= [{ name: 'Default', uuid: SecureRandom.uuid }]
       end
 
       def parse_user(identity_url)
         @identity_url = identity_url
-        OMF::Web::SessionStore[:id, :user] = @debug_user['id']
-        OMF::Web::SessionStore[:name, :user] = @debug_user['name']
+        [:id, :name, :projects].each do |k|
+          OMF::Web::SessionStore[k, :user] = @debug_user[k.to_s]
+        end
         OMF::Web::SessionStore[:data, :user] = @debug_user
       end
     end

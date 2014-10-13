@@ -9,6 +9,7 @@ def override_with_local(opts)
   Dir.exist?(local_dir) ? {path: local_dir} : opts
 end
 
+gem "rake"
 gem "omf_oml", override_with_local(path: '../omf_oml', github: 'mytestbed/omf_oml')
 gem "omf_web", override_with_local(path: '../omf_web', github: 'mytestbed/omf_web')
 gem "httparty"
@@ -33,3 +34,7 @@ group :dev do
   gem "pry"
 end
 
+# Only needed for gitolite integration. To exclude it using --without gitolite when running bundler
+group :gitolite do
+  gem "rugged"
+end

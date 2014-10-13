@@ -91,6 +91,23 @@ module OMF::Web::Theme
                 end
               end
 
+              if OMF::Web::SessionStore[:projects, :user] && !OMF::Web::SessionStore[:projects, :user].empty?
+                li do
+                  a id: 'projects-menu-a', class: 'nav-menu', href: "#" do
+                    i :class => "glyphicon glyphicon-th-list icon-white"
+                    OMF::Web::SessionStore[:current_project, :user] ||= OMF::Web::SessionStore[:projects, :user].first[:uuid]
+                    text OMF::Web::SessionStore[:projects, :user].find { |p| p[:uuid].to_s == OMF::Web::SessionStore[:current_project, :user].to_s }.try(:[], :name)
+                  end
+                  ul id: 'projects-menu-ul', class: "dropdown-menu" do
+                    OMF::Web::SessionStore[:projects, :user].each do |project|
+                      li do
+                        a project[:name], href: "/labwiki?project_id=#{project[:uuid]}"
+                      end
+                    end
+                  end
+                end
+              end
+
               li class: 'last-nav-link' do
                 a id: 'user-menu-a', class: 'nav-menu', href: "#" do
                   i :class => "glyphicon glyphicon-user icon-white"
