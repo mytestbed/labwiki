@@ -41,9 +41,10 @@ module LabWiki
         cl = (sproc.call(pat, opts, wopts) || [])
         cl.map do |f|
           f[:widget] = name
-          url = f.delete(:url)
-          f[:label] ||= url
-          f[:content] ||= Base64.encode64("#{f[:mime_type]}::#{url}").gsub("\n", '')
+          if url = f.delete(:url)
+            f[:label] ||= url
+            f[:content] ||= Base64.encode64("#{f[:mime_type]}::#{url}").gsub("\n", '')
+          end
           f
         end
       end.flatten.compact
