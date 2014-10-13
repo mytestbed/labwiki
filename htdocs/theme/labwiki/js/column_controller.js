@@ -167,9 +167,10 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       //this.displayed_content = selected;
       var self = this;
       var opts = {
-        action: 'get_content',
+        action: (selected.action || 'get_content'),
         //blob: selected.blob,  // use this one if we care about a specific version
-        col: this._name
+        col: this._name,
+        descriptor: selected
       };
       if (selected.name) opts.name = selected.name;
       if (selected.content) opts.content = selected.content;
@@ -373,7 +374,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
         drop: function(event, ui) {
           var propagate = true;
           var e = ui.draggable;
-          var propagate = null;
+          //var propagate = null;
           if (self.on_drop_handler) {
             propagate = self.on_drop_handler(e, $(this), self);
           }
