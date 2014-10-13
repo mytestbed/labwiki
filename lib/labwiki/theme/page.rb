@@ -70,6 +70,7 @@ module OMF::Web::Theme
             end
 
             ul class: 'nav navbar-nav navbar-right' do
+=begin
               li do
                 a id: 'tools-menu-a', class: 'nav-menu', href: "#" do
                   i :class => "glyphicon glyphicon-cog icon-white"
@@ -77,20 +78,9 @@ module OMF::Web::Theme
                 end
                 ul id: 'tools-menu-ul', class: "dropdown-menu" do
                   li 'GIMI', class: "dropdown-header"
-                  if (authorisation_info = LabWiki::Configurator[:session][:authorisation])
-                    authorisation_info[:certificate] = LabWiki::Configurator.read_file('session/authorisation/cert_file')
-                    li do
-                      form method: "post", action: authorisation_info[:url], id: "authorise" do
-                        input name: "tool_id", value: "Labwiki", type: "hidden"
-                        input name: "backto", value: authorisation_info[:callback_url], type: "hidden"
-                        input name: "tool_cert", value: authorisation_info[:certificate], type: "hidden"
-                      end
-                      a "Authorise", href: "#", onclick: "$('form#authorise').submit();"
-                    end
-                  end
                 end
               end
-
+=end
               if OMF::Web::SessionStore[:projects, :user] && !OMF::Web::SessionStore[:projects, :user].empty?
                 li do
                   a id: 'projects-menu-a', class: 'nav-menu', href: "#" do
@@ -108,20 +98,49 @@ module OMF::Web::Theme
                 end
               end
 
-              li class: 'last-nav-link' do
-                a id: 'user-menu-a', class: 'nav-menu', href: "#" do
+              if LabWiki::Configurator['plugins/topology/']
+                authorised = LabWiki::Plugin::Topology::SliceServiceProxy.instance.user_authorised?
+                authorised = false
+                a_cls = authorised ? "info" : "warning"
+                a_txt = authorised ? "Authorised" : "Not Authorised"
+                li do
+                  span :class => "label label-#{a_cls}", style: "line-height: 32px; font-size: 100%;" do
+                    text a_txt
+                  end
+                end
+              end
+
+              li :class => 'last-nav-link' do
+                a id: 'user-menu-a', :class => 'nav-menu', href: "#" do
                   i :class => "glyphicon glyphicon-user icon-white"
                   text OMF::Web::SessionStore[:name, :user] || 'Unknown'
                 end
-                ul id: 'user-menu-ul', class: 'nav-menu', class: "dropdown-menu" do
+                ul id: 'user-menu-ul', :class => "nav-menu dropdown-menu" do
+                  if (authorisation_info = LabWiki::Configurator[:session][:authorisation])
+                    authorisation_info[:certificate] = LabWiki::Configurator.read_file('session/authorisation/cert_file')
+                    li do
+                      form method: "post", action: authorisation_info[:url], id: "authorise" do
+                        input name: "tool_id", value: "Labwiki", type: "hidden"
+                        input name: "backto", value: authorisation_info[:callback_url], type: "hidden"
+                        input name: "tool_cert", value: authorisation_info[:certificate], type: "hidden"
+                      end
+
+                      a :class => "nav-menu-item", href: "#", onclick: "$('form#authorise').submit();" do
+                        i :class => "glyphicon glyphicon-ok icon-white"
+                        text "Authorise"
+                      end
+                    end
+                  end
+
                   li do
-                    a id: 'user-menu-logout-a', class: 'nav-menu-item', href: "/logout" do
+                    a id: 'user-menu-logout-a', :class => 'nav-menu-item', href: "/logout" do
                       i :class => "glyphicon glyphicon-off icon-white"
                       text "Logout"
                     end
                   end
                 end
               end
+
             end
           end
 
