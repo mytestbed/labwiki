@@ -107,7 +107,6 @@ module OMF::Web::Theme
 
               if LabWiki::Configurator['plugins/topology/']
                 authorised = LabWiki::Plugin::Topology::SliceServiceProxy.instance.user_authorised?
-                authorised = false
                 a_cls = authorised ? "info" : "warning"
                 a_txt = authorised ? "Authorised" : "Not Authorised"
                 li do
