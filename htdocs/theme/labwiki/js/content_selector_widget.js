@@ -28,7 +28,7 @@ define([], function () {
        };
 
       var self = this;
-      OHUB.bind('data_source.content_choices.changed', function(evt) {
+      OHUB.bind('data_source.content_choices_' + OML.session_id + '.changed', function(evt) {
         console.log('active', self._active);
         if (! self._active) return;
 

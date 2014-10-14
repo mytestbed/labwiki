@@ -153,10 +153,13 @@ module LabWiki
         end
       end
 
-      n = "content_choices"
-      t = OMF::OML::OmlTable.new n, [:name, :description]
-      OMF::Web::DataSourceProxy.register_datasource t
-      OMF::Web::SessionStore[:content_choices, :plugin_mgr] = t
+      unless OMF::Web::SessionStore[:content_choices, :plugin_mgr]
+        n = "content_choices_#{OMF::Web::SessionStore.session_id}"
+        t = OMF::OML::OmlTable.new n, [:name, :description]
+        OMF::Web::DataSourceProxy.register_datasource t
+        OMF::Web::SessionStore[:content_choices, :plugin_mgr] = t
+        OMF::Web::SessionStore[:content_choices_ds_name, :plugin_mgr] = n
+      end
     end
 
     # Return OML table to be used to pus content choices to browser
