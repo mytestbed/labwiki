@@ -34,7 +34,6 @@ end
 desc "Stop the Labwiki Daemon"
 task :stop do |t, args|
   system('/usr/bin/env bundle exec god stop labwiki')
-  system('/usr/bin/env bundle exec god quit')
 end
 
 desc "Print the status of the Labwiki daemon"
