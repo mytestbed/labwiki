@@ -152,6 +152,19 @@ module LabWiki
           _safe_call(block)
         end
       end
+
+      n = "content_choices"
+      t = OMF::OML::OmlTable.new n, [:name, :description]
+      OMF::Web::DataSourceProxy.register_datasource t
+      OMF::Web::SessionStore[:content_choices, :plugin_mgr] = t
+    end
+
+    # Return OML table to be used to pus content choices to browser
+    #
+    # Schema: [:name, :description]
+    #
+    def self.content_choice_table
+      OMF::Web::SessionStore[:content_choices, :plugin_mgr]
     end
 
     # FIXME should have arguments? or not?

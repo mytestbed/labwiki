@@ -34,27 +34,44 @@ module LabWiki
         warn "No search repo defined for '#{col}'"
         raise NoReposToSearchException.new
       end
+      choices = PluginManager.content_choice_table
+      choices.clear
       result = PluginManager.widgets_for_column(col).map do |widget|
         next unless sproc = widget[:search]
         name = widget[:name]
         wopts = Configurator["plugins/#{name}"]
-        cl = (sproc.call(pat, opts, wopts) || [])
-        cl.map do |f|
+
+        sproc.call(pat, opts, wopts) do |f|
+          #puts ">>>FFF>>> #{f}"
           f[:widget] = name
           if url = f.delete(:url)
             f[:label] ||= url
             f[:content] ||= Base64.encode64("#{f[:mime_type]}::#{url}").gsub("\n", '')
           end
-          f
+          #f[:widget] = widget[:name] if [widget[:handle_mime_type]].flatten.include?(r_item[:mime_type])
+          choices << [name, f.to_json]
         end
+
+
+        # cl = (sproc.call(pat, opts, wopts) || [])
+        # cl.map do |f|
+        #   f[:widget] = name
+        #   if url = f.delete(:url)
+        #     f[:label] ||= url
+        #     f[:content] ||= Base64.encode64("#{f[:mime_type]}::#{url}").gsub("\n", '')
+        #   end
+        #   f
+        # end
       end.flatten.compact
 
-      result.each do |r_item|
-        #puts r_item
-        PluginManager.widgets_for_column(col).each do |widget|
-          r_item[:widget] = widget[:name] if [widget[:handle_mime_type]].flatten.include?(r_item[:mime_type])
-        end
-      end
+      # result.each do |r_item|
+      #   #puts r_item
+      #   PluginManager.widgets_for_column(col).each do |widget|
+      #     r_item[:widget] = widget[:name] if [widget[:handle_mime_type]].flatten.include?(r_item[:mime_type])
+      #   end
+      # end
+
+      {}
     end
 
   end # class

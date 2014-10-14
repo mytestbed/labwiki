@@ -31,6 +31,12 @@ module OMF::Web::Theme
         index += 1
         ColumnRenderer.new(name.to_s.capitalize, @widget.column_widget(name), name, index)
       end
+
+      unless @content_choice_proxy = OMF::Web::SessionStore[:content_choice_proxy, :page]
+        cct = LabWiki::PluginManager.content_choice_table
+        @content_choice_proxy = ccp = OMF::Web::DataSourceProxy.for_source(name: cct.name)[0]
+        OMF::Web::SessionStore[:content_choice_proxy, :page] = ccp
+      end
     end
 
     def render_additional_headers
@@ -42,8 +48,9 @@ module OMF::Web::Theme
         "require(['#{js}'], function() {});"
       end
       javascript %{
-        require(['theme/labwiki/js/labwiki'], function() {
+        require(['theme/labwiki/js/labwiki', 'omf/data_source_repo'], function(lw, ds) {
           LW.session_id = OML.session_id = '#{OMF::Web::SessionStore.session_id}';
+          #{@content_choice_proxy.to_javascript()}
           #{gjsa.join("\n")}
         });
       }

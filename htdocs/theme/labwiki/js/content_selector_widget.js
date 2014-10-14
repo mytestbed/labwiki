@@ -19,12 +19,27 @@ define([], function () {
       this._search_pat = '';
       this._content_history = [];
       this._content_recommendations = [];
+      this._active = false;
 
       this._formatters = {
         '_': function(row, i, type, def_formatter) {
                return def_formatter(row.name, row.path, null, i, type);
              }
        };
+
+      var self = this;
+      OHUB.bind('data_source.content_choices.changed', function(evt) {
+        console.log('active', self._active);
+        if (! self._active) return;
+
+        var rows = evt.data_source.rows();
+        var list = _.map(rows, function(row) {
+          var j = row[2];
+          return JSON.parse(j);
+        })
+        self._content_recommendations = list;
+        self._refresh_suggestion_list(list);
+      });
     },
 
     /*
@@ -45,11 +60,13 @@ define([], function () {
       });
 
       si.bind('focus', function() {
+        self._active = true;
         self._refresh_suggestion_list();
         context_el.find('.suggestion-list').css('overflow', 'auto').show();
         return false;
       });
       si.bind('blur', function() {
+        self._active = false;
         context_el.find('.suggestion-list').delay(200).slideUp(200); //hide();
         return false;
       });
@@ -164,19 +181,20 @@ define([], function () {
         type: 'get',
         dataType: 'json'
       }).done(function(reply) {
-        if (reply.result) {
-          var list = reply.result;
-          self._content_recommendations = list;
-          self._refresh_suggestion_list(list);
-        } else if (reply.retry) {
-          // Retry again later
-          setTimeout(function() {
-            if (self._search_pat == pat) {
-              // Still loking for the same pattern
-              self._query(pat);
-            }
-          }, 1000);
-        }
+        // now comes through data_source
+//        if (reply.result) {
+//          var list = reply.result;
+//          self._content_recommendations = list;
+//          self._refresh_suggestion_list(list);
+//        } else if (reply.retry) {
+//          // Retry again later
+//          setTimeout(function() {
+//            if (self._search_pat == pat) {
+//              // Still loking for the same pattern
+//              self._query(pat);
+//            }
+//          }, 1000);
+//        }
       }).fail(function(xhr) {
         if (xhr.status == 401) {
           // Server lost authentication information and requires a new login

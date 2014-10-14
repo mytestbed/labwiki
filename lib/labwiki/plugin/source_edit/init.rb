@@ -17,8 +17,8 @@ LabWiki::PluginManager.register :source_edit, {
         (opts[:mime_type].start_with? 'text') ? 100 : nil
       end,
       :widget_class => LabWiki::Plugin::SourceEdit::SourceEditWidget,
-      :search => lambda do |pat, opts, wopts|
-        OMF::Web::ContentRepository.find_files(pat, opts)
+      :search => lambda do |pat, opts, wopts, &cbk|
+        OMF::Web::ContentRepository.find_files(pat, opts, &cbk)
       end
     }
   ],

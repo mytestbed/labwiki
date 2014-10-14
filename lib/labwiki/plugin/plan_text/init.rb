@@ -18,9 +18,9 @@ LabWiki::PluginManager.register :plan_text, {
         500
       end,
       :widget_class => LabWiki::Plugin::PlanText::PlanTextWidget,
-      :search => lambda do |pat, opts, wopts|
+      :search => lambda do |pat, opts, wopts, &cbk|
         opts[:mime_type] = 'text/markup'
-        OMF::Web::ContentRepository.find_files(pat, opts)
+        OMF::Web::ContentRepository.find_files(pat, opts, &cbk)
       end
     }
   ],
