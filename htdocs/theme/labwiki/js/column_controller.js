@@ -240,12 +240,18 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       var self = this;
       opts.sid = LW.session_id;
       opts.no_render = true;
-      $.ajax({
+      var type = (type != undefined) ? type : 'POST';
+      var req = {
         url: '_column',
-        data: JSON.stringify(opts),
-        type: (type != undefined) ? type : 'POST',
-        contentType: "application/json"
-      }).done(function(data) {
+        type: type
+      };
+      if (type != 'GET') {
+        req.data = JSON.stringify(opts);
+        req.contentType = "application/json"
+      } else {
+        req.data = opts;
+      }
+      $.ajax(req).done(function(data) {
         try {
           if (callback) callback(data.action_reply);
           if (status_cbk) status_cbk('success', 'OK');
