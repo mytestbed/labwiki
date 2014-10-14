@@ -10,6 +10,17 @@ module LabWiki
   class ColumnHandler < AbstractHandler
 
     def on_request(req)
+      case req.request_method
+      when 'POST'
+        return on_post(req)
+      when 'GET'
+        return on_get(req)
+      else
+        return [400, {}, "Cannot handle '#{req.request_method}'"]
+      end
+    end
+
+    def on_post(req)
       unless body = req.body #req.POST
         return [400, {"Content-Type" => 'text/json'}, 'Missing body']
       end
@@ -21,10 +32,21 @@ module LabWiki
           warn "Received request with unknown content type '#{req.content_type}'"
           return [400, {"Content-Type" => 'text/json'}, 'Unknown content type']
         end
+        #puts "BODY>>>> #{body}"
         params = JSON.parse(body)
       end
       #puts "REQUEST PARAMS> #{params}"
+      process(req, params)
+    end
 
+    def on_get(req)
+      params = {}
+      req.params.each {|k, v| params[k.to_s] = v}
+      #puts "ON_GET>>>> #{params.inspect}"
+      process(req, req.params || {})
+    end
+
+    def process(req, params)
       unless col = params['col']
         raise OMF::Web::Rack::MissingArgumentException.new "Missing parameter 'col'"
       end
