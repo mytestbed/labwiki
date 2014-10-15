@@ -24,9 +24,12 @@ module LabWiki
         [200, headers, [body]] # required for ruby > 1.9.2
       rescue OMF::Web::Rack::RedirectException => rex
         return [307, {'Location' => rex.redirect_url, "Content-Type" => ""}, ['Try again!']]
+      rescue OMF::Web::Rack::UnknownResourceException => rex
+        warn rex
+        return rex.reply
       rescue OMF::Web::Rack::MissingArgumentException => mex
         warn mex
-        return [412, {"Content-Type" => 'text'}, [mex.to_s]]
+        return mex.reply
       rescue Exception => ex
         error ex
         debug ex.to_s + "\n\t" + ex.backtrace.join("\n\t")
