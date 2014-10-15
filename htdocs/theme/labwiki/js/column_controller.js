@@ -273,7 +273,8 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
       if (content_descriptor.url) {
         var o = {
           url: content_descriptor.url,
-          mime_type: content_descriptor.mime_type
+          mime_type: content_descriptor.mime_type,
+          action: 'get_widget'
         };
         this.load_content(o);
       } else {
@@ -547,7 +548,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
 
     increment_col_span: function() {
       this.col_span = this.col_span < (LW.controllers.length - 1) ? this.col_span + 1 : this.col_span;
-    },
+    }
 
   });
 

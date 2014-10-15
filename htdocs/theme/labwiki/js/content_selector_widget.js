@@ -23,7 +23,7 @@ define([], function () {
 
       this._formatters = {
         '_': function(row, i, type, def_formatter) {
-               return def_formatter(row.name, row.path, null, i, type);
+               return def_formatter(row.name, row.path, row.img_url, i, type, row);
              }
        };
 
@@ -132,7 +132,7 @@ define([], function () {
 
       this._context_el.find('.suggestion-list').hide(); // make it go away fast so I know how much space I need for widget
       this.reset(); // clear text box
-
+      content_descr.action = 'get_widget'
       console.log("LOAD: " + content_descr.label);
       this._column_controller.load_content(content_descr);
     },
@@ -301,13 +301,17 @@ define([], function () {
     _build_suggestion_list: function(slist, type) {
       var formatters = this._formatters;
       var self = this;
-      var defFormatter = function (title, sub_title, img_url, index, type) {
+      var defFormatter = function (title, sub_title, img_url, index, type, row) {
         var klass = 'ui-menu-item';
         if (img_url == null) {
           img_url = "theme/labwiki/images/file-16.png";
         }
         //if (i == 0) klass = klass + ' ui-menu-item-first ui-menu-item-first-' + type;
-        var c = {klass: klass, idx: "" + index, type: type, img_url: img_url, title: title, sub_title: sub_title};
+        if (title.length > 40) {
+          // shorten it
+          title = title.slice(0, 7) + '...' + title.slice(-30)
+        }
+        var c = {klass: klass, idx: "" + index, type: type, img_url: img_url, title: title, sub_title: sub_title || row.widget};
         var h = self.def_formatter_template.replace(/{[^{}]+}/g, function(key) {
           return c[key.replace(/[{}]+/g, "")] || "";
         });

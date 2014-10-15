@@ -56,12 +56,23 @@ module LabWiki
     def dispatch_to_column(col, action, params, req)
       action = "on_#{action}".to_sym
       params = expand_req_params(col, params, req)
+      col_widget = @widgets[col] # currently shown widget
 
-      if action == :on_new
+      case action
+      when :on_new
         col_widget = nil
         action = :on_get_content
+      when :on_get_widget
+        if widget_id = params[:widget_id]
+          unless col_widget && col_widget.widget_id == widget_id
+            # if we can find it in the session store, use it
+            col_widget = OMF::Web::SessionStore[widget_id, :widgets]
+          end
+        else
+          col_widget = nil
+        end
+        action = :on_get_content
       else
-        col_widget = @widgets[col]
         debug "dispatch params: #{params} - col_wgt: #{col_widget}"
         if widget_id = params[:widget_id]
           unless col_widget && col_widget.widget_id == widget_id
@@ -69,7 +80,7 @@ module LabWiki
               # good we found an existing old one
               col_widget = @widgets[col] = w
             else
-              raise "Requesting unknown widget id '#{widget_id}::#{widget_id.class}' -- #{col_widget.inspect}"
+              raise OMF::Web::Rack::UnknownResourceException.new "Requesting unknown widget id '#{widget_id}::#{widget_id.class}'"
             end
           end
         elsif col_widget
@@ -129,7 +140,7 @@ module LabWiki
       if cd = params[:content]
         params[:mime_type], params[:url] = Base64.decode64(cd).split('::')
         unless params[:mime_type] && params[:url]
-          raise OMF::Web::Rack::MissingArgumentException.new "Can't decode 'content' parameter (#{cd})"
+          raise OMF::Web::Rack::MissingArgumentException.new "Can't decode 'content' parameter (#{cd}) - #{params}"
         end
         params[:content_descriptor] = cd
       elsif url = params[:content_url]
