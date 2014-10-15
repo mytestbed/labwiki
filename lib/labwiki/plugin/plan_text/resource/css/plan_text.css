@@ -23,17 +23,19 @@ div.widget_body_plan p.drop-target {
   line-height: 1.3em;
 }
 
-.plan_text ul {
-  display: block;
-  list-style-type: disc;
-  list-style-position: inside !important;
-}
-
 .plan_text ul li {
   list-style-type: disc;
-  list-style-position: inside !important;
+  list-style-position: outside !important;
   display: list-item;
-  margin-left: 10px;
+  margin-left: 30px;
+  margin-bottom: 10px;
+}
+
+.plan_text ol li {
+  list-style-type: decimal;
+  list-style-position: outside !important;
+  display: list-item;
+  margin-left: 30px;
   margin-bottom: 10px;
 }
 
