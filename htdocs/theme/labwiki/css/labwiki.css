@@ -675,6 +675,7 @@ div.lw-form tr.buttons td {
 
 #fullscreen_modal .modal-header h2 {
   font-size: 160%;
+  white-space: pre;
 }
 
 #fullscreen_modal .modal-body {
