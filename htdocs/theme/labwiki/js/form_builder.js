@@ -91,7 +91,7 @@ define([], function () {
           vc = $('<select class="form-control" />');
           shows_def_value = true;
           _.each(rdecl.choices || [], function(c) {
-            var o = $('<option>' + (c.label || 'Unknown') + '</option>');
+            var o = $('<option>' + (c.label || c.value || 'Unknown') + '</option>');
             if (c.value) {
               o.attr('value', c.value);
               if (rdecl.value) {
