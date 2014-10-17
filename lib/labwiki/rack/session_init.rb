@@ -39,8 +39,8 @@ module LabWiki
               env['warden'].set_user "https://localhost?id=xxx"
             else
               env['warden'].authenticate!(LabWiki::Authentication.type)
+              return [302, {'Location' => '/', "Content-Type" => ""}, ['Session lost, re-authenticate.']]
             end
-            return [302, {'Location' => '/', "Content-Type" => ""}, ['Session lost, re-authenticate.']]
           end
         end
 
