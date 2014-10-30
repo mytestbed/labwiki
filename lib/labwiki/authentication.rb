@@ -17,7 +17,7 @@ module LabWiki
     def self.setup(opts)
       # No authentication :none as default
       opts ||= { type: "none" }
-      require "labwiki/authentication/#{opts[:type]}"
+      require opts[:lib_path] || "labwiki/authentication/#{opts[:type]}"
       @@instance ||= @@types[opts[:type]].new(opts)
     end
 
@@ -45,7 +45,14 @@ module LabWiki
       @type = opts.delete(:type)
 
       Warden::Manager.after_set_user do |user, auth, opts|
-        parse_user(user) unless OMF::Web::SessionStore[:initialised, :session]
+        # Trigger start session callbacks
+        unless OMF::Web::SessionStore[:initialised, :session]
+          parse_user(user)
+          LabWiki::Configurator.start_session(OMF::Web::SessionStore[:data, :user])
+          LabWiki::PluginManager.init_session()
+          LabWiki::LWWidget.init_session()
+          OMF::Web::SessionStore[:initialised, :session] = true
+        end
       end
     end
 
