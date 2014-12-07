@@ -44,6 +44,22 @@ module LabWiki
                 end
               end
             end
+        },
+        "f4f" => {
+          provider: "http://node0.id.wall2-ilabt-iminds-be.wall2.ilabt.iminds.be/server/server.php",
+          required_fields: [
+            'http://iminds.be/user/urn',
+            "http://geni.net/user/prettyname",
+          ],
+          login_content:
+            Erector.inline do
+              p { img :src => "/resource/login/img/fed4fire-logo_small.jpg", :alt => "Fed4FIRE" }
+              p do
+                a :href => "/?openid_identifier=http://node0.id.wall2-ilabt-iminds-be.wall2.ilabt.iminds.be/server/server.php", :class => "btn btn-default" do
+                  text "Login with Fed4FIRE ID"
+                end
+              end
+            end
         }
       }
 
@@ -80,6 +96,11 @@ module LabWiki
         case @provider
         when "geni"
           if (urn = user['http://geni.net/user/urn'].try(:first))
+            OMF::Web::SessionStore[:id, :user] = urn.split('|').last
+          end
+          OMF::Web::SessionStore[:name, :user] = user['http://geni.net/user/prettyname'].try(:first)
+        when 'f4f'
+          if (urn = user['http://iminds.be/user/urn'].try(:first))
             OMF::Web::SessionStore[:id, :user] = urn.split('|').last
           end
           OMF::Web::SessionStore[:name, :user] = user['http://geni.net/user/prettyname'].try(:first)
