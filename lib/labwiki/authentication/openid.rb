@@ -101,7 +101,7 @@ module LabWiki
           OMF::Web::SessionStore[:name, :user] = user['http://geni.net/user/prettyname'].try(:first)
         when 'f4f'
           if (urn = user['http://iminds.be/user/urn'].try(:first))
-            OMF::Web::SessionStore[:id, :user] = urn.split('|').last
+            OMF::Web::SessionStore[:id, :user] = urn.split('+').last
           end
           OMF::Web::SessionStore[:name, :user] = user['http://geni.net/user/prettyname'].try(:first)
         when "google"
