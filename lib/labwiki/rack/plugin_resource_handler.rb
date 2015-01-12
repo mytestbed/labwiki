@@ -18,7 +18,7 @@ module LabWiki
 
     def _call(env)
       @path_info = ::Rack::Utils.unescape(env["PATH_INFO"])
-      parts = @path_info.split SEPS
+      parts = @path_info.split ::Rack::Utils::PATH_SEPS
       #puts ">>> PARTS: #{parts}"
 
       return fail(403, "Forbidden")  if parts.include? ".."
