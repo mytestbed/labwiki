@@ -171,9 +171,9 @@ module OMF::Web::Theme
                 span class: "glyphicon glyphicon-remove"
                 span 'Close', class: "sr-only"
              end
-             h2 "XXX", class: "modal-title"
+             h2 "???", class: "modal-title"
             end
-            div class: "modal-body" do
+            div class: "modal-body widget_container" do
               text '....'
             end
             # div class: "modal-footer" do
