@@ -10,6 +10,12 @@ module LabWiki::Plugin::PlanText
 
     # Check for data sources and create them if they don't exist yet
     def self.on_pre_create_embedded_widget(wdescr)
+      unless wdescr.is_a? Hash
+        warn "Malformed widget description - #{wdescr} "
+        # TODO: Should raise some error to be propagated to client
+        return {}
+      end
+
       if wdescr[:mime_type] == 'data/graph'
         wdescr[:type] = "data/#{wdescr.delete(:graph_type)}"
 
@@ -162,6 +168,25 @@ module LabWiki::Plugin::PlanText
 
 
     def content_renderer()
+      OMF::Web::SessionStore[:contentHandler, :repos] = lambda() do |url|
+        ps = url.split(':')
+        repo = nil
+        case ps.length
+          when 1
+            # Read from first repo
+            repo = OMF::Web::SessionStore[:plan, :repos][0]
+          when 2
+            repo = OMF::Web::SessionStore[:plan, :repos].find do |r|
+              #puts ">>>>>>> #{r.inspect} -- #{r.exist? url}"
+              r.exist?(url)
+            end
+        end
+        if repo
+          {content: repo.read(url), mime_type: repo.mime_type_for_file(url) }
+        else
+          raise "Can't find repo containing '#{url}'."
+        end
+      end
       @text_widget.content()
     end
 

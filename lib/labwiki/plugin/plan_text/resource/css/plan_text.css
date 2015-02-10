@@ -62,3 +62,8 @@ div.widget_body_plan p.drop-target {
   margin-bottom: 20px;
 }
 
+/* The above messes with leaflet.js */
+
+img.leaflet-tile {
+  max-height: none;
+}
