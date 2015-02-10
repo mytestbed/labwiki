@@ -87,11 +87,14 @@ define(['theme/labwiki/js/column_controller'], function (column_controller) {
 
     var fb = fm.find('.modal-body');
     fb.empty();
-    fb.append(content);
+    fm.off('shown.bs.modal');
+    if (content) {
+      fb.append(content);
+    }
     if (on_show) {
       fm.on('shown.bs.modal', function() {
         resize_modal();
-        on_show();
+        on_show(fb);
       });
     }
     fm.modal({});
@@ -127,7 +130,7 @@ define(['theme/labwiki/js/column_controller'], function (column_controller) {
     // Fix layout
     LW.resize();
 
-    console.log('hi');
+    //console.log('hi');
 
     window.onbeforeunload = function() { return "Your unsaved work will be lost."; };
   });
