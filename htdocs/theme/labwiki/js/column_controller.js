@@ -23,7 +23,7 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
     },
 
     // type: success, info, warning, danger
-    show_alert: function(type, msg, hide_after) {
+    show_alert: function(type, msg, hide_after_msec) {
       if (type == 'error') type = 'danger';
       var self = this;
       var ad = $('<div class="alert alert-' + type + ' fade in" role="alert">'
@@ -32,9 +32,9 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
                  + msg + '</div>');
       var ap = this.top_el.find('.col-alerts');
       ap.prepend(ad);
-      if (hide_after || type == 'success' || type == 'info') {
-        if (!hide_after) hide_after = 5000; // default
-        ad.delay(hide_after).fadeOut().promise().done(function() {
+      if (hide_after_msec || type == 'success' || type == 'info') {
+        if (!hide_after_msec) hide_after_msec = 5000; // default
+        ad.delay(hide_after_msec).fadeOut().promise().done(function() {
           ad.remove();
           self.check_size();
         });
@@ -46,22 +46,26 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
     add_tool: function(name, html_frag, callback) {
       var self = this;
       var id = this._name + '_tool_form_' + (this.tool_count += 1);
-      var hf = '<form class="form-inline" role="form" id="' + id + '" method="POST">'
-              + html_frag + '</form>';
-      this._content_selector.add_tool(name, hf);
-      var form = $('#' + id);
-      form.submit(function(event) {
-        callback(form, function(status, msg) {
-          self.show_alert(status, msg);
-          switch (status) {
-          case 'success':
-            self.close_tool_list();
-            break;
-          }
+      if (callback) {
+        var hf = '<form class="form-inline" role="form" id="' + id + '" method="POST">'
+          + html_frag + '</form>';
+        this._content_selector.add_tool(name, hf);
+        var form = $('#' + id);
+        form.submit(function (event) {
+          callback(form, function (status, msg) {
+            self.show_alert(status, msg);
+            switch (status) {
+              case 'success':
+                self.close_tool_list();
+                break;
+            }
+          });
+          return false;
         });
-        return false;
-      });
-      return form;
+        return form;
+      } else {
+        this._content_selector.add_tool(name, html_frag);
+      }
     },
 
     close_tool_list: function() {
