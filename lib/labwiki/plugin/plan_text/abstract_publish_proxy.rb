@@ -51,9 +51,19 @@ module LabWiki::Plugin::PlanText
       end
     end
 
+    # Pass in current_proxy which has content of the file
+    #
+    # Sample opts are {
+    #   :action=>"share",
+    #   :col=>"plan",
+    #   :plugin=>"wiki",
+    #   :url=>"bob:wiki/ass_1.md",
+    #   :sid=>"s6278879_4230225",
+    #   :repo_iterator=>[#<OMF::Web::GitContentRepository-system>, #<OMF::Web::GitContentRepository-bob>],
+    #   :title=>"Hello world"
+    # }
     def publish(content_proxy, opts)
-	raise Exception.new("Missing implementation")
-      #_to_html(content_proxy, true, opts)
+      raise Exception.new("Missing implementation")
     end
 
     def _to_html(cp, store_locally, opts)

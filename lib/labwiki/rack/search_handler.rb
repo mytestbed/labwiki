@@ -34,6 +34,9 @@ module LabWiki
         warn "No search repo defined for '#{col}'"
         raise NoReposToSearchException.new
       end
+
+      opts[:repo_iterator] = opts[:repo_iterator].select { |v| !v.hidden? }
+
       choices = PluginManager.content_choice_table
       choices.clear
       result = PluginManager.widgets_for_column(col).map do |widget|
