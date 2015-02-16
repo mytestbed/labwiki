@@ -16,6 +16,7 @@ gem "httparty"
 gem "god"
 gem 'rack-cors', :require => 'rack/cors'
 gem "i18n"
+gem "rack-fiber_pool"
 
 # Install gems from each plugin
 # Credit: http://madebynathan.com/2010/10/19/how-to-use-bundler-with-plugins-extensions
