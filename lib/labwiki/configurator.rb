@@ -116,6 +116,37 @@ module LabWiki
           (OMF::Web::SessionStore[:prepare, :repos] ||= []) << repo
           (OMF::Web::SessionStore[:execute, :repos] ||= []) << repo
         end
+
+        # Education setup move it to plugin later on
+        next if self['session/education/'].nil?
+
+        educators = self['session/education/educators/list'] || []
+        repos = {
+          educators: self['session/education/educators/repos'] || [],
+          students: self['session/education/students/repos'] || []
+        }
+
+        uid = OMF::Web::SessionStore[:id, :user]
+        utype = educators.include?(uid) ? :educators : :students
+        repos[utype].each do |repo_opts|
+          opts = repo_opts.dup
+          opts.each {|k, v| opts[k] = ERB.new(v).result(binding) if v.kind_of? String}
+          unless name = opts.delete(:name)
+            raise "Missing 'name' declaration in config file's 'session/education/...' - #{opts}"
+          end
+          repo = OMF::Web::ContentRepository.create(name.to_sym, opts)
+          OMF::Web::SessionStore[:plan, :repos] ||= []
+          OMF::Web::SessionStore[:prepare, :repos] ||= []
+          OMF::Web::SessionStore[:execute, :repos] ||= []
+
+          if repo_opts[:hidden]
+            (OMF::Web::SessionStore[:hidden, :repos] ||= []) << repo
+          else
+            OMF::Web::SessionStore[:plan, :repos] << repo
+            OMF::Web::SessionStore[:prepare, :repos] << repo
+            OMF::Web::SessionStore[:execute, :repos] << repo
+          end
+        end
       end
     end
 
