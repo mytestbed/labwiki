@@ -104,18 +104,21 @@ module LabWiki::Plugin::PlanText
       message = ""
       begin
         AbstractPublishProxy.instance.publish(cp, params)
+        gui_log(:info, 'File shared')
       rescue LabWiki::Plugin::PlanText::AccessDeniedError => e
         message = "#{e.inspect}"
       rescue LabWiki::Plugin::PlanText::NoConnectionToCMSError => e
         message = "#{e.inspect}"
       rescue LabWiki::Plugin::PlanText::InvalidUrlError => e
         message = "#{e.inspect}"
-      rescue Exception => e
-        message = "TODO: Rescue Exception -> #{e.inspect}"
+      #rescue Exception => e
+      #  message = "TODO: Rescue Exception -> #{e.inspect}"
       end
 
-      debug "error-message: #{message}" unless message == ""
-      gui_log(:error, message)
+      unless message == ""
+        debug "error-message: #{message}"
+        gui_log(:error, message)
+      end
 
       # # TODO: Pop up with message
 
