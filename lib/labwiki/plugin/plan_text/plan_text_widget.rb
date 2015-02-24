@@ -80,7 +80,7 @@ module LabWiki::Plugin::PlanText
       if gd.start_with? "---\n"
         gd = gd[4 .. -1]
       end
-      line << "{{{\n#{gd}\n}}}"
+      line << "\n{{{\n#{gd}\n}}}\n"
       #puts "LINE: #{line}"
 
       # Now save it

@@ -17,5 +17,5 @@ plugins
 /log
 /tmp
 .ruby-version
-
+.idea
 

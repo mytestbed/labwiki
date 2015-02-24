@@ -3,6 +3,10 @@ require 'omf_base/lobject'
 require 'openid/store/filesystem'
 require 'labwiki/authentication'
 require 'labwiki/rack/session_init'
+require 'rack/fiber_pool'
+
+
+use Rack::FiberPool, rescue_exception: Proc.new { |env, exception| [503, {}, exception.message] }
 
 LW_PORT = "#{LabWiki::Configurator[:port] || 4000}"
 
@@ -15,6 +19,7 @@ use Rack::Cors, debug: true do
 end
 
 use ::Rack::ShowExceptions
+
 
 cookie_key_affix = ENV['RACK_ENV'] == 'production' ? LW_PORT : Time.now
 
