@@ -494,6 +494,10 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
               case 'mkd':
                 mime_type = 'text/markup';
                 break;
+              case 'experiment':
+              case 'exp':
+                mime_type = 'plugin/experiment';
+                break;
             }
 
             if (controller != undefined && url != undefined) {
