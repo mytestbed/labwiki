@@ -1,0 +1,97 @@
+# Labwiki set up for educational environment
+
+## Getting the source code
+
+The changes implemented for this scenario can be found under git branch 'edu'
+
+    git clone https://github.com/mytestbed/labwiki.git
+    cd labwiki
+    git checkout edu
+
+For existing repository:
+
+    cd labwiki
+    git fetch origin
+    git checkout edu
+
+Then make sure using bundler to upgrade all the dependencies too:
+
+    cd labwiki
+    bundle update
+
+## Additional section in Labwiki configuration file
+
+A section of configuration options needs to be added to the standard labwiki config file.
+
+Let us start with what folders/repositories need to be created first.
+
+- repos
+  - system
+  - students
+    - bob
+    - alice
+  - submission
+
+* System repo contains all the teaching materials, lecture notes, sample OEDL scripts etc. Educators have full access and students will have READ only access.
+
+* Each logged in student would have a working repo named after his user id. Educator will have full access to folder 'students' hence have access to all students' working directories.
+
+* Submission repo is hidden from students, but educator would have full access.
+
+Now we can translate all these logic into labwiki configuration:
+
+    labwiki:
+      session:
+
+        ...
+
+        education:
+          educators:
+            # Add educators' user id into this list
+            list:
+            - professor_1
+            - lecturer_1
+
+            repos:
+            - name: system
+              type: git
+              top_dir: repos/system
+            - name: students
+              type: file
+              read_only: true
+              hidden: true
+              top_dir: repos/students
+            - name: submission
+              type: file
+              top_dir: repos/submission
+
+          students:
+            repos:
+            - name: system
+              type: git
+              read_only: true
+              top_dir: repos/system
+            - name: <%= OMF::Web::SessionStore[:id, :user] %>
+              type: git
+              create_if_not_exists: true
+              top_dir: repos/students/<%= OMF::Web::SessionStore[:id, :user] %>
+            - name: submission
+              type: file
+              no_access: true
+              hidden: true
+              top_dir: repos/submission
+
+
+
+## Submit assignments
+
+When bob finished an assignment 1, saved as file assignment\_1.md. Once he clicked the 'submit' icon, the file would be copied into submission folder, saved as wiki/bob/assignment\_1.md.
+
+It also write the record of each submission into a file named wiki/submission.md
+
+## Access submissions
+
+Educator would open wiki/submission.md in 'plan' column, and access each submitted assignment by click on the link in each record. This will navigate to students' wiki page.
+
+
+
