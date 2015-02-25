@@ -100,13 +100,14 @@ module LabWiki
 
     def self.create_widget(column, params)
       debug "Attempting to creating widget for column '#{column}' from '#{params}'"
+
+      # It can specify :widget or let it search based on mime_type
       if wname = params[:widget]
         wdescr = widgets_for_column(column).find do |wd|
           #debug "creating widget '#{wname}' - #{wd[:name] == wname} - #{wd}"
           wd[:name] == wname
         end
       else
-        # FIXME Seems now all widget is based on plugin, it never got here. Then the whole priority logic never got executed.
         widget = @@widgets_for_col[column.to_sym].reduce(:priority => 0, :wdescr => {}) do |best, wdescr|
           if wdescr[:priority] && priority = wdescr[:priority].call(params)
             if priority > best[:priority]
