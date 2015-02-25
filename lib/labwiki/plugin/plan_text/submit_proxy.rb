@@ -18,7 +18,8 @@ module LabWiki::Plugin::PlanText
       # Student, submitted file, when
       record_url = submission_repo.get_url_for_path('wiki/submission.md')
 
-      new_entry = "\n#{student_id} submitted #{submission_url} at #{Time.now.to_s}\n"
+      new_entry = "\n#{student_id} submitted [#{submission_url}](lw:plan:#{submission_url}) at #{Time.now.to_s}\n"
+
       to_write = if submission_repo.exist?(record_url)
                    submission_repo.read(record_url) + new_entry
                  else
