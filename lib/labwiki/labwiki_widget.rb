@@ -57,6 +57,8 @@ module LabWiki
       action = "on_#{action}".to_sym
       params = expand_req_params(col, params, req)
       col_widget = @widgets[col] # currently shown widget
+      # We have a hard time passing along the session related repos 
+      Thread.current[:repo_iterator] = OMF::Web::SessionStore[col, :repos]
 
       case action
       when :on_new
