@@ -54,7 +54,9 @@ module LabWiki::Plugin::PlanText
             if v.is_a? Hash
               extract_datasources(v)
             elsif v.is_a? Array
-              v.each {|e| extract_datasources(e) }
+              v.each do |e|
+                extract_datasources(e) if e.is_a? Hash
+              end
             end
         end
       end
