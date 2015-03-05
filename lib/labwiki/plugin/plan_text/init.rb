@@ -31,8 +31,11 @@ LabWiki::PluginManager.register :plan_text, {
 }
 
 # Register a callback to fix potentially fix embedded widgets
+require 'labwiki/plugin/plan_text/embedded_widget'
+OMF::Web::Widget.register_widget_type('lw', LabWiki::Plugin::PlanText::EmbeddedWidget)
+
 require 'omf-web/widget/text/maruku'
 OMF::Web::Widget::Text::Maruku::WidgetElement.on_pre_create do |wdescr|
-  LabWiki::Plugin::PlanText::PlanTextWidget.on_pre_create_embedded_widget(wdescr)
+  LabWiki::Plugin::PlanText::EmbeddedWidget.on_pre_create_embedded_widget(wdescr)
 end
 

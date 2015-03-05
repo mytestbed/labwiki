@@ -8,30 +8,6 @@ module LabWiki::Plugin::PlanText
   #
   class PlanTextWidget < LabWiki::ColumnWidget
 
-    # Check for data sources and create them if they don't exist yet
-    def self.on_pre_create_embedded_widget(wdescr)
-      unless wdescr.is_a? Hash
-        warn "Malformed widget description - #{wdescr} "
-        # TODO: Should raise some error to be propagated to client
-        return {}
-      end
-
-      if wdescr[:mime_type] == 'data/graph'
-        wdescr[:type] = "data/#{wdescr.delete(:graph_type)}"
-
-        if dss = wdescr[:data_sources]
-          dss.each do |ds|
-            puts ">>>>>>>> FIX DS #{ds}"
-            if data_url = ds[:data_url]
-              puts ">>>>> RESOLVE #{data_url}"
-            end
-            #ds[:id] = ds[:stream] = ds[:name] = 'foo'
-          end
-        end
-      end
-      puts ">>>>>>>> FIX WIDGET - #{wdescr}"
-      wdescr
-    end
 
     def initialize(column, config_opts, unused)
       unless column == :plan
