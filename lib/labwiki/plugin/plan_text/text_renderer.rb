@@ -33,7 +33,8 @@ module OMF::Web::Theme
       {
         img_src: '/resource/vendor/mono_icons/article32.png',
         title: @widget.title,
-        sub_title:  @content_descriptor[:url] #@widget.content_url
+        sub_title:  @content_descriptor[:url],
+        title_badge: @opts[:content].read_only? ? { text: 'Read-only', severity: 'warning' } : nil
       }
     end
 

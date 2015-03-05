@@ -476,24 +476,38 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
         if (href != undefined) {
           href = href.trim();
           if (href.slice(0, 3) == 'lw:') {
-            var p = href.slice(3).split('?');
-            var a = p[0].split('/');
+            el.removeAttr('href');
+            // Link syntax shall be lw:prepare:system:oedl:bob.oedl
+
+            var a = href.slice(3).split(':');
             var col = a[0];
-            var plugin = a[1];
+            var url = a.slice(1);
             var controller = LW[col + '_controller'];
-            if (controller != undefined && plugin != undefined) {
+
+            var mime_type = '';
+            switch (url.slice(-1)[0].split('.').slice(-1)[0]) {
+              case 'rb':
+              case 'oedl':
+                mime_type = 'text/ruby';
+                break;
+              case 'md':
+              case 'mkd':
+                mime_type = 'text/markup';
+                break;
+              case 'experiment':
+              case 'exp':
+                mime_type = 'plugin/experiment';
+                break;
+            }
+
+            if (controller != undefined && url != undefined) {
               var cmd = {
-                action: 'get_plugin',
+                action: 'get_widget',
+                url: url.join(':'),
                 col: col,
-                plugin: plugin
-              };
-              if (p[1] != undefined) {
-                var params = cmd['params'] = {};
-                _.each(p[1].split('&'), function (s) {
-                  var kv = s.split('=');
-                  params[kv[0]] = kv[1];
-                });
-              };
+                mime_type: mime_type
+              }
+
               // Making the link draggable as well
               el.data('content', cmd);
               el.draggable({
@@ -503,8 +517,6 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
                 zIndex: 9999
               });
 
-              // ... nad clickable
-              el.attr('href', '#');
               el.click(function() {
                 controller.refresh_content(cmd, 'POST');
                 return false;
