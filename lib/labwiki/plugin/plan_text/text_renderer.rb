@@ -12,7 +12,7 @@ module OMF::Web::Theme
       @opts = opts
       @widget = text_widget
       @content = content
-      puts "CONTENT>>>> #{opts.inspect}"
+      #puts "CONTENT>>>> #{opts.inspect}"
       @content_descriptor = opts[:content].content_descriptor
     end
 

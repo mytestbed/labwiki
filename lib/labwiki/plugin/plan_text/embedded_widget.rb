@@ -17,7 +17,7 @@ module LabWiki::Plugin::PlanText
 
         if dss = wdescr[:data_sources]
           dss.each do |ds|
-            puts ">>>>>>>> FIX DS #{ds}"
+            #puts ">>>>>>>> FIX DS #{ds}"
             if data_url = ds[:data_url]
               puts ">>>>> RESOLVE #{data_url}"
             end
@@ -25,12 +25,12 @@ module LabWiki::Plugin::PlanText
           end
         end
       end
-      puts ">>>>>>>> FIX WIDGET - #{wdescr}"
+      #puts ">>>>>>>> FIX WIDGET - #{wdescr}"
       wdescr
     end
 
     def self.create(wdescr)
-      puts ">>>>>>>> CREATE WIDGET - #{wdescr}"
+      #puts ">>>>>>>> CREATE WIDGET - #{wdescr}"
       self.new(wdescr)
     end
 
@@ -63,7 +63,7 @@ module LabWiki::Plugin::PlanText
     end
 
     def register_datasource(name, ds_descr)
-      puts ">>>>DATA_SOURCE: #{ds_descr}"
+      #puts ">>>>DATA_SOURCE: #{ds_descr}"
       unless OMF::Web::DataSourceProxy.validate_ds_description(ds_descr)
         raise "Unknown data source requested for data widget - #{ds_descr}"
       end

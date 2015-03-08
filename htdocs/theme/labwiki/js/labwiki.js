@@ -31,7 +31,7 @@ require.config({
 
 require(['css!graph_css/graph'], function(css) {});
 
-define(['theme/labwiki/js/column_controller'], function (column_controller) {
+define(['theme/labwiki/js/column_controller', 'omf/data_source_repo'], function (column_controller, ds_repo) {
   if (typeof(LW) == "undefined") LW = {};
   if (typeof(LW.plugin) == "undefined") LW.plugin = {};
 
@@ -122,6 +122,36 @@ define(['theme/labwiki/js/column_controller'], function (column_controller) {
 
   //LW.plugin = {}
 
+  // Look for discarded widgets and cleanup unused data sources
+  CLEANER_INTERVAL = 5000
+  setInterval(function() {
+    var TIMEOUT = 10000;
+    var body = $("body");
+    var ts = Date.now();
+    _.each(OML.widgets, function(widget, id) {
+      if (body.find("#" + id).length > 0) {
+        // apparently still in use
+        if ((typeof widget.ping) == "function") {
+          widget.ping(ts);
+        }
+      } else {
+        delete OML.widgets[id];
+      }
+    });
+    // Now check for old repos
+    ds_repo.each(function(ds, name) {
+      var dts = ds.ping();
+      if (!dts) {
+        // not sure when we would come through here?
+        ds.ping(dts);
+        return;
+      }
+      if ((ts - dts) > 2 * CLEANER_INTERVAL) {
+        // Looks like nobody is needing this data source anymore
+        ds_repo.deregister(name);
+      }
+    })
+  }, CLEANER_INTERVAL);
 
   $(function() {
     // Init controller now that everything is loaded
