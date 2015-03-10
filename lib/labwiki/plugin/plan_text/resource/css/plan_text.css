@@ -67,3 +67,66 @@ div.widget_body_plan p.drop-target {
 img.leaflet-tile {
   max-height: none;
 }
+
+/** Flagging error in embedded widget description **/
+.plan_text .widget-description-error {
+    border-top: solid 2pt red;
+  margin-top: 6pt;
+    margin-bottom: 6pt;
+}
+
+.plan_text .widget-description-error-reason {
+  color: red;
+    font-size: 14pt;
+    padding: 6pt 4pt 6pt 4pt;
+}
+
+.plan_text .widget-description-error-code {
+
+}
+
+.plan_text .widget-description-error-content {
+  background-color: #e6aaaa;
+  line-height: 18px;
+  line-height: 20px;
+  width: 2000px;
+  overflow-y: auto;
+}
+
+.plan_text .widget-description-error-content pre {
+  line-height: inherit;
+  /* padding: .4em .2em .4em .4em; */
+  white-space: pre !important;
+  cursor: default;
+  font-size: 12px;
+    border: none;
+    background: transparent;
+}
+
+.plan_text .widget-description-error-gutter {
+  width: 30px;
+  float: left;
+    background-color: #ebb;
+    padding-right: 5px;
+    border-right: solid 1pt #f88;
+}
+
+.plan_text .widget-description-error-gutter pre  {
+    color: #aaa;
+    color: #fff;
+  text-align: right;
+}
+
+.plan_text .widget-description-error-code {
+    margin-left: 30px;
+}
+
+.plan_text .widget-description-error-code pre {
+    padding-left: 5px;
+}
+
+.plan_text .widget-description-error-code pre.widget-description-error-line {
+    border-top: 1pt solid red;
+    border-bottom: 1pt solid red;
+}
+

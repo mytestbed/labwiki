@@ -6,7 +6,7 @@ module OMF::Web::Theme
 
   class CodeRenderer2 < Erector::Widget
 
-    #depends_on :css, "/resource/css/coderay.css"
+    depends_on :css, "/resource/css/coderay.css"
 
     # This maps the content's mime type to a different mode  supported
     # CodeMirror
