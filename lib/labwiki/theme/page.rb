@@ -51,7 +51,7 @@ module OMF::Web::Theme
         OML.session_id = '#{OMF::Web::SessionStore.session_id}';
         require(['theme/labwiki/js/labwiki', 'omf/data_source_repo'], function(lw, ds) {
           LW.session_id = OML.session_id = '#{OMF::Web::SessionStore.session_id}';
-          #{@content_choice_proxy.to_javascript()}
+          #{@content_choice_proxy.to_javascript(persistent: true)}
           #{gjsa.join("\n")}
         });
       }

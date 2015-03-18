@@ -138,12 +138,20 @@ define(['theme/labwiki/js/column_controller', 'omf/data_source_repo'], function 
         delete OML.widgets[id];
       }
     });
+    body.find(".widget_body").each(function() {
+      var el = $(this);
+      var f = el.data('data_source_pinger');
+      if (f) {
+        f(ds_repo, ts);
+      }
+    });
     // Now check for old repos
     ds_repo.each(function(ds, name) {
+      if (ds.is_persistent()) return; // persistent repos won't be reaped.
       var dts = ds.ping();
       if (!dts) {
         // not sure when we would come through here?
-        ds.ping(dts);
+        ds.ping(ts);
         return;
       }
       if ((ts - dts) > 2 * CLEANER_INTERVAL) {
