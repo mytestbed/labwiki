@@ -35,21 +35,28 @@ module LabWiki
         raise NoReposToSearchException.new
       end
       choices = PluginManager.content_choice_table
+      #puts ">>> CHOICES: #{choices}"
       choices.clear
       result = PluginManager.widgets_for_column(col).map do |widget|
+        #puts ">>SEARCHING #{widget}"
         next unless sproc = widget[:search]
         name = widget[:name]
         wopts = Configurator["plugins/#{name}"]
 
-        sproc.call(pat, opts, wopts) do |f|
-          #puts ">>>FFF>>> #{f}"
-          f[:widget] = name
-          if url = f.delete(:url)
-            f[:label] ||= url
-            f[:content] ||= Base64.encode64("#{f[:mime_type]}::#{url}").gsub("\n", '')
+        begin
+          sproc.call(pat, opts, wopts) do |f|
+            #puts ">>>FFF#{name}>>> #{f}"
+            f[:widget] = name
+            if url = f.delete(:url)
+              f[:label] ||= url
+              f[:content] ||= Base64.encode64("#{f[:mime_type]}::#{url}").gsub("\n", '')
+            end
+            #f[:widget] = widget[:name] if [widget[:handle_mime_type]].flatten.include?(r_item[:mime_type])
+            choices << [name, f.to_json]
           end
-          #f[:widget] = widget[:name] if [widget[:handle_mime_type]].flatten.include?(r_item[:mime_type])
-          choices << [name, f.to_json]
+        rescue Exception => ex
+          warn "Calling search proc on '#{widget[:name]}' raised '#{ex}'"
+          debug ex.backtrace.join("\n\t")
         end
 
 
