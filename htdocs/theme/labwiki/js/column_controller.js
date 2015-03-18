@@ -482,6 +482,10 @@ define(["theme/labwiki/js/content_selector_widget"], function (ContentSelectorWi
             var a = href.slice(3).split(':');
             var col = a[0];
             var url = a.slice(1);
+            if (url.length == 0) {
+              console.log("Illegal lw: format: " + href);
+              return;
+            }
             var controller = LW[col + '_controller'];
 
             var mime_type = '';
