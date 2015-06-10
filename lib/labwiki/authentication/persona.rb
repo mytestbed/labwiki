@@ -27,7 +27,7 @@ module LabWiki
             img :src => "/resource/login/img/persona-logo-wordmark.png", :alt => "Login"
             3.times { br }
             a id: 'signin', :class => "btn btn-lg btn-default" do
-              text "Login with your gmail address"
+              text "Login with your email address"
             end
           end
 
