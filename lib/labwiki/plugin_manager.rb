@@ -1,6 +1,7 @@
 require 'omf_base/lobject'
 require 'omf_web'
 require 'omf-web/theme'
+require 'omf_oml/table'
 
 module LabWiki
   module Plugin; end # Put all plugins under this module
